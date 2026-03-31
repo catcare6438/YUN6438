@@ -1,5 +1,4 @@
 Content is user-generated and unverified.
-1
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -298,17 +297,32 @@ function isWE(y,m,d){const w=new Date(y,m,d).getDay();return w===0||w===6}
 function cln(s){return(s||'').split('\n').map(p=>p.replace(/[~]?\d{1,4}[-:~]\d{2,4}/g,'').replace('球球','').trim()).filter(Boolean).join('、')}
 
 function toHHMM(raw){
+  // 把 "12-4" "2-530" "1200-1600" 等統一轉成 HH:MM
   raw=raw.replace(/\D/g,'');
   if(!raw)return'??';
-  if(raw.length<=2)return raw.padStart(2,'0')+':00';
-  if(raw.length===3)return'0'+raw[0]+':'+raw.slice(1);
-  return raw.slice(0,2)+':'+raw.slice(2,4);
+  if(raw.length===1)return'0'+raw+':00';   // "4" → 04:00
+  if(raw.length===2)return raw+':00';       // "12" → 12:00
+  if(raw.length===3)return'0'+raw[0]+':'+raw.slice(1); // "530" → 05:30
+  return raw.slice(0,2)+':'+raw.slice(2,4); // "1600" → 16:00
 }
 function extractBallTime(shiftVal){
   if(!shiftVal)return null;
   const line=shiftVal.split('\n').find(l=>l.includes('球球'));if(!line)return null;
   const m=line.match(/球球\s*(\d{1,4})[-:](\d{1,4})/);if(!m)return null;
   return{start:toHHMM(m[1]),end:toHHMM(m[2])};
+}
+// 取同班人員（非球球）
+function coworkers(shiftVal){
+  if(!shiftVal)return[];
+  return shiftVal.split('\n')
+    .filter(l=>l.trim()&&!l.includes('球球')&&!l.includes('采淳'))
+    .map(l=>l.replace(/[~]?\d{1,4}[-:~]\d{2,4}/g,'').replace('~','').trim())
+    .filter(Boolean);
+}
+// 週一週五掃地提醒
+function cleaningDay(dateStr){
+  const wdL=WD_LABEL[dateStr];
+  return wdL==='一'||wdL==='五';
 }
 
 // ══ 靈性備用 ══
@@ -319,8 +333,10 @@ function fallbackSpirit(y,m){
 // ══ 狀態 ══
 const TODAY=todayStr();
 let curTab='schedule';
+// 預設選今天所在的週
 let curWeekI=(()=>{for(let i=0;i<WEEKS.length;i++)if(WEEKS[i].dates.includes(TODAY))return i;return WEEKS.length-1})();
-let selDate=WEEKS[curWeekI].dates.includes(TODAY)?TODAY:WEEKS[curWeekI].dates[0];
+// 預設選今天
+let selDate=TODAY;
 let calY=parseD(TODAY).getFullYear(),calM=parseD(TODAY).getMonth();
 let spiritTxt='',spiritKey='',spLoading=false;
 let events=(()=>{try{return JSON.parse(localStorage.getItem('bb_ev')||'[]')}catch{return[]}})();
@@ -376,6 +392,12 @@ function renderSchedule(){
   const myS=dd?SHIFTS.filter(k=>dd[k]&&dd[k].includes('球球')):[];
   const mainS=myS[0]||null;
   const bt=mainS?extractBallTime(dd[mainS]):null;
+  // 同班人員（球球那個班次的其他人）
+  const cwList=mainS&&dd?coworkers(dd[mainS]):[];
+  // 是否休假
+  const isOff=myS.length===0;
+  // 掃地提醒
+  const showCleaning=!isOff&&cleaningDay(selDate);
   function pS(k){const o=['凌晨','早上','下午','晚上'],i=o.indexOf(k);for(let j=i-1;j>=0;j--){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
   function nS(k){const o=['凌晨','早上','下午','晚上'],i=o.indexOf(k);for(let j=i+1;j<o.length;j++){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
   const pv=mainS&&dd?pS(mainS):null,nx=mainS&&dd?nS(mainS):null;
@@ -402,12 +424,17 @@ function renderSchedule(){
     const dt=parseD(d),act=d===selDate,isT=d===TODAY;
     const red=isRed(d)||isWE(dt.getFullYear(),dt.getMonth(),dt.getDate());
     const wdL=WD_LABEL[d]||'';
-    const bg=act?T.pill:'rgba(255,255,255,.65)';
-    const bc=isT&&!act?T.accent:red&&!act?T.border+'99':'rgba(255,255,255,.5)';
-    h+=`<div class="day-pill${act?' active':''}" style="background:${bg};border-color:${bc}" onclick="selDay('${d}')">
-      <div class="day-wd" style="color:${act?'rgba(255,255,255,.8)':red?T.accent:T.accent2}">${wdL}</div>
-      <div class="day-num" style="color:${act?'#fff':red?T.accent:T.accent2+'99'}">${dt.getDate()}</div>
-      ${isRed(d)?`<div class="day-red-dot" style="color:${act?'#fff':'#ff5060'}">●</div>`:''}
+    const ddItem=DATA[d];
+    const isOffDay=!ddItem||!SHIFTS.some(k=>ddItem[k]&&ddItem[k].includes('球球'));
+    // 休假→天空藍，今天→主題漸變，其他照常
+    const bg=act?T.pill:isOffDay?'linear-gradient(135deg,#b8e4ff,#90ccff)':'rgba(255,255,255,.65)';
+    const bc=isT&&!act?T.accent:isOffDay&&!act?'#60b8e8':red&&!act?T.border+'99':'rgba(255,255,255,.5)';
+    const numColor=act?'#fff':isOffDay?'#1a6fa8':red?T.accent:T.accent2+'99';
+    h+=`<div class="day-pill${act?' active':''}" style="background:${bg};border-color:${bc};position:relative" onclick="selDay('${d}')">
+      <div class="day-wd" style="color:${act?'rgba(255,255,255,.8)':isOffDay?'#3090c0':red?T.accent:T.accent2}">${wdL}</div>
+      <div class="day-num" style="color:${numColor}">${dt.getDate()}</div>
+      ${isT?`<div style="font-size:.65rem;line-height:1">🌸</div>`:isOffDay&&!act?`<div style="font-size:.55rem;color:#60b8e8">休</div>`:''}
+      ${isRed(d)&&!isOffDay?`<div class="day-red-dot" style="color:${act?'#fff':'#ff5060'}">●</div>`:''}
     </div>`;
   });
   h+=`</div>`;
@@ -426,6 +453,10 @@ function renderSchedule(){
       <div style="font-family:'Nunito',sans-serif;font-size:1.2rem;font-weight:900;color:${T.accent}">${SICON[mainS]} ${mainS}班</div>
       ${bt?`<div class="shift-time-big" style="color:${T.accent}">${bt.start} ～ ${bt.end}</div>`:''}
       <div style="font-size:.7rem;color:${T.accent2};font-weight:700">⏰ 上班 ${bt?bt.start:'?'} ／ 下班 ${bt?bt.end:'?'}</div>
+      ${cwList.length?`<div style="margin-top:8px;padding:7px 12px;background:rgba(255,255,255,.6);border-radius:12px;border:1.5px solid ${T.border}">
+        <div style="font-size:.6rem;font-weight:900;color:${T.accent2};margin-bottom:3px">👯 今天一起上班</div>
+        <div style="font-size:.88rem;font-weight:900;color:${T.accent}">${cwList.join('・')}</div>
+      </div>`:''}
     </div>
     <div class="info-grid">
       <div class="info-box" style="border-color:${T.border}">
@@ -438,10 +469,13 @@ function renderSchedule(){
         <div class="info-lbl" style="color:${T.accent2}">誰來接班</div>
         <div class="info-val" style="color:${nx?T.accent:'#ccc'}">${nx?cln(nx.val):'無接班'}</div>
       </div>
-      <div class="info-box full" style="border-color:${T.border}">
-        <div class="info-icon">🤝</div>
-        <div class="info-lbl" style="color:${T.accent2}">我接誰的班</div>
-        <div class="info-val" style="color:${pv?T.accent:'#ccc'}">${pv?`接 ${SICON[pv.key]} ${cln(pv.val)} 的班`:'今天第一班！'}</div>
+      <div class="info-box full" style="border-color:${T.border};${showCleaning?'background:linear-gradient(135deg,rgba(255,240,200,.6),rgba(255,220,160,.4));border-color:#ffd080':''}">
+        <div class="info-icon">${showCleaning?'🧹':'🤝'}</div>
+        <div class="info-lbl" style="color:${T.accent2}">${showCleaning?'今日清潔提醒':'我接誰的班'}</div>
+        <div class="info-val" style="color:${showCleaning?'#8a5000':pv?T.accent:'#ccc'}">
+          ${showCleaning?'🏠 2樓＋3樓 掃地＋拖地':(pv?`接 ${SICON[pv.key]} ${cln(pv.val)} 的班`:'今天第一班！')}
+        </div>
+        ${showCleaning&&pv?`<div style="font-size:.66rem;color:${T.accent2};margin-top:4px">🤝 接 ${SICON[pv.key]} ${cln(pv.val)} 的班</div>`:''}
       </div>
     </div>`;
   }
