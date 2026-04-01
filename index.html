@@ -1,5 +1,3 @@
-Content is user-generated and unverified.
-2
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -78,16 +76,6 @@ body.tab-planner{background:linear-gradient(160deg,#ffe8f8 0%,#ffd8f0 50%,#ffe8d
 .cal-dot{width:4px;height:4px;border-radius:50%;background:#60c080;margin:1px auto 0}
 .holiday-row{display:flex;align-items:center;gap:10px;border-radius:13px;padding:8px 11px;margin-bottom:5px;border-width:1.5px;border-style:solid}
 
-/* 靈性 */
-.spirit-sec{background:rgba(255,255,255,.7);border-radius:14px;padding:10px 12px;margin-bottom:8px;border-width:1.5px;border-style:solid}
-.spirit-title{font-weight:900;font-size:.75rem;margin-bottom:3px}
-.spirit-content{font-size:.8rem;line-height:1.85;white-space:pre-wrap}
-.ak-box{border-radius:16px;padding:12px 13px;margin-bottom:9px;border-width:1.5px;border-style:solid}
-.ak-title{font-weight:900;font-size:.75rem;margin-bottom:5px}
-.ak-content{font-size:.8rem;line-height:1.88;white-space:pre-wrap}
-.spirit-btn{width:100%;margin-top:8px;padding:10px;border:none;border-radius:13px;color:#fff;font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer}
-.spirit-btn:disabled{cursor:not-allowed;opacity:.6}
-
 /* 行程 */
 .event-row{display:flex;align-items:center;gap:9px;border-radius:13px;padding:9px 12px;margin-bottom:6px;border-width:1.5px;border-style:solid;background:rgba(255,255,255,.65)}
 .event-row.done-row{background:rgba(180,240,200,.25);border-color:#80d0a0!important}
@@ -165,39 +153,7 @@ const TH={
 
 // ══ 班表資料 ══
 const RAW=[
-  // 3月
-  {date:'2025-03-01',凌晨:'球球 0000-1000',早上:'曾姐 7-11',下午:'Tien Yun 1-5',晚上:'韶芸 1800-2400'},
-  {date:'2025-03-02',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'小茹 1500-2100\nYing',晚上:'萱汶\n小茹 1500-2100\n群翔'},
-  {date:'2025-03-03',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'球球 1200-1600\n小茹',晚上:'韶芸 1800-2400\n阿瑛 1800-2200'},
-  {date:'2025-03-04',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'阿瑛 1300-1800\n球球 1200-1800',晚上:'韶芸 1800-2400\n小茹'},
-  {date:'2025-03-05',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'Ying 1300-1900\n球球 1200-1600',晚上:'阿瑛 1800-2300\n萱汶'},
-  {date:'2025-03-06',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200\nEmily 9-12',下午:'Ying 1200-1800\n群翔 1200-1700',晚上:'韶芸 1800-2400\n小茹'},
-  {date:'2025-03-07',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200\nEmily 9-12',下午:'萱汶\n群翔',晚上:'韶芸 2100-0300\n小茹'},
-  {date:'2025-03-08',凌晨:'曾姐 6-10',早上:'蔡小習 1000-1400\nEmily 9-12',下午:'Tien Yun 1-5\n淑珍',晚上:'韶芸 1800-2400'},
-  {date:'2025-03-09',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'Ying 1200-1800\n球球 1200-1600',晚上:'小茹\n萱汶'},
-  {date:'2025-03-10',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200\nEmily 9-12',下午:'小茹\n書書 12-4',晚上:'韶芸 1800-2400\n阿瑛 1800-2200'},
-  {date:'2025-03-11',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'阿瑛 1300-1800\n球球 1200-1800',晚上:'韶芸 1800-2400\n萱汶'},
-  {date:'2025-03-12',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'Ying 1300-1900\n球球 1200-1600',晚上:'阿瑛 1800-2300\n群翔 1800-2300'},
-  {date:'2025-03-13',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'Ying 1200-1800',晚上:'韶芸 1800-2400\n小茹'},
-  {date:'2025-03-14',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'婉寧 12-5\nYing',晚上:'韶芸 1800-2400\n群翔 1800-2300'},
-  {date:'2025-03-15',凌晨:'采淳 0200-0900',早上:'Emily 9-12',下午:'Tien Yun 1-5\n淑珍',晚上:'韶芸 1800-2400'},
-  {date:'2025-03-16',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200\nEmily 9-12',下午:'球球 1200-1600\n群翔 1200-1700',晚上:'小茹\n書書 1700-2000'},
-  {date:'2025-03-17',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200\nEmily 9-12',下午:'Ying 1200-1800\n小茹 1400-2000',晚上:'阿瑛 1800-2200\n小茹 1400-2000'},
-  {date:'2025-03-18',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200\nEmily 9-12',下午:'阿瑛 1300-1800\n球球 1200-1800',晚上:'韶芸 1800-2400\n群翔 1800-2300'},
-  {date:'2025-03-19',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200\nEmily 9-12',下午:'Ying 1300-1900\n球球 1200-1600',晚上:'阿瑛 1800-2300\n萱汶'},
-  {date:'2025-03-20',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200\nEmily 9-12',下午:'Ying 1200-1800\n球球 1200-1800',晚上:'韶芸 1800-2400\n新人'},
-  {date:'2025-03-21',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'萱汶 12-21\n婉寧 12-5',晚上:'韶芸 2100-0300\n書書'},
-  {date:'2025-03-22',凌晨:'Emily 0600-1000',早上:'蔡小習 1000-1400',下午:'Tien Yun 1-5\n淑珍',晚上:'韶芸 1800-2400'},
-  {date:'2025-03-23',凌晨:'曾姐 6-10',早上:'',下午:'Ying 1200-1800\n球球 1200-1600',晚上:'萱汶\n群翔 1800-2300'},
-  {date:'2025-03-24',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'Ying',晚上:'韶芸 1800-2400\n阿瑛 1800-2200'},
-  {date:'2025-03-25',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'阿瑛 1300-1800\n球球 1200-1800',晚上:'韶芸 1800-2400'},
-  {date:'2025-03-26',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'球球 1200-1600\nYing',晚上:'阿瑛 1800-2300\n萱汶'},
-  {date:'2025-03-27',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'Ying 1200-1800\n球球 1200-1800',晚上:'韶芸 1800-2400\n群翔 1800-2300'},
-  {date:'2025-03-28',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'萱汶 1300-2100\n群翔 1200-1800',晚上:'萱汶 1300-2100\n韶芸 2100-0300'},
-  {date:'2025-03-29',凌晨:'曾姐 6-10',早上:'蔡小習 1000-1400\nEmily 9-12',下午:'Tien Yun 1-5\n淑珍',晚上:'韶芸 1800-2400\n群翔 1800-2300'},
-  {date:'2025-03-30',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'Ying 1200-1800\n球球 1200-1600',晚上:'萱汶\n群翔 1800-2300'},
-  {date:'2025-03-31',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'Ying 1200-1800\n群翔 1200-1700',晚上:'韶芸 1800-2400\n阿瑛 1800-2200'},
-  // 4月
+// 4月
   {date:'2025-04-01',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'萱汶 1200-2200\n群翔 12-6',晚上:'韶芸 1800-2400\n萱汶 1200-2200'},
   {date:'2025-04-02',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'球球 12-4\n萱汶 1300-2300',晚上:'萱汶 1300-2300\n群翔 1800-2300'},
   {date:'2025-04-03',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'Ying 12-6\n球球 2-530',晚上:'韶芸 1800-2400\n萱汶 1700-2300'},
@@ -233,11 +189,6 @@ const DATA={};RAW.forEach(r=>DATA[r.date]=r);
 
 // ══ 週清單 ══
 const WEEKS=[
-  {label:'3/1（週日）',dates:['2025-03-01']},
-  {label:'3/2（一）～ 3/8（日）',dates:['2025-03-02','2025-03-03','2025-03-04','2025-03-05','2025-03-06','2025-03-07','2025-03-08']},
-  {label:'3/9（一）～ 3/15（日）',dates:['2025-03-09','2025-03-10','2025-03-11','2025-03-12','2025-03-13','2025-03-14','2025-03-15']},
-  {label:'3/16（一）～ 3/22（日）',dates:['2025-03-16','2025-03-17','2025-03-18','2025-03-19','2025-03-20','2025-03-21','2025-03-22']},
-  {label:'3/23（一）～ 3/29（日）',dates:['2025-03-23','2025-03-24','2025-03-25','2025-03-26','2025-03-27','2025-03-28','2025-03-29']},
   {label:'3/30（一）～ 4/5（日）',dates:['2025-03-30','2025-03-31','2025-04-01','2025-04-02','2025-04-03','2025-04-04','2025-04-05']},
   {label:'4/6（一）～ 4/12（日）',dates:['2025-04-06','2025-04-07','2025-04-08','2025-04-09','2025-04-10','2025-04-11','2025-04-12']},
   {label:'4/13（一）～ 4/19（日）',dates:['2025-04-13','2025-04-14','2025-04-15','2025-04-16','2025-04-17','2025-04-18','2025-04-19']},
@@ -326,10 +277,6 @@ function cleaningDay(dateStr){
   return wdL==='一'||wdL==='五';
 }
 
-// ══ 靈性備用 ══
-function fallbackSpirit(y,m){
-  return`【💰 財運提醒】武曲化祿入財帛，${y}年${m+1}月財氣穩健 ⭐⭐⭐⭐\n【💕 感情提醒】天同星守感情宮，感情溫馨甜蜜 ⭐⭐⭐⭐\n【✨ 工作提醒】天府官祿宮穩固，工作表現亮眼 ⭐⭐⭐⭐⭐\n【🌙 整體運勢】紫微坐命氣場強大，這個月你的光芒會被看見 💕\n【🌅 早晨能量】深呼吸三次告訴自己今天一切順流，帶著感恩出門好事靠近 🌸\n【🌞 午間提醒】中午放空五分鐘讓身心充電，午後直覺特別靈敏 ✨\n【🌙 夜晚功課】睡前感謝今天三件事，把不愉快交給夜晚帶走 💤`;
-}
 
 // ══ 狀態 ══
 const TODAY=todayStr();
@@ -399,10 +346,10 @@ function renderSchedule(){
   const isOff=myS.length===0;
   // 掃地提醒
   const showCleaning=!isOff&&cleaningDay(selDate);
-  function pS(k){const o=['凌晨','早上','下午','晚上'],i=o.indexOf(k);for(let j=i-1;j>=0;j--){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
-  function nS(k){const o=['凌晨','早上','下午','晚上'],i=o.indexOf(k);for(let j=i+1;j<o.length;j++){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
+  function pS(k){const o=['凌晨班','早班','下午班','晚班'],i=o.indexOf(k);for(let j=i-1;j>=0;j--){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
+  function nS(k){const o=['凌晨班','早班','下午班','晚班'],i=o.indexOf(k);for(let j=i+1;j<o.length;j++){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
   const pv=mainS&&dd?pS(mainS):null,nx=mainS&&dd?nS(mainS):null;
-  const earlyPpl=dd?cln(dd['早上']||''):'';
+  const earlyPpl=dd?cln(dd['早班']||''):'';
 
   let h=`<div class="deco-row">`;
   TH.schedule.deco.forEach((e,i)=>h+=`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`);
@@ -563,18 +510,9 @@ function renderCalendar(){
     <div class="cal-grid" style="margin-bottom:3px">${['一','二','三','四','五','六','日'].map((d,i)=>`<div style="font-size:.58rem;font-weight:700;color:${i>=5?T.accent:T.accent2};text-align:center;padding:2px 0">${d}</div>`).join('')}</div>
     <div class="cal-grid">${grid}</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:.6rem;font-weight:700">
-      <span style="color:${T.accent}">🔴 假日</span><span style="color:${T.accent2}">🐾 上班</span><span style="color:#60c080">● 行程</span>
+      <span style="color:${T.accent}">♥️ 假日</span><span style="color:${T.accent2}">🐈‍⬛ 上班</span><span style="color:#60c080">📣 行程</span>
     </div>
-  </div>
-  ${hList?`<div class="card" style="border-color:${T.border};box-shadow:${T.shadow}"><div style="position:absolute;top:0;left:0;right:0;height:3px;background:${T.bar}"></div><div class="sec-lbl" style="color:${T.accent}">🎌 ${calM+1}月節假日</div>${hList}</div>`:''}
-  <div class="card" style="border-color:${T.border};box-shadow:${T.shadow};background:linear-gradient(135deg,${T.border}22,${T.accent2}11)">
-    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${T.bar}"></div>
-    <div class="sec-lbl" style="color:${T.accent}">🔮 紫微命盤 ${calY}年${calM+1}月</div>
-    ${spLoading?`<div style="text-align:center;padding:18px;color:${T.accent}"><span class="spin" style="font-size:2rem">🌀</span><div style="font-size:.8rem;margin-top:6px">連線宇宙能量中...</div></div>`:''}
-    ${zH}
-    <button class="spirit-btn" style="background:${spLoading?'rgba(200,200,220,.5)':T.pill}" onclick="loadSpirit()" ${spLoading?'disabled':''}>
-      ${spLoading?'🌀 連線中...':'✨ 重新連線宇宙能量'}
-    </button>
+
   </div>
   <div class="card" style="border-color:${T.border};box-shadow:${T.shadow};background:linear-gradient(135deg,${T.accent2}11,${T.border}22)">
     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${T.bar}"></div>
@@ -584,34 +522,6 @@ function renderCalendar(){
 }
 function calPrev(){calM--;if(calM<0){calM=11;calY--;}spiritTxt='';spiritKey='';renderCalendar();loadSpirit();}
 function calNext(){calM++;if(calM>11){calM=0;calY++;}spiritTxt='';spiritKey='';renderCalendar();loadSpirit();}
-
-// ══ AI 靈性 ══
-async function loadSpirit(){
-  const key=calY+'-'+calM;
-  spLoading=true;renderCalendar();
-  const prompt=`你是球球（1990年3月8日凌晨02:44台灣時間出生）的靈性導師。繁體中文，溫柔可愛語氣，多用emoji。命盤：紫微坐命子宮，水二局，財帛武曲化祿，官祿天府，感情天同。針對${calY}年${calM+1}月給七段（【】標題空行分隔）：【💰 財運提醒】一句+⭐評分 【💕 感情提醒】一句+⭐評分 【✨ 工作提醒】一句+⭐評分 【🌙 整體運勢】二句 【🌅 早晨能量】二句 【🌞 午間提醒】二句 【🌙 夜晚功課】二句`;
-  try{
-    const r=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':'在這裡填入API_KEY','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,messages:[{role:'user',content:prompt}]})
-    });
-    const data=await r.json();
-    const txt=(data.content||[]).map(c=>c.type==='text'?c.text:'').join('').trim();
-    spiritTxt=txt||fallbackSpirit(calY,calM);spiritKey=key;
-  }catch{spiritTxt=fallbackSpirit(calY,calM);spiritKey=key;}
-  spLoading=false;renderCalendar();
-}
-function parseSecs(txt){
-  if(!txt)return{ziwei:[],akashic:[]};
-  const z=[],a=[],ak=['早晨','午間','夜晚'];
-  txt.split(/\n(?=【)/).forEach(p=>{
-    const m=p.match(/【(.+?)】([\s\S]*)/);if(!m)return;
-    const t=m[1].trim(),c=m[2].trim();
-    (ak.some(k=>t.includes(k))?a:z).push({title:t,content:c});
-  });
-  return{ziwei:z,akashic:a};
-}
 
 // ══ 行程 ══
 function saveEvts(){try{localStorage.setItem('bb_ev',JSON.stringify(events))}catch{}}
