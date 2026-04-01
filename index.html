@@ -1,3 +1,5 @@
+Content is user-generated and unverified.
+2
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -76,6 +78,7 @@ body.tab-planner{background:linear-gradient(160deg,#ffe8f8 0%,#ffd8f0 50%,#ffe8d
 .cal-dot{width:4px;height:4px;border-radius:50%;background:#60c080;margin:1px auto 0}
 .holiday-row{display:flex;align-items:center;gap:10px;border-radius:13px;padding:8px 11px;margin-bottom:5px;border-width:1.5px;border-style:solid}
 
+
 /* 行程 */
 .event-row{display:flex;align-items:center;gap:9px;border-radius:13px;padding:9px 12px;margin-bottom:6px;border-width:1.5px;border-style:solid;background:rgba(255,255,255,.65)}
 .event-row.done-row{background:rgba(180,240,200,.25);border-color:#80d0a0!important}
@@ -110,7 +113,7 @@ body.tab-planner{background:linear-gradient(160deg,#ffe8f8 0%,#ffd8f0 50%,#ffe8d
     <div class="hdr-logo" id="hdr-logo">🌸 球球の魔法日曆</div>
     <div class="hdr-date" id="hdr-date"></div>
   </div>
-  <div style="font-size:1.6rem" id="hdr-pet" class="float">🐾</div>
+  <div style="font-size:1.6rem" id="hdr-pet" class="float">♥️</div>
 </div>
 
 <div class="body">
@@ -120,7 +123,7 @@ body.tab-planner{background:linear-gradient(160deg,#ffe8f8 0%,#ffd8f0 50%,#ffe8d
 </div>
 
 <div class="tabbar" id="tabbar">
-  <button class="tab-btn" id="tb-schedule" onclick="switchTab('schedule')"><div class="tab-icon">🐾</div>班表</button>
+  <button class="tab-btn" id="tb-schedule" onclick="switchTab('schedule')"><div class="tab-icon">🐈‍⬛</div>班表</button>
   <button class="tab-btn" id="tb-calendar" onclick="switchTab('calendar')"><div class="tab-icon">🌸</div>日曆</button>
   <button class="tab-btn" id="tb-planner" onclick="switchTab('planner')"><div class="tab-icon">📝</div>行程</button>
 </div>
@@ -133,14 +136,9 @@ const TH={
     border:'#e8b8d8',accent:'#c060a0',accent2:'#8050c0',
     pill:'linear-gradient(135deg,#e060a0,#9060d0)',
     shadow:'3px 4px 0 #e8c8e0',bar:'linear-gradient(90deg,#e060a0,#c070d0,#8080e0,#60b0f0)',
-    deco:['🌸','🎀','🐱','✨','🌸'],hdrPet:'🐾',
+    deco:['🌸','🎀','🐱','✨','🌸'],hdrPet:'🐈‍⬛',
   },
-  calendar:{
-    bg:'linear-gradient(160deg,#dde8ff 0%,#e8d8ff 50%,#d8f0ff 100%)',
-    border:'#b8c8f0',accent:'#5060c0',accent2:'#3090c0',
-    pill:'linear-gradient(135deg,#6070d0,#30a0d0)',
-    shadow:'3px 4px 0 #c0c8f0',bar:'linear-gradient(90deg,#6070d0,#5090d0,#30b0c0,#40c0d0)',
-    deco:['🌙','⭐','🔮','⭐','🌙'],hdrPet:'🌙',
+
   },
   planner:{
     bg:'linear-gradient(160deg,#ffe8f8 0%,#ffd8f0 50%,#ffe8d8 100%)',
@@ -153,7 +151,7 @@ const TH={
 
 // ══ 班表資料 ══
 const RAW=[
-// 4月
+ // 4月
   {date:'2025-04-01',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'萱汶 1200-2200\n群翔 12-6',晚上:'韶芸 1800-2400\n萱汶 1200-2200'},
   {date:'2025-04-02',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'球球 12-4\n萱汶 1300-2300',晚上:'萱汶 1300-2300\n群翔 1800-2300'},
   {date:'2025-04-03',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200',下午:'Ying 12-6\n球球 2-530',晚上:'韶芸 1800-2400\n萱汶 1700-2300'},
@@ -172,7 +170,7 @@ const RAW=[
   {date:'2025-04-16',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'Ying 1-7\n球球 12-4',晚上:'阿瑛 1800-2300\n萱汶'},
   {date:'2025-04-17',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200',下午:'Ying 12-6\n球球 2-530',晚上:'韶芸 1800-2400'},
   {date:'2025-04-18',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200\n淑珍',下午:'萱汶',晚上:'韶芸 1800-2400'},
-  {date:'2025-04-19',凌晨:'',早上:'Emily 9-12',下午:'Tien Yun 1-5\n淑珍',晚上:'萱汶'},
+  {date:'2025-04-19',凌晨:'早上:'Emily 9-12',下午:'Tien Yun 1-5\n淑珍',晚上:'萱汶'},
   {date:'2025-04-20',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200\nEmily 9-12',下午:'Ying 12-6\n球球 12-4',晚上:'萱汶'},
   {date:'2025-04-21',凌晨:'采淳 ~0200-1200',早上:'采淳 ~0200-1200\nEmily 9-12',下午:'球球 12-4',晚上:'韶芸 1800-2400'},
   {date:'2025-04-22',凌晨:'采淳 ~0200-1200\n曾姐 6-10',早上:'采淳 ~0200-1200\nEmily 9-12',下午:'阿瑛 1-6\n萱汶',晚上:'韶芸 1800-2400'},
@@ -196,12 +194,6 @@ const WEEKS=[
   {label:'4/27（一）～ 4/30（四）',dates:['2025-04-27','2025-04-28','2025-04-29','2025-04-30']},
 ];
 const WD_LABEL={
-  '2025-03-01':'日',
-  '2025-03-02':'一','2025-03-03':'二','2025-03-04':'三','2025-03-05':'四','2025-03-06':'五','2025-03-07':'六','2025-03-08':'日',
-  '2025-03-09':'一','2025-03-10':'二','2025-03-11':'三','2025-03-12':'四','2025-03-13':'五','2025-03-14':'六','2025-03-15':'日',
-  '2025-03-16':'一','2025-03-17':'二','2025-03-18':'三','2025-03-19':'四','2025-03-20':'五','2025-03-21':'六','2025-03-22':'日',
-  '2025-03-23':'一','2025-03-24':'二','2025-03-25':'三','2025-03-26':'四','2025-03-27':'五','2025-03-28':'六','2025-03-29':'日',
-  '2025-03-30':'一','2025-03-31':'二',
   '2025-04-01':'三','2025-04-02':'四','2025-04-03':'五','2025-04-04':'六','2025-04-05':'日',
   '2025-04-06':'一','2025-04-07':'二','2025-04-08':'三','2025-04-09':'四','2025-04-10':'五','2025-04-11':'六','2025-04-12':'日',
   '2025-04-13':'一','2025-04-14':'二','2025-04-15':'三','2025-04-16':'四','2025-04-17':'五','2025-04-18':'六','2025-04-19':'日',
@@ -252,9 +244,9 @@ function toHHMM(raw){
   // 把 "12-4" "2-530" "1200-1600" 等統一轉成 HH:MM
   raw=raw.replace(/\D/g,'');
   if(!raw)return'??';
-  if(raw.length===1)return'0'+raw+':00';   // "4" → 04:00
+  if(raw.length===1)return'0'+raw+':00';   // "4" → 16:00
   if(raw.length===2)return raw+':00';       // "12" → 12:00
-  if(raw.length===3)return'0'+raw[0]+':'+raw.slice(1); // "530" → 05:30
+  if(raw.length===3)return'0'+raw[0]+':'+raw.slice(1); // "530" → 17:30
   return raw.slice(0,2)+':'+raw.slice(2,4); // "1600" → 16:00
 }
 function extractBallTime(shiftVal){
@@ -346,10 +338,10 @@ function renderSchedule(){
   const isOff=myS.length===0;
   // 掃地提醒
   const showCleaning=!isOff&&cleaningDay(selDate);
-  function pS(k){const o=['凌晨班','早班','下午班','晚班'],i=o.indexOf(k);for(let j=i-1;j>=0;j--){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
-  function nS(k){const o=['凌晨班','早班','下午班','晚班'],i=o.indexOf(k);for(let j=i+1;j<o.length;j++){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
+  function pS(k){const o=['凌晨','早上','下午','晚上'],i=o.indexOf(k);for(let j=i-1;j>=0;j--){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
+  function nS(k){const o=['凌晨','早上','下午','晚上'],i=o.indexOf(k);for(let j=i+1;j<o.length;j++){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
   const pv=mainS&&dd?pS(mainS):null,nx=mainS&&dd?nS(mainS):null;
-  const earlyPpl=dd?cln(dd['早班']||''):'';
+  const earlyPpl=dd?cln(dd['早上']||''):'';
 
   let h=`<div class="deco-row">`;
   TH.schedule.deco.forEach((e,i)=>h+=`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`);
@@ -374,7 +366,7 @@ function renderSchedule(){
     const wdL=WD_LABEL[d]||'';
     const ddItem=DATA[d];
     const isOffDay=!ddItem||!SHIFTS.some(k=>ddItem[k]&&ddItem[k].includes('球球'));
-    // 休假→天空藍，今天→主題漸變，其他照常
+    // 休假→粉橘白，今天→主題漸變，其他照常
     const bg=act?T.pill:isOffDay?'linear-gradient(135deg,#b8e4ff,#90ccff)':'rgba(255,255,255,.65)';
     const bc=isT&&!act?T.accent:isOffDay&&!act?'#60b8e8':red&&!act?T.border+'99':'rgba(255,255,255,.5)';
     const numColor=act?'#fff':isOffDay?'#1a6fa8':red?T.accent:T.accent2+'99';
@@ -402,23 +394,23 @@ function renderSchedule(){
       ${bt?`<div class="shift-time-big" style="color:${T.accent}">${bt.start} ～ ${bt.end}</div>`:''}
       <div style="font-size:.7rem;color:${T.accent2};font-weight:700">⏰ 上班 ${bt?bt.start:'?'} ／ 下班 ${bt?bt.end:'?'}</div>
       ${cwList.length?`<div style="margin-top:8px;padding:7px 12px;background:rgba(255,255,255,.6);border-radius:12px;border:1.5px solid ${T.border}">
-        <div style="font-size:.6rem;font-weight:900;color:${T.accent2};margin-bottom:3px">👯 今天一起上班</div>
+        <div style="font-size:.6rem;font-weight:900;color:${T.accent2};margin-bottom:3px">👩‍❤️‍👨 今天一起上班</div>
         <div style="font-size:.88rem;font-weight:900;color:${T.accent}">${cwList.join('・')}</div>
       </div>`:''}
     </div>
     <div class="info-grid">
       <div class="info-box" style="border-color:${T.border}">
-        <div class="info-icon">👩‍🏫</div>
-        <div class="info-lbl" style="color:${T.accent2}">早班是誰</div>
-        <div class="info-val" style="color:${earlyPpl?T.accent:'#ccc'}">${earlyPpl||'沒有早班'}</div>
+        <div class="info-icon">☀️</div>
+        <div class="info-lbl" style="color:${T.accent2}">早班</div>
+        <div class="info-val" style="color:${earlyPpl?T.accent:'#ccc'}">${earlyPpl||'沒早班'}</div>
       </div>
       <div class="info-box" style="border-color:${T.border}">
-        <div class="info-icon">🔁</div>
-        <div class="info-lbl" style="color:${T.accent2}">誰來接班</div>
+        <div class="info-icon">🧸</div>
+        <div class="info-lbl" style="color:${T.accent2}">誰接班</div>
         <div class="info-val" style="color:${nx?T.accent:'#ccc'}">${nx?cln(nx.val):'無接班'}</div>
       </div>
       <div class="info-box full" style="border-color:${T.border};${showCleaning?'background:linear-gradient(135deg,rgba(255,240,200,.6),rgba(255,220,160,.4));border-color:#ffd080':''}">
-        <div class="info-icon">${showCleaning?'🧹':'🤝'}</div>
+        <div class="info-icon">${showCleaning?'🧹':'🧸'}</div>
         <div class="info-lbl" style="color:${T.accent2}">${showCleaning?'今日清潔提醒':'我接誰的班'}</div>
         <div class="info-val" style="color:${showCleaning?'#8a5000':pv?T.accent:'#ccc'}">
           ${showCleaning?'🏠 2樓＋3樓 掃地＋拖地':(pv?`接 ${SICON[pv.key]} ${cln(pv.val)} 的班`:'今天第一班！')}
@@ -438,7 +430,7 @@ function renderSchedule(){
       const ppl=v.split('\n').map(p=>{
         const isMe=p.includes('球球');
         const nm=p.replace(/[~]?\d{1,4}[-:~]\d{2,4}/g,'').replace('~','').trim();
-        return isMe?`<span class="me-tag" style="background:${T.accent}22;color:${T.accent}">🐾球球</span>`:`<span>${nm}</span>`;
+        return isMe?`<span class="me-tag" style="background:${T.accent}22;color:${T.accent}">🧸球球</span>`:`<span>${nm}</span>`;
       }).join('・');
       h+=`<div class="shift-row" style="border-color:${T.border}55">
         <div class="shift-dot" style="background:${T.accent}"></div>
@@ -510,18 +502,29 @@ function renderCalendar(){
     <div class="cal-grid" style="margin-bottom:3px">${['一','二','三','四','五','六','日'].map((d,i)=>`<div style="font-size:.58rem;font-weight:700;color:${i>=5?T.accent:T.accent2};text-align:center;padding:2px 0">${d}</div>`).join('')}</div>
     <div class="cal-grid">${grid}</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:.6rem;font-weight:700">
-      <span style="color:${T.accent}">♥️ 假日</span><span style="color:${T.accent2}">🐈‍⬛ 上班</span><span style="color:#60c080">📣 行程</span>
+      <span style="color:${T.accent}">🔴 假日</span><span style="color:${T.accent2}">🧸 上班</span><span style="color:#60c080">● 行程</span>
     </div>
-
+  </div>
+    
+    </button>
   </div>
   <div class="card" style="border-color:${T.border};box-shadow:${T.shadow};background:linear-gradient(135deg,${T.accent2}11,${T.border}22)">
     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${T.bar}"></div>
-    <div class="sec-lbl" style="color:${T.accent}">🌟 阿卡西靈性建議</div>
-    ${aH||`<div style="text-align:center;color:${T.border};font-size:.8rem;padding:12px">點上方按鈕連線後顯示 🌸</div>`}
-  </div>`;
 }
 function calPrev(){calM--;if(calM<0){calM=11;calY--;}spiritTxt='';spiritKey='';renderCalendar();loadSpirit();}
 function calNext(){calM++;if(calM>11){calM=0;calY++;}spiritTxt='';spiritKey='';renderCalendar();loadSpirit();}
+
+}
+function parseSecs(txt){
+  if(!txt)return{ziwei:[],akashic:[]};
+  const z=[],a=[],ak=['早晨','午間','夜晚'];
+  txt.split(/\n(?=【)/).forEach(p=>{
+    const m=p.match(/【(.+?)】([\s\S]*)/);if(!m)return;
+    const t=m[1].trim(),c=m[2].trim();
+    (ak.some(k=>t.includes(k))?a:z).push({title:t,content:c});
+  });
+  return{ziwei:z,akashic:a};
+}
 
 // ══ 行程 ══
 function saveEvts(){try{localStorage.setItem('bb_ev',JSON.stringify(events))}catch{}}
