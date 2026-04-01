@@ -223,4 +223,429 @@ const WDL={
   '2025-03-23':'日','2025-03-24':'一','2025-03-25':'二','2025-03-26':'三','2025-03-27':'四','2025-03-28':'五','2025-03-29':'六',
   '2025-03-30':'日','2025-03-31':'一',
   '2025-04-01':'二','2025-04-02':'三','2025-04-03':'四','2025-04-04':'五','2025-04-05':'六',
-  '2025-04-06':'日','2025-04-07':'一','2025-04-08':'二','2025-04-09':'三',
+  '2025-04-06':'日','2025-04-07':'一','2025-04-08':'二','2025-04-09':'三','2025-04-10':'四','2025-04-11':'五','2025-04-12':'六',
+  '2025-04-13':'日','2025-04-14':'一','2025-04-15':'二','2025-04-16':'三','2025-04-17':'四','2025-04-18':'五','2025-04-19':'六',
+  '2025-04-20':'日','2025-04-21':'一','2025-04-22':'二','2025-04-23':'三','2025-04-24':'四','2025-04-25':'五','2025-04-26':'六',
+  '2025-04-27':'日','2025-04-28':'一','2025-04-29':'二','2025-04-30':'三',
+};
+const TW_RED={
+  '2025-02-28':'和平紀念日','2025-04-03':'兒童節補假','2025-04-04':'兒童節','2025-04-05':'清明節',
+  '2025-05-01':'勞動節','2025-10-10':'國慶日',
+  '2026-02-16':'小年夜','2026-02-17':'春節','2026-02-18':'春節','2026-02-19':'春節','2026-02-28':'和平紀念日',
+  '2026-04-03':'兒童節補假','2026-04-04':'兒童節','2026-04-05':'清明節','2026-04-06':'清明節補假',
+  '2026-05-01':'勞動節','2026-10-10':'國慶日',
+};
+const H_ICON={'和平紀念日':'🕊️','兒童節':'🎈','兒童節補假':'🎈','清明節':'🌿','清明節補假':'🌿','勞動節':'💪','國慶日':'🇹🇼','春節':'🧧','小年夜':'🏮'};
+const SHIFTS=['凌晨','早上','下午','晚上'];
+const SICON={凌晨:'🌙',早上:'☀️',下午:'🌸',晚上:'🌆'};
+
+// 心情選項
+const MOODS=[
+  {em:'😊',lbl:'開心'},{em:'🥰',lbl:'幸福'},{em:'😌',lbl:'平靜'},{em:'😴',lbl:'疲累'},
+  {em:'😤',lbl:'煩躁'},{em:'😢',lbl:'難過'},{em:'🤩',lbl:'興奮'},{em:'😰',lbl:'焦慮'},
+  {em:'🥳',lbl:'慶祝'},{em:'😑',lbl:'無感'},
+];
+const TAGS=['☀️ 好天氣','🍜 美食','🛒 購物','🏃 運動','💤 補眠','📱 追劇','👯 朋友','💕 約會','🐱 擼貓','📚 學習','💰 收入','🎵 音樂'];
+const WEATHERS=[{em:'☀️',lbl:'晴'},{em:'⛅',lbl:'多雲'},{em:'🌧️',lbl:'雨'},{em:'⛈️',lbl:'雷雨'},{em:'🌫️',lbl:'陰'}];
+
+function p2(n){return String(n).padStart(2,'0')}
+function todayStr(){const t=new Date();return`${t.getFullYear()}-${p2(t.getMonth()+1)}-${p2(t.getDate())}`}
+function parseD(s){const a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2])}
+function d2s(d){return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`}
+function dim(y,m){return new Date(y,m+1,0).getDate()}
+// 日曆週偏移（週日為第一欄，offset=0）
+function calOff(y,m){return new Date(y,m,1).getDay();}
+function isRed(k){return!!(TW_RED[k])}
+function isBallWork(d){const r=DATA[d];return r&&SHIFTS.some(k=>r[k]&&r[k].includes('球球'))}
+
+// 解析班次人員（含時間）
+function parseShiftPeople(val){
+  if(!val||!val.trim())return[];
+  return val.split('\n').map(line=>{
+    line=line.trim();if(!line)return null;
+    // 提取名字和時間
+    const tm=line.match(/(\d{1,2}[:.]\d{2})\s*[-~]\s*(\d{1,2}[:.]\d{2})/)||
+              line.match(/(\d{3,4})\s*[-:]\s*(\d{3,4})/)||
+              line.match(/~?(\d{1,2})\s*[-:]\s*(\d{1,2})/);
+    let name=line.replace(/[~]?\d{1,2}[:.:]?\d{0,2}\s*[-~]\s*\d{1,2}[:.:]?\d{0,2}/g,'').replace(/[~]/g,'').trim();
+    if(!name)return null;
+    const timeStr=tm?tm[0].replace('~','').trim():'';
+    return{name,time:timeStr};
+  }).filter(Boolean);
+}
+
+// 解析球球時間（格式多樣：12:00-16:00 / 12-4 / 14:00-17:30）
+function extractBallTime(val){
+  if(!val)return null;
+  const line=val.split('\n').find(l=>l.includes('球球'));if(!line)return null;
+  // 嘗試 HH:MM-HH:MM
+  let m=line.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
+  if(m)return{start:m[1],end:m[2]};
+  // 嘗試 HHMM-HHMM
+  m=line.match(/(\d{4})\s*[-:]\s*(\d{4})/);
+  if(m)return{start:m[1].slice(0,2)+':'+m[1].slice(2),end:m[2].slice(0,2)+':'+m[2].slice(2)};
+  // 嘗試 H-H 或 HH-H
+  m=line.match(/球球\s*(\d{1,2})\s*[-:]\s*(\d{1,2})/);
+  if(m){
+    const toT=n=>n.padStart(2,'0')+':00';
+    return{start:toT(m[1]),end:toT(m[2])};
+  }
+  return null;
+}
+
+const TODAY=todayStr();
+let curTab='s';
+let curWeekI=(()=>{for(let i=0;i<WEEKS.length;i++)if(WEEKS[i].dates.includes(TODAY))return i;return WEEKS.length-1})();
+let selDate=TODAY;
+let calY=parseD(TODAY).getFullYear(),calM=parseD(TODAY).getMonth();
+let selCalDate='';
+let events=(()=>{try{return JSON.parse(localStorage.getItem('bb_ev')||'[]')}catch{return[]}})();
+let moods=(()=>{try{return JSON.parse(localStorage.getItem('bb_mood')||'{}')}catch{return{}}})();
+
+// ── 初始化 ──
+(function(){
+  const td=parseD(TODAY);
+  document.getElementById('hdr-date').textContent=`${td.getFullYear()}/${td.getMonth()+1}/${td.getDate()}（週${['日','一','二','三','四','五','六'][td.getDay()]}）`;
+  renderS();checkBanners();
+})();
+
+function goTab(t){
+  curTab=t;
+  ['s','c','p'].forEach(id=>{
+    document.getElementById('tab-'+id).style.display=id===t?'block':'none';
+    const b=document.getElementById('tb-'+id);
+    b.className='tb'+(id===t?' on':'');
+  });
+  if(t==='c')renderC();
+  if(t==='p')renderP();
+  window.scrollTo(0,0);
+}
+
+// ════ 班表 ════
+function renderS(){
+  const w=WEEKS[curWeekI];
+  const dd=DATA[selDate];
+  const myS=dd?SHIFTS.filter(k=>dd[k]&&dd[k].includes('球球')):[];
+  const mainS=myS[0]||null;
+  const bt=mainS?extractBallTime(dd[mainS]):null;
+  const isOff=myS.length===0;
+  const wdL=WDL[selDate]||'';
+  const isClean=!isOff&&(wdL==='一'||wdL==='五');
+
+  // 同班人員
+  let cwNames=[];
+  if(mainS&&dd&&dd[mainS]){
+    cwNames=dd[mainS].split('\n').map(l=>{
+      if(l.includes('球球')||l.includes('采淳'))return null;
+      return l.replace(/[~]?\d{1,2}[:.:]?\d{0,2}\s*[-~:]\s*\d{1,2}[:.:]?\d{0,2}/g,'').replace(/[~]/g,'').trim()||null;
+    }).filter(Boolean);
+  }
+
+  // 前後班
+  function pS(k){const o=['凌晨','早上','下午','晚上'],i=o.indexOf(k);for(let j=i-1;j>=0;j--){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
+  function nS(k){const o=['凌晨','早上','下午','晚上'],i=o.indexOf(k);for(let j=i+1;j<o.length;j++){const v=dd&&dd[o[j]]||'';if(v&&!v.includes('球球'))return{key:o[j],val:v}}return null}
+  const pv=mainS&&dd?pS(mainS):null,nx=mainS&&dd?nS(mainS):null;
+  const earlyPpl=dd?dd['早上']?dd['早上'].split('\n').filter(l=>l.trim()&&!l.includes('采淳')).map(l=>l.replace(/[~]?\d{1,2}[:.:]?\d{0,2}\s*[-~:]\s*\d{1,2}[:.:]?\d{0,2}/g,'').replace(/[~]/g,'').trim()).filter(Boolean).join('、'):'':'';
+
+  let h=`<div class="deco">`;
+  ['🌸','🎀','🐱','✨','🌸'].forEach((e,i)=>h+=`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`);
+  h+=`</div>`;
+
+  // 週導航
+  h+=`<div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px">
+    <button class="nav-btn" onclick="prevW()">‹</button>
+    <div style="text-align:center">
+      <div style="font-family:'Nunito',sans-serif;font-weight:900;color:#c060a0;font-size:.88rem">第${curWeekI+1}週</div>
+      <div style="font-size:.63rem;color:#9060c0">${w.label}</div>
+    </div>
+    <button class="nav-btn" onclick="nextW()">›</button>
+  </div>`;
+
+  // 日期列
+  h+=`<div class="days-row" style="grid-template-columns:repeat(${w.dates.length},1fr)">`;
+  w.dates.forEach(d=>{
+    const dt=parseD(d),act=d===selDate,isT=d===TODAY;
+    const offDay=!isBallWork(d);
+    const red=isRed(d);
+    let cls='day-pill';
+    if(act)cls+=' active';
+    else if(offDay)cls+=' is-off';
+    if(isT)cls+=' is-today';
+    if(red&&!act&&!offDay)cls+=' is-red';
+    h+=`<div class="${cls}" onclick="selDay('${d}')">
+      <div class="day-wd">${WDL[d]||''}</div>
+      <div class="day-num">${dt.getDate()}</div>
+      ${isT?`<div class="day-today-mark">♦️</div>`:offDay&&!act?`<div class="day-off-mark">休</div>`:''}
+      ${red&&!act&&!offDay?`<div style="font-size:.4rem;color:#d04060">●</div>`:''}
+    </div>`;
+  });
+  h+=`</div>`;
+
+  // 主卡
+  h+=`<div class="card">`;
+  if(isOff){
+    h+=`<div style="text-align:center;padding:24px 10px">
+      <div style="font-family:'Nunito',sans-serif;font-size:5rem;font-weight:900;color:#90c8f0;-webkit-text-stroke:2px #50a0e0;text-shadow:3px 3px 0 #50a0e044;line-height:1">休</div>
+      <div style="font-weight:700;color:#5090c0;margin-top:8px;font-size:.85rem;letter-spacing:.1em">✦ 好好休息唷 球球 ✦</div>
+      <div style="font-size:2rem;margin-top:8px">🌸💤🛌</div>
+    </div>`;
+  } else {
+    h+=`<div class="shift-hero">
+      <div style="font-size:.63rem;font-weight:900;color:#9060c0;letter-spacing:.18em;margin-bottom:3px">✦ 球球今天的班 ✦</div>
+      <div style="font-family:'Nunito',sans-serif;font-size:1.2rem;font-weight:900;color:#c060a0">${SICON[mainS]} ${mainS}班</div>
+      ${bt?`<div class="shift-time-big">${bt.start} ～ ${bt.end}</div>`:''}
+      <div style="font-size:.7rem;color:#9060c0;font-weight:700">⏰ 上班 ${bt?bt.start:'?'} ／ 下班 ${bt?bt.end:'?'}</div>
+      ${cwNames.length?`<div style="margin-top:9px;background:rgba(255,255,255,.65);border-radius:12px;padding:7px 12px;border:1.5px solid #e8b8d8">
+        <div style="font-size:.58rem;font-weight:900;color:#9060c0;margin-bottom:3px">👯 今天一起上班</div>
+        <div style="font-size:.9rem;font-weight:900;color:#c060a0">${cwNames.join(' ・ ')}</div>
+      </div>`:''}
+    </div>
+    <div class="info-grid">
+      <div class="info-box">
+        <div class="info-icon">👩‍🏫</div>
+        <div class="info-lbl">早班是誰</div>
+        <div class="info-val ${earlyPpl?'':'dim'}">${earlyPpl||'沒有早班'}</div>
+      </div>
+      <div class="info-box">
+        <div class="info-icon">🔁</div>
+        <div class="info-lbl">誰來接班</div>
+        <div class="info-val ${nx?'':'dim'}">${nx?nxNames(nx.val):'無接班'}</div>
+      </div>
+      <div class="info-box full ${isClean?'cleaning':''}">
+        <div class="info-icon">${isClean?'🧹':'🤝'}</div>
+        <div class="info-lbl">${isClean?'今日清潔提醒':'我接誰的班'}</div>
+        <div class="info-val ${isClean?'':''}${!isClean&&!pv?' dim':''}" style="${isClean?'color:#8a5000':''}">
+          ${isClean?'🏠 2樓＋3樓 掃地＋拖地':(pv?`接 ${SICON[pv.key]} ${pvNames(pv.val)} 的班`:'今天第一班！')}
+        </div>
+        ${isClean&&pv?`<div style="font-size:.66rem;color:#9060c0;margin-top:4px">🤝 接 ${SICON[pv.key]} ${pvNames(pv.val)} 的班</div>`:''}
+      </div>
+    </div>`;
+  }
+  h+=`</div>`;
+
+  // 全日班表
+  if(dd){
+    h+=`<div class="card"><div class="sec-lbl">✦ 今日全班表</div>`;
+    SHIFTS.forEach(k=>{
+      const v=dd[k]||'';if(!v.trim())return;
+      const people=parseShiftPeople(v);
+      if(!people.length)return;
+      const rows=people.map(p=>{
+        const isMe=p.name==='球球';
+        const nameStr=isMe?`<span class="me-tag">🐾 球球</span>`:p.name;
+        const timeStr=p.time?` <span style="font-size:.68rem;color:#a070b0;font-weight:600">${p.time}</span>`:'';
+        return`<div>${nameStr}${timeStr}</div>`;
+      }).join('');
+      h+=`<div class="shift-row">
+        <div class="shift-dot" style="background:linear-gradient(135deg,#e060a0,#9060d0)"></div>
+        <div class="shift-slot">${SICON[k]} ${k}</div>
+        <div class="shift-person">${rows}</div>
+      </div>`;
+    });
+    h+=`</div>`;
+  }
+
+  document.getElementById('tab-s').innerHTML=h;
+}
+
+function nxNames(val){return val.split('\n').map(l=>l.replace(/[~]?\d{1,2}[:.:]?\d{0,2}\s*[-~:]\s*\d{1,2}[:.:]?\d{0,2}/g,'').replace(/[~]/g,'').trim()).filter(Boolean).join('、')}
+function pvNames(val){return nxNames(val)}
+function selDay(d){selDate=d;renderS()}
+function prevW(){if(curWeekI>0){curWeekI--;selDate=WEEKS[curWeekI].dates[0];renderS()}}
+function nextW(){if(curWeekI<WEEKS.length-1){curWeekI++;selDate=WEEKS[curWeekI].dates[0];renderS()}}
+
+// ════ 日曆 ════
+function renderC(){
+  const days=dim(calY,calM),off=calOff(calY,calM);
+  let grid='';
+  for(let i=0;i<off;i++)grid+=`<div></div>`;
+  for(let d=1;d<=days;d++){
+    const k=`${calY}-${p2(calM+1)}-${p2(d)}`;
+    const hN=TW_RED[k],isT=TODAY===k;
+    const offDay=!isBallWork(k);
+    const hasMood=!!(moods[k]&&moods[k].mood);
+    const hasEvt=events.some(e=>e.date===k);
+    const isSel=selCalDate===k;
+    let cls='cal-cell';
+    if(isT)cls+=' today';
+    else if(hN)cls+=' holiday';
+    else if(offDay)cls+=' is-off-cal';
+    if(hasMood&&!isT)cls+=' has-mood';
+    if(isSel&&!isT)cls+=' selected';
+    const moodEm=hasMood?moods[k].mood:'';
+    const evDot=hasEvt?`<div style="font-size:.5rem">📌</div>`:'';
+    grid+=`<div class="${cls}" onclick="selCal('${k}')">
+      <div class="cal-num">${d}</div>
+      <div class="cal-cell-icons">${moodEm}${isT?'♦️':''}${evDot}</div>
+    </div>`;
+  }
+
+  // 本月節日
+  let hList='';
+  for(let d=1;d<=days;d++){
+    const k=`${calY}-${p2(calM+1)}-${p2(d)}`,hN=TW_RED[k];if(!hN)continue;
+    const dow=['日','一','二','三','四','五','六'][new Date(calY,calM,d).getDay()];
+    hList+=`<div style="display:flex;align-items:center;gap:10px;background:rgba(255,200,200,.2);border:1.5px solid #ffcccc;border-radius:13px;padding:8px 11px;margin-bottom:5px">
+      <div style="font-size:1.2rem">${H_ICON[hN]||'🎌'}</div>
+      <div><div style="font-weight:700;color:#d04060;font-size:.8rem">${calM+1}/${d}（${dow}）</div><div style="font-size:.7rem;color:#e87fa0">${hN}</div></div>
+    </div>`;
+  }
+
+  // 選取日期詳情
+  let detailHtml='';
+  if(selCalDate){
+    const dt=parseD(selCalDate);
+    const moodData=moods[selCalDate]||{};
+    const dayEvts=events.filter(e=>e.date===selCalDate);
+    const ddCal=DATA[selCalDate];
+    const ballShift=ddCal?SHIFTS.find(k=>ddCal[k]&&ddCal[k].includes('球球')):null;
+    const btCal=ballShift?extractBallTime(ddCal[ballShift]):null;
+
+    detailHtml=`<div class="day-detail">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-family:'Nunito',sans-serif;font-weight:900;color:#c060a0;font-size:1rem">${calM+1}/${dt.getDate()}（${['日','一','二','三','四','五','六'][dt.getDay()]}）</div>
+        ${ballShift?`<div style="background:linear-gradient(135deg,rgba(224,96,160,.2),rgba(144,96,208,.15));border-radius:12px;padding:5px 12px;font-size:.78rem;font-weight:700;color:#c060a0">${SICON[ballShift]} ${btCal?btCal.start+'～'+btCal.end:ballShift+'班'}</div>`:`<div style="background:linear-gradient(135deg,#b8e4ff,#7ecfff);border-radius:12px;padding:5px 12px;font-size:.78rem;font-weight:700;color:#1060a0">休假 🌙</div>`}
+      </div>
+      <!-- 心情記錄 -->
+      <div style="font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:7px">💭 今日心情</div>
+      <div class="mood-grid" id="mg-${selCalDate}">${MOODS.map(m=>`<div class="mood-btn${moodData.mood===m.em?' sel':''}" onclick="setMood('${selCalDate}','${m.em}')"><div class="mood-em">${m.em}</div><div class="mood-lbl">${m.lbl}</div></div>`).join('')}</div>
+      <div style="font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:7px">🌤 天氣</div>
+      <div class="weather-row" id="wx-${selCalDate}">${WEATHERS.map(w=>`<div class="wx-btn${moodData.weather===w.em?' sel':''}" onclick="setWx('${selCalDate}','${w.em}')"><div class="wx-em">${w.em}</div><div class="wx-lbl">${w.lbl}</div></div>`).join('')}</div>
+      <div style="font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:7px">✨ 今天做了什麼</div>
+      <div class="tag-row" id="tg-${selCalDate}">${TAGS.map(t=>{const sel=(moodData.tags||[]).includes(t);return`<div class="tag-btn${sel?' sel':''}" onclick="togTag('${selCalDate}','${t}')">${t}</div>`}).join('')}</div>
+      <div style="font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:5px">📝 小日記</div>
+      <textarea class="diary-inp" rows="3" id="diary-${selCalDate}" placeholder="今天發生了什麼？隨便寫幾個字就好 🌸" onchange="saveDiary('${selCalDate}',this.value)">${moodData.diary||''}</textarea>
+      ${dayEvts.length?`<div style="margin-top:10px;font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:6px">📌 今日行程</div>${dayEvts.map(e=>`<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.7);border:1.5px solid #e8b8d8;border-radius:11px;padding:7px 10px;margin-bottom:5px"><div style="font-size:.9rem">${e.done?'✅':'📌'}</div><div style="font-size:.78rem;font-weight:700;color:#c060a0">${e.time?e.time+' ':''} ${e.title}</div></div>`).join('')}`:''}
+      <button class="save-btn" onclick="saveMoodAll('${selCalDate}')">🌸 儲存今日記錄</button>
+    </div>`;
+  }
+
+  document.getElementById('tab-c').innerHTML=`
+  <div class="deco">${['🌙','⭐','💫','⭐','🌙'].map((e,i)=>`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`).join('')}</div>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <button class="nav-btn" onclick="calPrev()">‹</button>
+      <div style="font-family:'Nunito',sans-serif;font-weight:900;color:#c060a0;font-size:1rem">🌸 ${calY}年 ${calM+1}月</div>
+      <button class="nav-btn" onclick="calNext()">›</button>
+    </div>
+    <div class="cal-grid" style="margin-bottom:3px">${['日','一','二','三','四','五','六'].map((d,i)=>`<div style="font-size:.58rem;font-weight:700;color:${i===0||i===6?'#c060a0':'#9060c0'};text-align:center;padding:2px 0">${d}</div>`).join('')}</div>
+    <div class="cal-grid">${grid}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:.6rem;font-weight:700;color:#9060c0">
+      <span style="color:#c060a0">♦️ 今天</span><span style="color:#98e8b0">🟢 有心情</span><span style="color:#60b0e8">🔵 休假</span><span>📌 有行程</span>
+    </div>
+    ${detailHtml}
+  </div>
+  ${hList?`<div class="card"><div class="sec-lbl">🎌 ${calM+1}月節假日</div>${hList}</div>`:''}`;
+}
+
+function selCal(k){selCalDate=selCalDate===k?'':k;renderC();}
+function calPrev(){calM--;if(calM<0){calM=11;calY--;}selCalDate='';renderC();}
+function calNext(){calM++;if(calM>11){calM=0;calY++;}selCalDate='';renderC();}
+
+// 心情儲存
+function saveMoods(){try{localStorage.setItem('bb_mood',JSON.stringify(moods))}catch{}}
+function setMood(d,em){
+  if(!moods[d])moods[d]={};
+  moods[d].mood=moods[d].mood===em?'':em;
+  saveMoods();renderC();
+}
+function setWx(d,em){
+  if(!moods[d])moods[d]={};
+  moods[d].weather=moods[d].weather===em?'':em;
+  saveMoods();renderC();
+}
+function togTag(d,t){
+  if(!moods[d])moods[d]={};
+  if(!moods[d].tags)moods[d].tags=[];
+  const i=moods[d].tags.indexOf(t);
+  if(i>=0)moods[d].tags.splice(i,1);else moods[d].tags.push(t);
+  saveMoods();renderC();
+}
+function saveDiary(d,txt){if(!moods[d])moods[d]={};moods[d].diary=txt;saveMoods();}
+function saveMoodAll(d){
+  const ta=document.getElementById('diary-'+d);
+  if(ta&&moods[d])moods[d].diary=ta.value;
+  saveMoods();
+  // 顯示小提示
+  const btn=event.target;btn.textContent='✅ 儲存成功！';
+  setTimeout(()=>{btn.textContent='🌸 儲存今日記錄'},1500);
+}
+
+// ════ 行程 ════
+function saveEvts(){try{localStorage.setItem('bb_ev',JSON.stringify(events))}catch{}}
+function addEvt(){
+  const d=document.getElementById('ev-d').value,ti=document.getElementById('ev-t').value,ttl=document.getElementById('ev-ttl').value;
+  if(!d||!ttl)return;
+  events.push({id:Date.now(),date:d,time:ti,title:ttl,done:false});
+  events.sort((a,b)=>a.date.localeCompare(b.date));
+  saveEvts();renderP();checkBanners();
+}
+function delEvt(id){events=events.filter(e=>e.id!==id);saveEvts();renderP();checkBanners();}
+function togDone(id){const e=events.find(e=>e.id===id);if(e)e.done=!e.done;saveEvts();renderP();}
+
+function renderP(){
+  const tmr=d2s(new Date(parseD(TODAY).getTime()+86400000));
+  const todayEvs=events.filter(e=>e.date===TODAY);
+  const tmrEvs=events.filter(e=>e.date===tmr);
+  let h=`<div class="deco">${['🌺','🐝','🌻','🐝','🌺'].map((e,i)=>`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`).join('')}</div>`;
+
+  if(tmrEvs.length)h+=`<div class="card" style="border-color:#e060a0;background:linear-gradient(135deg,rgba(224,96,160,.1),rgba(144,96,208,.07))">
+    <div class="sec-lbl">🔔 明天的提醒</div>${tmrEvs.map(e=>`<div class="event-row" style="border-color:#e8b8d8"><div style="font-size:1rem">🗓️</div><div style="flex:1"><div style="font-weight:700;font-size:.82rem;color:#c060a0">${e.time?e.time+' ':''}${e.title}</div><div style="font-size:.63rem;color:#9060c0">${e.date}</div></div></div>`).join('')}
+  </div>`;
+
+  if(todayEvs.length)h+=`<div class="card"><div class="sec-lbl">⭐ 今天的行程</div>${todayEvs.map(e=>`<div class="event-row${e.done?' done-row':''}">
+    <div class="check-c${e.done?' ck':''}" onclick="togDone(${e.id})">${e.done?'<span style="color:#fff;font-size:.7rem;font-weight:900">✓</span>':''}</div>
+    <div style="flex:1"><div style="font-weight:700;font-size:.82rem;color:${e.done?'#60a070':'#c060a0'};text-decoration:${e.done?'line-through':'none'}">${e.time?e.time+' ':''}${e.title}</div></div>
+    <button class="del-btn" style="color:#e8b8d8" onclick="delEvt(${e.id})">✕</button>
+  </div>`).join('')}</div>`;
+
+  h+=`<div class="card"><div class="sec-lbl">📝 新增行程</div>
+    <div class="inp-grid">
+      <div><div class="inp-lbl">📅 日期 *</div><input class="inp" type="date" id="ev-d"></div>
+      <div><div class="inp-lbl">⏰ 時間</div><input class="inp" type="time" id="ev-t"></div>
+    </div>
+    <div style="margin-bottom:10px"><div class="inp-lbl">🌸 事情 *</div><input class="inp" type="text" id="ev-ttl" placeholder="例：看醫生、約朋友…"></div>
+    <button class="add-btn" onclick="addEvt()">🌸 加入行程</button>
+  </div>
+  <div class="card"><div class="sec-lbl">📋 所有行程</div>
+    ${events.length?events.map(e=>{
+      const isPast=e.date<TODAY,isT=e.date===TODAY;
+      return`<div class="event-row${e.done?' done-row':isT?' ':''}" style="opacity:${isPast&&!e.done?.6:1};border-color:${isT?'#c060a0':'#e8b8d8'}">
+        <div class="check-c${e.done?' ck':''}" onclick="togDone(${e.id})">${e.done?'<span style="color:#fff;font-size:.7rem;font-weight:900">✓</span>':''}</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:.8rem;color:${e.done?'#60a070':isPast?'#b090a0':'#c060a0'};text-decoration:${e.done?'line-through':'none'}">${e.time?e.time+' ':''}${e.title}</div>
+          <div style="font-size:.62rem;color:#9060c0">${e.date}${isT?' 今天':''}${e.done?' ✨完成':''}</div>
+        </div>
+        <button style="background:none;border:none;color:#e8b8d8;cursor:pointer;font-weight:900" onclick="delEvt(${e.id})">✕</button>
+      </div>`;
+    }).join(''):`<div class="empty">還沒有行程，快加入吧 🌸</div>`}
+  </div>`;
+  document.getElementById('tab-p').innerHTML=h;
+}
+
+// ════ 橫幅 ════
+function checkBanners(){
+  const now=new Date(),tmr=d2s(new Date(now.getTime()+86400000)),bs=[];
+  events.filter(e=>e.date===tmr).forEach(e=>bs.push({...e,type:'tomorrow'}));
+  events.filter(e=>{
+    if(e.date!==TODAY||!e.time)return false;
+    const[h,m]=e.time.split(':').map(Number);
+    return(h*60+m)-(now.getHours()*60+now.getMinutes())>0&&(h*60+m)-(now.getHours()*60+now.getMinutes())<=60;
+  }).forEach(e=>bs.push({...e,type:'soon'}));
+  const el=document.getElementById('banners');
+  el.innerHTML=bs.map(b=>`<div class="banner ${b.type}">
+    <div style="font-size:1.2rem">${b.type==='soon'?'⏰':'🔔'}</div>
+    <div style="flex:1">
+      <div style="font-weight:900;color:#fff;font-size:.82rem">${b.type==='soon'?'⚡ 一小時後！':'🌸 明天有行程'}</div>
+      <div style="color:rgba(255,255,255,.9);font-size:.74rem">${b.time?b.time+' ':''}${b.title}</div>
+    </div>
+    <button class="banner-x" onclick="this.parentElement.remove();updateHdr()">✕</button>
+  </div>`).join('');
+  updateHdr();
+}
+function updateHdr(){
+  document.getElementById('hdr').style.top=document.getElementById('banners').children.length*46+'px';
+}
+</script>
+</body>
+</html>
