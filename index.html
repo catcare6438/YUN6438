@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="球球日曆">
 <meta name="theme-color" content="#e8b8d8">
-<title>球球の魔法日曆 🌸</title>
+<title>🌸 球球の魔法日曆 🌸</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -111,7 +111,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 <div id="banners"></div>
 <div class="hdr" id="hdr">
   <div>
-    <div class="hdr-logo">🌸 球球の魔法日曆</div>
+    <div class="hdr-logo">🌸 球球の魔法日曆 🌸</div>
     <div class="hdr-today" id="hdr-today"></div>
     <div id="hdr-shift"></div>
   </div>
@@ -123,9 +123,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
   <div id="tab-p" style="display:none"></div>
 </div>
 <div class="tabbar">
-  <button class="tb on" id="tb-s" onclick="goTab('s')"><div>🐾</div>班表</button>
-  <button class="tb" id="tb-c" onclick="goTab('c')"><div>🌸</div>日曆</button>
-  <button class="tb" id="tb-p" onclick="goTab('p')"><div>📝</div>行程</button>
+  <button class="tb on" id="tb-s" onclick="goTab('s')"><div>🐈‍⬛</div>班表</button>
+  <button class="tb" id="tb-c" onclick="goTab('c')"><div>📅</div>日曆</button>
+  <button class="tb" id="tb-p" onclick="goTab('p')"><div>🛝</div>行程</button>
 </div>
 <script>
 // ══════════════════════════════════════════
@@ -141,11 +141,11 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 // 跨夜班 22:00-07:00
 
 const SHIFT_DEF = [
-  {key:'凌晨班', time:'05:00-09:00', icon:'🌙', color:'#b3d4ff'},
+  {key:'凌晨班', time:'05:00-09:00', icon:'🐷', color:'#b3d4ff'},
   {key:'早班',   time:'08:00-12:00', icon:'☀️', color:'#ffe08a'},
-  {key:'下午班', time:'12:00-18:00', icon:'🌸', color:'#ffb3cc'},
-  {key:'晚班',   time:'18:00-23:00', icon:'🌆', color:'#c8a0ff'},
-  {key:'跨夜班', time:'22:00-07:00', icon:'🌛', color:'#98e0c8'},
+  {key:'下午班', time:'12:00-18:00', icon:'🧸', color:'#ffb3cc'},
+  {key:'晚班',   time:'18:00-23:00', icon:'🌚', color:'#c8a0ff'},
+  {key:'跨夜班', time:'22:00-07:00', icon:'🐽', color:'#98e0c8'},
 ];
 
 // 班表資料結構：每個日期包含5個班別的人員陣列
@@ -340,8 +340,8 @@ const RAW=[
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
   // ── 2026-04 ──
   {date:'2026-04-01',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
+    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
+    早班:[{name:'曾姐',time:'06:00-10:00'}],
     下午班:[{name:'萱汶',time:'12:00-22:00'},{name:'群翔',time:'12:00-18:00'}],
     晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'萱汶',time:'12:00-22:00'}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
@@ -352,8 +352,8 @@ const RAW=[
     晚班:[{name:'萱汶',time:'13:00-23:00'},{name:'群翔',time:'18:00-23:00'}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
   {date:'2026-04-03',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
+    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
+    早班:[{name:'曾姐',time:'06:00-10:00'}],
     下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'14:00-17:30'}],
     晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'萱汶',time:'17:00-23:00'}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
@@ -364,8 +364,8 @@ const RAW=[
     晚班:[{name:'韶芸',time:'21:00-03:00'},{name:'小茹',time:'14:00-21:00'}],
     跨夜班:[]},
   {date:'2026-04-05',
-    凌晨班:[{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'蔡小習',time:'10:00-14:00'}],
+    凌晨班:[]},
+    早班:[{name:'曾姐',time:'06:00-10:00'},{name:'蔡小習',time:'10:00-14:00'}],
     下午班:[{name:'Tien Yun',time:'13:00-17:00'},{name:'淑珍',time:''}],
     晚班:[{name:'小茹',time:'18:00-23:00'}],
     跨夜班:[]},
@@ -382,8 +382,8 @@ const RAW=[
     晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'阿瑛',time:'18:00-22:00'}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
   {date:'2026-04-08',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
+    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
+    早班:[{name:'曾姐',time:'06:00-10:00'}],
     下午班:[{name:'阿瑛',time:'13:00-18:00'},{name:'萱汶',time:''}],
     晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'萱汶',time:''}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
@@ -394,8 +394,8 @@ const RAW=[
     晚班:[{name:'阿瑛',time:'18:00-23:00'},{name:'萱汶',time:''}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
   {date:'2026-04-10',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
+   凌晨班:[{name:'采淳',time:'02:00-12:00'}],
+    早班:[{name:'曾姐',time:'06:00-10:00'}],{name:'Emily',time:'09:00-12:00'}],
     下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'14:00-17:30'}],
     晚班:[{name:'韶芸',time:'18:00-24:00'}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
@@ -466,14 +466,14 @@ const RAW=[
     晚班:[{name:'韶芸',time:'18:00-24:00'}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
   {date:'2026-04-22',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
+   凌晨班:[{name:'采淳',time:'02:00-12:00'}],
+    早班:[{name:'曾姐',time:'06:00-10:00'},{name:'Emily',time:'09:00-12:00'}],
     下午班:[{name:'阿瑛',time:'13:00-18:00'},{name:'萱汶',time:''}],
     晚班:[{name:'韶芸',time:'18:00-24:00'}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
   {date:'2026-04-23',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
+   凌晨班:[{name:'采淳',time:'02:00-12:00'}],
+    早班:[{name:'曾姐',time:'06:00-10:00'},{name:'Emily',time:'09:00-12:00'}],
     下午班:[{name:'Ying',time:'13:00-19:00'},{name:'球球',time:'12:00-16:00'}],
     晚班:[{name:'阿瑛',time:'18:00-23:00'},{name:'萱汶',time:''}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
@@ -484,20 +484,20 @@ const RAW=[
     晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'萱汶',time:''}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
   {date:'2026-04-25',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'淑珍',time:''}],
+     凌晨班:[{name:'采淳',time:'02:00-12:00'}],
+    早班:[{name:'曾姐',time:'06:00-10:00'},{name:'淑珍',time:''}],
     下午班:[{name:'萱汶',time:''}],
     晚班:[{name:'韶芸',time:'18:00-24:00'}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
   {date:'2026-04-26',
     凌晨班:[{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'蔡小習',time:'10:00-14:00'}],
+    早班:[[{name:'曾姐',time:'06:00-10:00'},{name:'蔡小習',time:'10:00-14:00'}],
     下午班:[{name:'Tien Yun',time:'13:00-17:00'},{name:'淑珍',time:''}],
     晚班:[],
     跨夜班:[]},
   {date:'2026-04-27',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
+    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
+    早班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
     下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-16:00'}],
     晚班:[{name:'萱汶',time:''}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
@@ -508,8 +508,8 @@ const RAW=[
     晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'阿瑛',time:'18:00-22:00'}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
   {date:'2026-04-29',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
+    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
+    早班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
     下午班:[{name:'阿瑛',time:'13:00-18:00'},{name:'萱汶',time:''}],
     晚班:[{name:'韶芸',time:'18:00-24:00'}],
     跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
