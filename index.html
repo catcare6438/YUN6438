@@ -650,7 +650,7 @@ function renderS(){
   function pplStr(people){return people.filter(p=>p.name!=='采淳').map(p=>p.time?`${p.name}(${p.time})`:p.name).filter(Boolean).join('、')||people.map(p=>p.name).join('、')}
 
   let h=`<div class="deco">`;
-  ['🌸','🎀','🐱','✨','🌸'].forEach((e,i)=>h+=`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`);
+  ['🎁','🎀','🍀','✨','🍙'].forEach((e,i)=>h+=`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`);
   h+=`</div>`;
 
   // 週導航
@@ -676,7 +676,7 @@ function renderS(){
     h+=`<div class="${cls}" onclick="selDay('${d}')">
       <div class="day-wd">${getWDLabel(d)}</div>
       <div class="day-num">${dt.getDate()}</div>
-      <div class="day-mark">${isT?'♦️':offDay&&!act?'<span style="font-size:.48rem;color:#4090d0">休</span>':''}</div>
+      <div class="day-mark">${isT?'♥️':offDay&&!act?'<span style="font-size:.48rem;color:#4090d0">休</span>':''}</div>
     </div>`;
   });
   h+=`</div>`;
@@ -687,23 +687,23 @@ function renderS(){
     h+=`<div style="text-align:center;padding:24px 10px">
       <div style="font-family:'Nunito',sans-serif;font-size:5rem;font-weight:900;color:#90c8f0;-webkit-text-stroke:2px #50a0e0;text-shadow:3px 3px 0 #50a0e044;line-height:1">休</div>
       <div style="font-weight:700;color:#5090c0;margin-top:8px;font-size:.85rem">✦ 好好休息唷 球球 ✦</div>
-      <div style="font-size:2rem;margin-top:8px">🌸💤🛌</div>
+      <div style="font-size:2rem;margin-top:8px">🧘‍♀️💤🛌</div>
     </div>`;
   } else {
     h+=`<div class="shift-hero">
-      <div style="font-size:.63rem;font-weight:900;color:#9060c0;letter-spacing:.15em;margin-bottom:3px">✦ 球球今天的班 ✦</div>
+      <div style="font-size:.63rem;font-weight:900;color:#9060c0;letter-spacing:.15em;margin-bottom:3px">🍀 球球今天的班 🍀</div>
       <div style="font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;color:#c060a0">${ballShift.icon} ${ballShift.key}</div>
       <div class="time-big">${ballTime||ballShift.time}</div>
-      ${cwNames.length?`<div class="cw-box"><div style="font-size:.58rem;font-weight:900;color:#9060c0;margin-bottom:4px">👯 今天一起上班</div><div style="font-size:.88rem;font-weight:900;color:#c060a0">${cwNames.join('　')}</div></div>`:''}
+      ${cwNames.length?`<div class="cw-box"><div style="font-size:.58rem;font-weight:900;color:#9060c0;margin-bottom:4px">💞 一起上班</div><div style="font-size:.88rem;font-weight:900;color:#c060a0">${cwNames.join('　')}</div></div>`:''}
     </div>
     <div class="ig">
-      <div class="ib"><div class="i-icon">👩‍🏫</div><div class="i-lbl">早班是誰</div><div class="i-val ${earlyPpl?'':'dim'}">${earlyPpl||'沒有早班'}</div></div>
-      <div class="ib"><div class="i-icon">🔁</div><div class="i-lbl">誰來接班</div><div class="i-val ${nextShift?'':'dim'}">${nextShift?pplStr(nextShift.people):'無接班'}</div></div>
+      <div class="ib"><div class="i-icon">♥️</div><div class="i-lbl">早班是誰</div><div class="i-val ${earlyPpl?'':'dim'}">${earlyPpl||'沒有早班'}</div></div>
+      <div class="ib"><div class="i-icon">🙆‍♀️</div><div class="i-lbl">誰來接班</div><div class="i-val ${nextShift?'':'dim'}">${nextShift?pplStr(nextShift.people):'無接班'}</div></div>
       <div class="ib full ${isClean?'clean':''}">
-        <div class="i-icon">${isClean?'🧹':'🤝'}</div>
+        <div class="i-icon">${isClean?'🧹':'🐈'}</div>
         <div class="i-lbl">${isClean?'今日清潔提醒':'我接誰的班'}</div>
         <div class="i-val" style="${isClean?'color:#8a5000':''}">${isClean?'🏠 2樓＋3樓 掃地＋拖地':(prevShift?`接 ${prevShift.key} ${pplStr(prevShift.people)} 的班`:'今天第一班！')}</div>
-        ${isClean&&prevShift?`<div style="font-size:.64rem;color:#9060c0;margin-top:3px">🤝 接 ${prevShift.key} ${pplStr(prevShift.people)} 的班</div>`:''}
+        ${isClean&&prevShift?`<div style="font-size:.64rem;color:#9060c0;margin-top:3px">🍂 接 ${prevShift.key} ${pplStr(prevShift.people)} 的班</div>`:''}
       </div>
     </div>`;
   }
@@ -716,7 +716,7 @@ function renderS(){
       const ppl=dd[s.key];if(!ppl||!ppl.length)return;
       const rows=ppl.map(p=>{
         const isMe=p.name==='球球';
-        const nm=isMe?`<span class="me-tag">🐾 球球</span>`:p.name;
+        const nm=isMe?`<span class="me-tag">🍀 球球</span>`:p.name;
         const tm=p.time?` <span class="p-time">${p.time}</span>`:'';
         return`<span>${nm}${tm}</span>`;
       }).join('<span style="color:#d0b0c0;margin:0 3px">・</span>');
@@ -754,7 +754,7 @@ function renderC(){
     if(isSel&&!isT)cls+=' csel';
     grid+=`<div class="${cls}" onclick="selCal('${k}')">
       <div class="cnum">${d}</div>
-      <div class="cicons">${hN?H_ICON[hN]||'🎌':''}${isT?'♦️':''}${hasMood&&!isT?moods[k].mood:''}${hasEvt&&!hasMood?'📌':''}</div>
+      <div class="cicons">${hN?H_ICON[hN]||'🎌':''}${isT?'🪻':''}${hasMood&&!isT?moods[k].mood:''}${hasEvt&&!hasMood?'🪶':''}</div>
     </div>`;
   }
 
@@ -789,7 +789,7 @@ function renderC(){
       <div class="tag-row">${TAGS.map(t=>{const sel=(moodData.tags||[]).includes(t);return`<div class="tbtn${sel?' tsel':''}" onclick="togTag('${selCalDate}','${t}')">${t}</div>`}).join('')}</div>
       <div style="font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:5px">📝 小日記</div>
       <textarea class="diary" rows="3" id="diary-${selCalDate}" placeholder="今天發生了什麼？隨便寫幾個字就好 🌸" onchange="saveDiary('${selCalDate}',this.value)">${moodData.diary||''}</textarea>
-      ${dayEvts.length?`<div style="margin-top:10px;font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:5px">📌 今日行程</div>${dayEvts.map(e=>`<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.7);border:1.5px solid #e8b8d8;border-radius:11px;padding:7px 10px;margin-bottom:4px"><div>${e.done?'✅':'📌'}</div><div style="font-size:.78rem;font-weight:700;color:#c060a0">${e.time?e.time+' ':''}${e.title}</div></div>`).join('')}`:''}
+      ${dayEvts.length?`<div style="margin-top:10px;font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:5px">🪻 今日行程</div>${dayEvts.map(e=>`<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.7);border:1.5px solid #e8b8d8;border-radius:11px;padding:7px 10px;margin-bottom:4px"><div>${e.done?'✅':'📌'}</div><div style="font-size:.78rem;font-weight:700;color:#c060a0">${e.time?e.time+' ':''}${e.title}</div></div>`).join('')}`:''}
       <button class="sbtn" onclick="saveMoodAll('${selCalDate}')">🌸 儲存今日記錄</button>
     </div>`;
   }
@@ -805,7 +805,7 @@ function renderC(){
     <div class="cgrid" style="margin-bottom:3px">${['日','一','二','三','四','五','六'].map((d,i)=>`<div style="font-size:.58rem;font-weight:700;color:${i===0||i===6?'#c060a0':'#9060c0'};text-align:center;padding:2px 0">${d}</div>`).join('')}</div>
     <div class="cgrid">${grid}</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:.6rem;font-weight:700;color:#9060c0">
-      <span style="color:#c060a0">♦️ 今天</span><span style="color:#98e0b0">🟢 有心情</span><span style="color:#60b0e8">🔵 休假</span><span>📌 行程</span>
+      <span style="color:#c060a0">🪶 今天</span><span style="color:#98e0b0">🟢 有心情</span><span style="color:#60b0e8">🔵 休假</span><span>🪻 行程</span>
     </div>
     ${detailHtml}
   </div>
@@ -829,7 +829,7 @@ function togDone(id){const e=events.find(e=>e.id===id);if(e)e.done=!e.done;saveE
 function renderP(){
   const tmr=d2s(new Date(parseD(TODAY).getTime()+86400000));
   const te=events.filter(e=>e.date===TODAY),tre=events.filter(e=>e.date===tmr);
-  let h=`<div class="deco">${['🌺','🐝','🌻','🐝','🌺'].map((e,i)=>`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`).join('')}</div>`;
+  let h=`<div class="deco">${['🐈‍⬛','🐿️','🦔','🐝','💟'].map((e,i)=>`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`).join('')}</div>`;
   if(tre.length)h+=`<div class="card" style="border-color:#e060a0;background:linear-gradient(135deg,rgba(224,96,160,.08),rgba(144,96,208,.05))"><div class="sec-lbl">🔔 明天的提醒</div>${tre.map(e=>`<div class="erow"><div style="font-size:1rem">🗓️</div><div style="flex:1"><div style="font-weight:700;font-size:.82rem;color:#c060a0">${e.time?e.time+' ':''}${e.title}</div><div style="font-size:.62rem;color:#9060c0">${e.date}</div></div></div>`).join('')}</div>`;
   if(te.length)h+=`<div class="card"><div class="sec-lbl">⭐ 今天的行程</div>${te.map(e=>`<div class="erow${e.done?' done':''}"><div class="chk${e.done?' ck':''}" onclick="togDone(${e.id})">${e.done?'<span style="color:#fff;font-size:.7rem;font-weight:900">✓</span>':''}</div><div style="flex:1"><div style="font-weight:700;font-size:.82rem;color:${e.done?'#60a070':'#c060a0'};text-decoration:${e.done?'line-through':'none'}">${e.time?e.time+' ':''}${e.title}</div></div><button style="background:none;border:none;color:#e8b8d8;cursor:pointer;font-weight:900" onclick="delEvt(${e.id})">✕</button></div>`).join('')}</div>`;
   h+=`<div class="card"><div class="sec-lbl">📝 新增行程</div><div class="ig2"><div><div class="ilbl">📅 日期 *</div><input class="inp" type="date" id="ev-d"></div><div><div class="ilbl">⏰ 時間</div><input class="inp" type="time" id="ev-t"></div></div><div style="margin-bottom:10px"><div class="ilbl">🌸 事情 *</div><input class="inp" type="text" id="ev-ttl" placeholder="例：看醫生、約朋友…"></div><button class="abtn" onclick="addEvt()">🌸 加入行程</button></div>`;
