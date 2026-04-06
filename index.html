@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="球球日曆">
 <meta name="theme-color" content="#e8b8d8">
-<title>球球の魔法日曆 ☁️</title>
+<title>球球の魔法日曆 🌸</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ffe0f0 0%,#f0e0ff 50%,#dde8ff 100%);min-height:100vh;padding-bottom:74px;overflow-x:hidden}
-.hdr{background:rgba(255,255,255,.88);backdrop-filter:blur(14px);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:3px dashed #e8b8d8}
+.hdr{background:rgba(255,255,255,.88);backdrop-filter:blur(14px);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:3px dashed #e8b8d8;transition:top .2s}
 .hdr-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.05rem;background:linear-gradient(135deg,#e060a0,#9060d0);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hdr-today{font-size:.72rem;font-weight:700;color:#c060a0;margin-top:1px}
-.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#98e060;margin-right:5px;vertical-align:middle}
-.sync-dot.off{background:#e06060}
-.sync-dot.ing{background:#e0c060;animation:blink .6s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hdr-shift{display:inline-block;background:linear-gradient(135deg,rgba(224,96,160,.18),rgba(144,96,208,.12));border:1.5px solid #e8b8d8;border-radius:20px;padding:2px 10px;font-size:.7rem;font-weight:900;color:#c060a0;margin-top:3px}
 .body{padding:12px 12px 0;max-width:430px;margin:0 auto}
 .card{background:rgba(255,255,255,.84);border-radius:22px;padding:14px;margin-bottom:12px;box-shadow:3px 4px 0 #e8c8e0;position:relative;overflow:hidden;border:2.5px solid #e8b8d8}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#e060a0,#c070d0,#8080e0,#60b0f0)}
 .sec-lbl{font-family:'Nunito',sans-serif;font-weight:900;font-size:.82rem;color:#c060a0;margin-bottom:10px}
 .nav-btn{width:34px;height:34px;border-radius:50%;border:2px solid #e8b8d8;background:rgba(255,255,255,.8);color:#c060a0;font-weight:900;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* 日期列 */
 .days-row{display:grid;gap:4px;margin-bottom:12px}
 .day-pill{border-radius:13px;padding:6px 3px;text-align:center;cursor:pointer;transition:all .15s;border:2px solid rgba(200,180,220,.3);background:rgba(255,255,255,.65)}
 .day-pill.act{background:linear-gradient(135deg,#e060a0,#9060d0);border-color:#c040a0}
@@ -29,11 +29,14 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 .day-wd{font-size:.52rem;font-weight:700;color:#b080c0;margin-bottom:1px}
 .day-pill.act .day-wd,.day-pill.act .day-num{color:#fff}
 .day-pill.off .day-wd,.day-pill.off .day-num{color:#1060a0}
+.day-pill.red-d .day-num{color:#d04060}
 .day-num{font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:900;color:#a060b0}
 .day-mark{font-size:.68rem;line-height:1.1}
+/* 班次主卡 */
 .shift-hero{text-align:center;background:linear-gradient(135deg,rgba(224,96,160,.12),rgba(144,96,208,.08));border-radius:18px;padding:14px;margin-bottom:11px;border:2px dashed #e8b8d8}
 .time-big{font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;color:#c060a0;margin:4px 0;letter-spacing:.02em}
 .cw-box{background:rgba(255,255,255,.65);border:1.5px solid #e8b8d8;border-radius:12px;padding:8px 12px;margin-top:8px}
+/* 資訊格 */
 .ig{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ib{background:rgba(255,255,255,.72);border:2px solid #e8b8d8;border-radius:15px;padding:10px;text-align:center}
 .ib.full{grid-column:1/-1}
@@ -42,12 +45,14 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 .i-lbl{font-size:.58rem;font-weight:900;color:#a070b0;margin-bottom:3px}
 .i-val{font-size:.72rem;font-weight:700;color:#c060a0}
 .i-val.dim{color:#ccc}
+/* 全日班表 */
 .srow{display:flex;align-items:flex-start;gap:9px;background:rgba(255,255,255,.65);border:1.5px solid #e8c0d8;border-radius:13px;padding:8px 11px;margin-bottom:5px}
 .sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
 .sslot{font-size:.63rem;font-weight:700;color:#a070b0;min-width:56px}
 .speople{font-size:.74rem;font-weight:700;color:#c060a0;line-height:1.75;flex:1}
 .me-tag{background:rgba(224,96,160,.14);border-radius:7px;padding:0 5px;color:#d040a0;font-weight:900}
 .p-time{font-size:.65rem;color:#a070b0;font-weight:500}
+/* 日曆 */
 .cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .ccell{border-radius:9px;padding:5px 2px;text-align:center;background:rgba(255,255,255,.55);border:1.5px solid rgba(200,180,220,.2);cursor:pointer;transition:all .15s;min-height:36px}
 .ccell:hover{background:rgba(255,255,255,.85)}
@@ -61,6 +66,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 .ccell.cholid .cnum{color:#d04060}
 .ccell.coff .cnum{color:#1060a0}
 .cicons{font-size:.52rem;line-height:1.3;min-height:12px}
+/* 心情 */
 .mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px}
 .mbtn{border:2px solid transparent;border-radius:11px;padding:7px 3px;text-align:center;cursor:pointer;background:rgba(255,255,255,.7);transition:all .18s}
 .mbtn.msel{border-color:#e060a0;background:linear-gradient(135deg,rgba(224,96,160,.18),rgba(144,96,208,.12));transform:scale(1.06)}
@@ -76,6 +82,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 .tbtn.tsel{background:linear-gradient(135deg,#e060a0,#9060d0);border-color:#c040a0;color:#fff}
 .diary{width:100%;padding:9px 11px;border:2px solid #e8b8d8;border-radius:12px;font-family:inherit;font-size:.82rem;color:#9060c0;background:rgba(255,255,255,.9);outline:none;resize:none}
 .sbtn{width:100%;padding:10px;background:linear-gradient(135deg,#e060a0,#9060d0);color:#fff;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;cursor:pointer;margin-top:8px;box-shadow:2px 3px 0 #b040a0}
+/* 行程 */
 .erow{display:flex;align-items:center;gap:9px;border-radius:13px;padding:9px 12px;margin-bottom:6px;border:1.5px solid #e8b8d8;background:rgba(255,255,255,.68)}
 .erow.done{background:rgba(180,240,200,.25);border-color:#80d0a0}
 .chk{width:22px;height:22px;border-radius:50%;border:2.5px solid #e8b8d8;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
@@ -84,23 +91,38 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 .abtn{width:100%;padding:11px;background:linear-gradient(135deg,#e060a0,#9060d0);color:#fff;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;cursor:pointer;box-shadow:2px 3px 0 #b040a0}
 .ig2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}
 .ilbl{font-size:.63rem;font-weight:700;color:#a070b0;margin-bottom:3px}
+/* 橫幅 */
+#banners{position:fixed;top:0;left:0;right:0;z-index:200}
+.banner{padding:10px 14px;display:flex;align-items:center;gap:10px}
+.ban-tmr{background:linear-gradient(135deg,#c060a0,#8060c0)}
+.ban-soon{background:linear-gradient(135deg,#e05080,#e09030)}
+.ban-x{background:rgba(255,255,255,.25);border:none;color:#fff;border-radius:50%;width:26px;height:26px;cursor:pointer;font-weight:900;margin-left:auto}
+/* Tab Bar */
 .tabbar{display:flex;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-top:3px dashed #e8b8d8;position:fixed;bottom:0;left:0;right:0;padding:7px 0;z-index:50}
 .tb{flex:1;text-align:center;padding:6px 4px;border-radius:14px;border:2px solid transparent;background:none;font-family:'Nunito',sans-serif;font-size:.7rem;font-weight:700;color:#b080c0;cursor:pointer}
 .tb.on{background:linear-gradient(135deg,#e060a0,#9060d0);color:#fff}
 .float{display:inline-block;animation:float 3s ease-in-out infinite}
 .deco{text-align:center;margin:4px 0 10px;font-size:1.7rem;letter-spacing:5px}
 .empty{text-align:center;color:#d0b0c0;font-size:.82rem;padding:14px}
-/* ── 試算表 ── */
-.sheet-wrap{overflow-x:auto;margin:0 -4px;border-radius:14px}
-.sheet-tbl{border-collapse:separate;border-spacing:2px;min-width:520px;width:100%}
-.sh-th{background:linear-gradient(135deg,rgba(224,96,160,.18),rgba(144,96,208,.12));color:#c060a0;font-size:.65rem;font-weight:900;padding:7px 6px;border-radius:8px;text-align:center;white-space:nowrap}
-.sh-td{background:rgba(255,255,255,.72);border:1.5px solid #e8d0e8;border-radius:8px;padding:0;transition:all .15s}
-.sh-td.edit-cell{background:rgba(255,240,250,.95);border-color:#e060a0}
-.sh-td input{width:100%;padding:6px 7px;border:none;background:transparent;font-family:inherit;font-size:.75rem;color:#9060c0;outline:none;text-align:center}
-.sh-td.row-hdr{background:linear-gradient(135deg,rgba(224,96,160,.1),rgba(144,96,208,.07));min-width:70px}
-.sh-td.row-hdr input{color:#c060a0;font-weight:700}
-.add-row-btn{width:100%;margin-top:6px;padding:7px;background:rgba(255,255,255,.7);border:2px dashed #e8b8d8;border-radius:11px;color:#c060a0;font-weight:700;font-size:.75rem;cursor:pointer}
-.del-row-btn{background:none;border:none;color:#e8b8d8;cursor:pointer;font-size:.9rem;padding:0 4px}
-.del-row-btn:hover{color:#e06090}
-/* ── 同步面板 ── */
-.sync-panel{background:linear-gradient(135deg,rgba(144,96,208,.08),rgba(96,160,240,.06));border:2px dashed #c0a0e0;border-radius:18px;
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+</style>
+</head>
+<body>
+<div id="banners"></div>
+<div class="hdr" id="hdr">
+  <div>
+    <div class="hdr-logo">🌸 球球の魔法日曆</div>
+    <div class="hdr-today" id="hdr-today"></div>
+    <div id="hdr-shift"></div>
+  </div>
+  <div style="font-size:1.5rem" class="float">🐾</div>
+</div>
+<div class="body">
+  <div id="tab-s"></div>
+  <div id="tab-c" style="display:none"></div>
+  <div id="tab-p" style="display:none"></div>
+</div>
+<div class="tabbar">
+  <button class="tb on" id="tb-s" onclick="goTab('s')"><div>🐾</div>班表</button>
+  <button class="tb" id="tb-c" onclick="goTab('c')"><div>🌸</div>日曆</button>
+  <button class="tb" id="tb-p" onclick="goTab('p
