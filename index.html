@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="球球日曆">
 <meta name="theme-color" content="#e8b8d8">
-<title>🌸 球球の魔法日曆 🌸</title>
+<title>球球の魔法日曆 ☁️</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ffe0f0 0%,#f0e0ff 50%,#dde8ff 100%);min-height:100vh;padding-bottom:74px;overflow-x:hidden}
-.hdr{background:rgba(255,255,255,.88);backdrop-filter:blur(14px);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:3px dashed #e8b8d8;transition:top .2s}
+.hdr{background:rgba(255,255,255,.88);backdrop-filter:blur(14px);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:3px dashed #e8b8d8}
 .hdr-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.05rem;background:linear-gradient(135deg,#e060a0,#9060d0);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .hdr-today{font-size:.72rem;font-weight:700;color:#c060a0;margin-top:1px}
-.hdr-shift{display:inline-block;background:linear-gradient(135deg,rgba(224,96,160,.18),rgba(144,96,208,.12));border:1.5px solid #e8b8d8;border-radius:20px;padding:2px 10px;font-size:.7rem;font-weight:900;color:#c060a0;margin-top:3px}
+.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#98e060;margin-right:5px;vertical-align:middle}
+.sync-dot.off{background:#e06060}
+.sync-dot.ing{background:#e0c060;animation:blink .6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .body{padding:12px 12px 0;max-width:430px;margin:0 auto}
 .card{background:rgba(255,255,255,.84);border-radius:22px;padding:14px;margin-bottom:12px;box-shadow:3px 4px 0 #e8c8e0;position:relative;overflow:hidden;border:2.5px solid #e8b8d8}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#e060a0,#c070d0,#8080e0,#60b0f0)}
 .sec-lbl{font-family:'Nunito',sans-serif;font-weight:900;font-size:.82rem;color:#c060a0;margin-bottom:10px}
 .nav-btn{width:34px;height:34px;border-radius:50%;border:2px solid #e8b8d8;background:rgba(255,255,255,.8);color:#c060a0;font-weight:900;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-/* 日期列 */
 .days-row{display:grid;gap:4px;margin-bottom:12px}
 .day-pill{border-radius:13px;padding:6px 3px;text-align:center;cursor:pointer;transition:all .15s;border:2px solid rgba(200,180,220,.3);background:rgba(255,255,255,.65)}
 .day-pill.act{background:linear-gradient(135deg,#e060a0,#9060d0);border-color:#c040a0}
@@ -29,14 +29,11 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 .day-wd{font-size:.52rem;font-weight:700;color:#b080c0;margin-bottom:1px}
 .day-pill.act .day-wd,.day-pill.act .day-num{color:#fff}
 .day-pill.off .day-wd,.day-pill.off .day-num{color:#1060a0}
-.day-pill.red-d .day-num{color:#d04060}
 .day-num{font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:900;color:#a060b0}
 .day-mark{font-size:.68rem;line-height:1.1}
-/* 班次主卡 */
 .shift-hero{text-align:center;background:linear-gradient(135deg,rgba(224,96,160,.12),rgba(144,96,208,.08));border-radius:18px;padding:14px;margin-bottom:11px;border:2px dashed #e8b8d8}
 .time-big{font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;color:#c060a0;margin:4px 0;letter-spacing:.02em}
 .cw-box{background:rgba(255,255,255,.65);border:1.5px solid #e8b8d8;border-radius:12px;padding:8px 12px;margin-top:8px}
-/* 資訊格 */
 .ig{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .ib{background:rgba(255,255,255,.72);border:2px solid #e8b8d8;border-radius:15px;padding:10px;text-align:center}
 .ib.full{grid-column:1/-1}
@@ -45,14 +42,12 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 .i-lbl{font-size:.58rem;font-weight:900;color:#a070b0;margin-bottom:3px}
 .i-val{font-size:.72rem;font-weight:700;color:#c060a0}
 .i-val.dim{color:#ccc}
-/* 全日班表 */
 .srow{display:flex;align-items:flex-start;gap:9px;background:rgba(255,255,255,.65);border:1.5px solid #e8c0d8;border-radius:13px;padding:8px 11px;margin-bottom:5px}
 .sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
 .sslot{font-size:.63rem;font-weight:700;color:#a070b0;min-width:56px}
 .speople{font-size:.74rem;font-weight:700;color:#c060a0;line-height:1.75;flex:1}
 .me-tag{background:rgba(224,96,160,.14);border-radius:7px;padding:0 5px;color:#d040a0;font-weight:900}
 .p-time{font-size:.65rem;color:#a070b0;font-weight:500}
-/* 日曆 */
 .cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
 .ccell{border-radius:9px;padding:5px 2px;text-align:center;background:rgba(255,255,255,.55);border:1.5px solid rgba(200,180,220,.2);cursor:pointer;transition:all .15s;min-height:36px}
 .ccell:hover{background:rgba(255,255,255,.85)}
@@ -66,7 +61,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 .ccell.cholid .cnum{color:#d04060}
 .ccell.coff .cnum{color:#1060a0}
 .cicons{font-size:.52rem;line-height:1.3;min-height:12px}
-/* 心情 */
 .mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px}
 .mbtn{border:2px solid transparent;border-radius:11px;padding:7px 3px;text-align:center;cursor:pointer;background:rgba(255,255,255,.7);transition:all .18s}
 .mbtn.msel{border-color:#e060a0;background:linear-gradient(135deg,rgba(224,96,160,.18),rgba(144,96,208,.12));transform:scale(1.06)}
@@ -82,7 +76,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 .tbtn.tsel{background:linear-gradient(135deg,#e060a0,#9060d0);border-color:#c040a0;color:#fff}
 .diary{width:100%;padding:9px 11px;border:2px solid #e8b8d8;border-radius:12px;font-family:inherit;font-size:.82rem;color:#9060c0;background:rgba(255,255,255,.9);outline:none;resize:none}
 .sbtn{width:100%;padding:10px;background:linear-gradient(135deg,#e060a0,#9060d0);color:#fff;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;cursor:pointer;margin-top:8px;box-shadow:2px 3px 0 #b040a0}
-/* 行程 */
 .erow{display:flex;align-items:center;gap:9px;border-radius:13px;padding:9px 12px;margin-bottom:6px;border:1.5px solid #e8b8d8;background:rgba(255,255,255,.68)}
 .erow.done{background:rgba(180,240,200,.25);border-color:#80d0a0}
 .chk{width:22px;height:22px;border-radius:50%;border:2.5px solid #e8b8d8;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
@@ -91,761 +84,23 @@ body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ff
 .abtn{width:100%;padding:11px;background:linear-gradient(135deg,#e060a0,#9060d0);color:#fff;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;cursor:pointer;box-shadow:2px 3px 0 #b040a0}
 .ig2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}
 .ilbl{font-size:.63rem;font-weight:700;color:#a070b0;margin-bottom:3px}
-/* 橫幅 */
-#banners{position:fixed;top:0;left:0;right:0;z-index:200}
-.banner{padding:10px 14px;display:flex;align-items:center;gap:10px}
-.ban-tmr{background:linear-gradient(135deg,#c060a0,#8060c0)}
-.ban-soon{background:linear-gradient(135deg,#e05080,#e09030)}
-.ban-x{background:rgba(255,255,255,.25);border:none;color:#fff;border-radius:50%;width:26px;height:26px;cursor:pointer;font-weight:900;margin-left:auto}
-/* Tab Bar */
 .tabbar{display:flex;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-top:3px dashed #e8b8d8;position:fixed;bottom:0;left:0;right:0;padding:7px 0;z-index:50}
 .tb{flex:1;text-align:center;padding:6px 4px;border-radius:14px;border:2px solid transparent;background:none;font-family:'Nunito',sans-serif;font-size:.7rem;font-weight:700;color:#b080c0;cursor:pointer}
 .tb.on{background:linear-gradient(135deg,#e060a0,#9060d0);color:#fff}
 .float{display:inline-block;animation:float 3s ease-in-out infinite}
 .deco{text-align:center;margin:4px 0 10px;font-size:1.7rem;letter-spacing:5px}
 .empty{text-align:center;color:#d0b0c0;font-size:.82rem;padding:14px}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-</style>
-</head>
-<body>
-<div id="banners"></div>
-<div class="hdr" id="hdr">
-  <div>
-    <div class="hdr-logo">🌸 球球の魔法日曆 🌸</div>
-    <div class="hdr-today" id="hdr-today"></div>
-    <div id="hdr-shift"></div>
-  </div>
-  <div style="font-size:1.5rem" class="float">🧸</div>
-</div>
-<div class="body">
-  <div id="tab-s"></div>
-  <div id="tab-c" style="display:none"></div>
-  <div id="tab-p" style="display:none"></div>
-</div>
-<div class="tabbar">
-  <button class="tb on" id="tb-s" onclick="goTab('s')"><div>🐈‍⬛</div>班表</button>
-  <button class="tb" id="tb-c" onclick="goTab('c')"><div>🧸</div>日曆</button>
-  <button class="tb" id="tb-p" onclick="goTab('p')"><div>🐿️</div>行程</button>
-</div>
-<script>
-// ══════════════════════════════════════════
-// ⚠️ 2026年班表尚待更新，目前為2025年3-4月示範資料
-// 請將新班表截圖傳給Claude，即可更新此區塊
-// ══════════════════════════════════════════
-
-// 班別定義（5種）
-// 凌晨班 05:00-09:00
-// 早班   06:00-12:00
-// 下午班 12:00-18:00
-// 晚班   18:00-23:00
-// 跨夜班 22:00-07:00
-
-const SHIFT_DEF = [
-  {key:'凌晨班', time:'05:00-09:00', icon:'🐷', color:'#b3d4ff'},
-  {key:'早班',   time:'08:00-12:00', icon:'♥️', color:'#ffe08a'},
-  {key:'下午班', time:'12:00-18:00', icon:'🦩', color:'#ffb3cc'},
-  {key:'晚班',   time:'18:00-23:00', icon:'🦄', color:'#c8a0ff'},
-  {key:'跨夜班', time:'22:00-07:00', icon:'🐮', color:'#98e0c8'},
-];
-
-// 班表資料結構：每個日期包含5個班別的人員陣列
-// people: [{name, time}]  time可為空
-const RAW=[
-  // ── 2026-03 ──
-  {date:'2026-03-01',
-    凌晨班:[{name:'球球',time:'00:00-10:00'}],
-    早班:[{name:'曾姐',time:'07:00-11:00'}],
-    下午班:[{name:'Tien Yun',time:'13:00-17:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-02',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'小茹',time:'15:00-21:00'},{name:'Ying',time:''}],
-    晚班:[{name:'萱汶',time:''},{name:'小茹',time:'15:00-21:00'},{name:'群翔',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-03',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'球球',time:'12:00-16:00'},{name:'小茹',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'阿瑛',time:'18:00-22:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-04',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'阿瑛',time:'13:00-18:00'},{name:'球球',time:'12:00-18:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'小茹',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-05',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'13:00-19:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'阿瑛',time:'18:00-23:00'},{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-06',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'群翔',time:'12:00-17:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'小茹',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-07',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'萱汶',time:''},{name:'群翔',time:''}],
-    晚班:[{name:'韶芸',time:'21:00-03:00'},{name:'小茹',time:''}],
-    跨夜班:[]},
-  {date:'2026-03-08',
-    凌晨班:[{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'蔡小習',time:'10:00-14:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Tien Yun',time:'13:00-17:00'},{name:'淑珍',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-09',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'小茹',time:''},{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-10',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'小茹',time:''},{name:'書書',time:'12:00-16:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'阿瑛',time:'18:00-22:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-11',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'阿瑛',time:'13:00-18:00'},{name:'球球',time:'12:00-18:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-12',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'13:00-19:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'阿瑛',time:'18:00-23:00'},{name:'群翔',time:'18:00-23:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-13',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'小茹',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-14',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'婉寧',time:'12:00-17:00'},{name:'Ying',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'群翔',time:'18:00-23:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-09:00'}]},
-  {date:'2026-03-15',
-    凌晨班:[{name:'采淳',time:'02:00-09:00'}],
-    早班:[{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Tien Yun',time:'13:00-17:00'},{name:'淑珍',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-16',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'球球',time:'12:00-16:00'},{name:'群翔',time:'12:00-17:00'}],
-    晚班:[{name:'小茹',time:''},{name:'書書',time:'17:00-20:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-17',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'小茹',time:'14:00-20:00'}],
-    晚班:[{name:'阿瑛',time:'18:00-22:00'},{name:'小茹',time:'14:00-20:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-18',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'阿瑛',time:'13:00-18:00'},{name:'球球',time:'12:00-18:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'群翔',time:'18:00-23:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-19',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Ying',time:'13:00-19:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'阿瑛',time:'18:00-23:00'},{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-20',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-18:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'新人',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-21',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'萱汶',time:'12:00-21:00'},{name:'婉寧',time:'12:00-17:00'}],
-    晚班:[{name:'韶芸',time:'21:00-03:00'},{name:'書書',time:''}],
-    跨夜班:[]},
-  {date:'2026-03-22',
-    凌晨班:[{name:'Emily',time:'06:00-10:00'}],
-    早班:[{name:'蔡小習',time:'10:00-14:00'}],
-    下午班:[{name:'Tien Yun',time:'13:00-17:00'},{name:'淑珍',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[]},
-  {date:'2026-03-23',
-    凌晨班:[{name:'曾姐',time:'06:00-10:00'}],
-    早班:[],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'萱汶',time:''},{name:'群翔',time:'18:00-23:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-24',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'阿瑛',time:'18:00-22:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-25',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'阿瑛',time:'13:00-18:00'},{name:'球球',time:'12:00-18:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-26',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'球球',time:'12:00-16:00'},{name:'Ying',time:''}],
-    晚班:[{name:'阿瑛',time:'18:00-23:00'},{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-27',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-18:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'群翔',time:'18:00-23:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-28',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'萱汶',time:'13:00-21:00'},{name:'群翔',time:'12:00-18:00'}],
-    晚班:[{name:'萱汶',time:'13:00-21:00'},{name:'韶芸',time:'21:00-03:00'}],
-    跨夜班:[]},
-  {date:'2026-03-29',
-    凌晨班:[{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'蔡小習',time:'10:00-14:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Tien Yun',time:'13:00-17:00'},{name:'淑珍',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'群翔',time:'18:00-23:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-30',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'萱汶',time:''},{name:'群翔',time:'18:00-23:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-03-31',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'群翔',time:'12:00-17:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'阿瑛',time:'18:00-22:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  // ── 2025-04 ──
-  {date:'2026-04-01',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'萱汶',time:'12:00-22:00'},{name:'群翔',time:'12:00-18:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'萱汶',time:'12:00-22:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-02',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'球球',time:'12:00-16:00'},{name:'萱汶',time:'13:00-23:00'}],
-    晚班:[{name:'萱汶',time:'13:00-23:00'},{name:'群翔',time:'18:00-23:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-03',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'14:00-17:30'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'萱汶',time:'17:00-23:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-04',
-    凌晨班:[{name:'采淳',time:'02:00-11:00'}],
-    早班:[{name:'采淳',time:'02:00-11:00'},{name:'淑珍',time:''}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'小茹',time:'14:00-21:00'}],
-    晚班:[{name:'韶芸',time:'21:00-03:00'},{name:'小茹',time:'14:00-21:00'}],
-    跨夜班:[]},
-  {date:'2026-04-05',
-    凌晨班:[{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'蔡小習',time:'10:00-14:00'}],
-    下午班:[{name:'Tien Yun',time:'13:00-17:00'},{name:'淑珍',time:''}],
-    晚班:[{name:'小茹',time:'18:00-23:00'}],
-    跨夜班:[]},
-  {date:'2026-04-06',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-07',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'阿瑛',time:'18:00-22:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-08',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'阿瑛',time:'13:00-18:00'},{name:'萱汶',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-09',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'球球',time:'12:00-16:00'},{name:'萱汶',time:''}],
-    晚班:[{name:'阿瑛',time:'18:00-23:00'},{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-10',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'14:00-17:30'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-11',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'萱汶',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-12',
-    凌晨班:[{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'蔡小習',time:'10:00-14:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Tien Yun',time:'13:00-17:00'},{name:'淑珍',time:''}],
-    晚班:[{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-13',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-14',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'阿瑛',time:'18:00-22:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-15',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'阿瑛',time:'13:00-18:00'},{name:'萱汶',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-16',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'13:00-19:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'阿瑛',time:'18:00-23:00'},{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-17',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'14:00-17:30'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-18',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'淑珍',time:''}],
-    下午班:[{name:'萱汶',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-19',
-    凌晨班:[],
-    早班:[{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Tien Yun',time:'13:00-17:00'},{name:'淑珍',time:''}],
-    晚班:[{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-20',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-21',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-22',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'阿瑛',time:'13:00-18:00'},{name:'萱汶',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-23',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Ying',time:'13:00-19:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'阿瑛',time:'18:00-23:00'},{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-24',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'Emily',time:'09:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'14:00-17:30'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-25',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'},{name:'淑珍',time:''}],
-    下午班:[{name:'萱汶',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-26',
-    凌晨班:[{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'蔡小習',time:'10:00-14:00'}],
-    下午班:[{name:'Tien Yun',time:'13:00-17:00'},{name:'淑珍',time:''}],
-    晚班:[],
-    跨夜班:[]},
-  {date:'2026-04-27',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-28',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'12:00-18:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'},{name:'阿瑛',time:'18:00-22:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-29',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'},{name:'曾姐',time:'06:00-10:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'阿瑛',time:'13:00-18:00'},{name:'萱汶',time:''}],
-    晚班:[{name:'韶芸',time:'18:00-24:00'}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-  {date:'2026-04-30',
-    凌晨班:[{name:'采淳',time:'02:00-12:00'}],
-    早班:[{name:'采淳',time:'02:00-12:00'}],
-    下午班:[{name:'Ying',time:'13:00-19:00'},{name:'球球',time:'12:00-16:00'}],
-    晚班:[{name:'阿瑛',time:'18:00-23:00'},{name:'萱汶',time:''}],
-    跨夜班:[{name:'采淳',time:'02:00-12:00'}]},
-];
-const DATA={};RAW.forEach(r=>DATA[r.date]=r);
-
-// 週清單（週日為每週第一天，JS getDay() 0=日）
-function buildWeeks(){
-  const all=RAW.map(r=>r.date).sort();
-  const weeks=[];
-  const seen={};
-  all.forEach(s=>{
-    const d=parseD(s);
-    const dow=d.getDay(); // 0=日
-    // 找本週週日
-    const sun=new Date(d.getTime()-dow*86400000);
-    const sunStr=d2s(sun);
-    if(!seen[sunStr]){seen[sunStr]=[];weeks.push(seen[sunStr]);}
-    seen[sunStr].push(s);
-  });
-  return weeks.map(dates=>{
-    const f=parseD(dates[0]),l=parseD(dates[dates.length-1]);
-    const wdNames=['日','一','二','三','四','五','六'];
-    return{
-      label:`${f.getMonth()+1}/${f.getDate()}（${wdNames[f.getDay()]}）～ ${l.getMonth()+1}/${l.getDate()}（${wdNames[l.getDay()]}）`,
-      dates
-    };
-  });
-}
-const WEEKS=buildWeeks();
-
-const TW_RED={
-  '2025-02-28':'和平紀念日','2025-04-03':'兒童節補假','2025-04-04':'兒童節','2025-04-05':'清明節',
-  '2025-05-01':'勞動節','2025-10-10':'國慶日',
-  '2026-02-16':'小年夜','2026-02-17':'春節','2026-02-18':'春節','2026-02-19':'春節',
-  '2026-02-27':'和平紀念日補假','2026-02-28':'和平紀念日',
-  '2026-04-03':'兒童節補假','2026-04-04':'兒童節','2026-04-05':'清明節','2026-04-06':'清明節補假',
-  '2026-05-01':'勞動節','2026-06-19':'端午節','2026-09-25':'中秋節','2026-10-09':'國慶補假','2026-10-10':'國慶日',
-  '2026-10-25':'台灣光復節','2026-10-26':'光復節補假','2026-12-25':'行憲紀念日',
-};
-const H_ICON={'和平紀念日':'🕊️','和平紀念日補假':'🕊️','兒童節':'🎈','兒童節補假':'🎈','清明節':'🌿','清明節補假':'🌿','勞動節':'💪','端午節':'🎋','中秋節':'🥮','國慶日':'🇹🇼','國慶補假':'🇹🇼','春節':'🧧','小年夜':'🏮','台灣光復節':'🎌','光復節補假':'🎌','行憲紀念日':'📜'};
-
-// 40個標籤
-const TAGS=[
-  '☀️ 好天氣','🌧️ 下雨天','❄️ 好冷','🌈 彩虹',
-  '🍜 美食','🧋 手搖杯','☕ 咖啡','🍰 甜點','🍱 自煮','🍺 小酌',
-  '🛒 購物','💰 省錢','💸 破費','🎁 收到禮物',
-  '🏃 運動','🧘 瑜伽','🚶 散步','🚴 騎車',
-  '💤 補眠','🛁 泡澡','💆 放鬆','🏠 宅在家',
-  '📱 追劇','🎮 打遊戲','📚 看書','🎵 聽音樂','🎨 畫畫','✍️ 寫日記',
-  '👯 朋友','💕 約會','👨‍👩‍👧 家人','🐱 擼貓','🐶 遛狗',
-  '💼 工作順','😤 工作累','🌟 獲得稱讚','📋 完成任務',
-  '✈️ 出遊','🗺️ 探索新地方','🌸 賞花',
-];
-
-const MOODS=[
-  {em:'😊',lbl:'開心'},{em:'🥰',lbl:'幸福'},{em:'😌',lbl:'平靜'},{em:'😴',lbl:'疲累'},{em:'😤',lbl:'煩躁'},
-  {em:'😢',lbl:'難過'},{em:'🤩',lbl:'興奮'},{em:'😰',lbl:'焦慮'},{em:'🥳',lbl:'慶祝'},{em:'😑',lbl:'無感'},
-];
-const WEATHERS=[{em:'☀️',lbl:'晴'},{em:'⛅',lbl:'多雲'},{em:'🌧️',lbl:'雨'},{em:'⛈️',lbl:'雷雨'},{em:'🌫️',lbl:'陰'}];
-
-function p2(n){return String(n).padStart(2,'0')}
-function todayStr(){const t=new Date();return`${t.getFullYear()}-${p2(t.getMonth()+1)}-${p2(t.getDate())}`}
-function parseD(s){const a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2])}
-function d2s(d){return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`}
-function dim(y,m){return new Date(y,m+1,0).getDate()}
-function calOff(y,m){return new Date(y,m,1).getDay()} // 週日=0
-function isRed(k){return!!(TW_RED[k])}
-function isBallWork(d){const r=DATA[d];if(!r)return false;return SHIFT_DEF.some(s=>r[s.key]&&r[s.key].some(p=>p.name==='球球'))}
-function getBallShift(d){const r=DATA[d];if(!r)return null;return SHIFT_DEF.find(s=>r[s.key]&&r[s.key].some(p=>p.name==='球球'))||null}
-function getBallTime(d){const r=DATA[d];if(!r)return null;const s=getBallShift(d);if(!s)return null;const p=r[s.key].find(p=>p.name==='球球');return p&&p.time?p.time:s.time}
-function getWDLabel(d){return['日','一','二','三','四','五','六'][parseD(d).getDay()]}
-
-const TODAY=todayStr();
-let curTab='s';
-let curWeekI=(()=>{for(let i=0;i<WEEKS.length;i++)if(WEEKS[i].dates.includes(TODAY))return i;return WEEKS.length-1})();
-let selDate=TODAY;
-let calY=parseD(TODAY).getFullYear(),calM=parseD(TODAY).getMonth();
-let selCalDate='';
-let events=(()=>{try{return JSON.parse(localStorage.getItem('bb_ev')||'[]')}catch{return[]}})();
-let moods=(()=>{try{return JSON.parse(localStorage.getItem('bb_mood')||'{}')}catch{return{}}})();
-
-// 初始化：設定頂部日期＋班別
-(function(){
-  const td=parseD(TODAY);
-  const wdNames=['日','一','二','三','四','五','六'];
-  document.getElementById('hdr-today').textContent=`${td.getFullYear()}年${td.getMonth()+1}月${td.getDate()}日（週${wdNames[td.getDay()]}）`;
-  const bs=getBallShift(TODAY);
-  const bt=getBallTime(TODAY);
-  const shiftEl=document.getElementById('hdr-shift');
-  if(bs){shiftEl.innerHTML=`<span class="hdr-shift">${bs.icon} ${bs.key}　${bt||bs.time}</span>`;}
-  else{shiftEl.innerHTML=`<span class="hdr-shift" style="background:linear-gradient(135deg,rgba(96,160,240,.18),rgba(96,200,240,.12));border-color:#80c0f0;color:#1060a0">🌙 今天休假</span>`;}
-  renderS();checkBanners();
-})();
-
-function goTab(t){
-  curTab=t;
-  ['s','c','p'].forEach(id=>{
-    document.getElementById('tab-'+id).style.display=id===t?'block':'none';
-    document.getElementById('tb-'+id).className='tb'+(id===t?' on':'');
-  });
-  if(t==='c')renderC();
-  if(t==='p')renderP();
-  window.scrollTo(0,0);
-}
-
-// ════ 班表 ════
-function renderS(){
-  const w=WEEKS[curWeekI];
-  const dd=DATA[selDate];
-  const ballShift=getBallShift(selDate);
-  const ballTime=getBallTime(selDate);
-  const isOff=!ballShift;
-  const wdLabel=getWDLabel(selDate);
-  const isClean=!isOff&&(wdLabel==='一'||wdLabel==='五');
-
-  // 同班人員
-  let cwNames=[];
-  if(ballShift&&dd){
-    cwNames=dd[ballShift.key].filter(p=>p.name!=='球球'&&p.name!=='采淳').map(p=>p.time?`${p.name} ${p.time}`:p.name);
-  }
-
-  // 早班人員
-  const earlyPpl=dd&&dd['早班']?dd['早班'].filter(p=>p.name!=='采淳').map(p=>p.time?`${p.name}(${p.time})`:p.name).join('、'):'';
-
-  // 前後班
-  const shiftOrder=SHIFT_DEF.map(s=>s.key);
-  const myIdx=ballShift?shiftOrder.indexOf(ballShift.key):-1;
-  let prevShift=null,nextShift=null;
-  if(myIdx>0){for(let i=myIdx-1;i>=0;i--){const v=dd&&dd[shiftOrder[i]];if(v&&v.length&&v.some(p=>p.name!=='球球')){prevShift={key:shiftOrder[i],people:v};break;}}}
-  if(myIdx>=0&&myIdx<shiftOrder.length-1){for(let i=myIdx+1;i<shiftOrder.length;i++){const v=dd&&dd[shiftOrder[i]];if(v&&v.length&&v.some(p=>p.name!=='球球')){nextShift={key:shiftOrder[i],people:v};break;}}}
-  function pplStr(people){return people.filter(p=>p.name!=='采淳').map(p=>p.time?`${p.name}(${p.time})`:p.name).filter(Boolean).join('、')||people.map(p=>p.name).join('、')}
-
-  let h=`<div class="deco">`;
-  ['🎁','🎀','🍀','✨','🍙'].forEach((e,i)=>h+=`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`);
-  h+=`</div>`;
-
-  // 週導航
-  h+=`<div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px">
-    <button class="nav-btn" onclick="prevW()">‹</button>
-    <div style="text-align:center">
-      <div style="font-family:'Nunito',sans-serif;font-weight:900;color:#c060a0;font-size:.88rem">第${curWeekI+1}週</div>
-      <div style="font-size:.62rem;color:#9060c0">${w.label}</div>
-    </div>
-    <button class="nav-btn" onclick="nextW()">›</button>
-  </div>`;
-
-  // 日期列
-  h+=`<div class="days-row" style="grid-template-columns:repeat(${w.dates.length},1fr)">`;
-  w.dates.forEach(d=>{
-    const dt=parseD(d),act=d===selDate,isT=d===TODAY;
-    const offDay=!isBallWork(d);
-    const red=isRed(d)||dt.getDay()===0||dt.getDay()===6;
-    let cls='day-pill';
-    if(act)cls+=' act'; else if(offDay)cls+=' off';
-    if(isT)cls+=' tod';
-    if(red&&!act&&!offDay)cls+=' red-d';
-    h+=`<div class="${cls}" onclick="selDay('${d}')">
-      <div class="day-wd">${getWDLabel(d)}</div>
-      <div class="day-num">${dt.getDate()}</div>
-      <div class="day-mark">${isT?'♥️':offDay&&!act?'<span style="font-size:.48rem;color:#4090d0">休</span>':''}</div>
-    </div>`;
-  });
-  h+=`</div>`;
-
-  // 主卡
-  h+=`<div class="card">`;
-  if(isOff){
-    h+=`<div style="text-align:center;padding:24px 10px">
-      <div style="font-family:'Nunito',sans-serif;font-size:5rem;font-weight:900;color:#90c8f0;-webkit-text-stroke:2px #50a0e0;text-shadow:3px 3px 0 #50a0e044;line-height:1">休</div>
-      <div style="font-weight:700;color:#5090c0;margin-top:8px;font-size:.85rem">✦ 好好休息唷 球球 ✦</div>
-      <div style="font-size:2rem;margin-top:8px">🧘‍♀️💤🛌</div>
-    </div>`;
-  } else {
-    h+=`<div class="shift-hero">
-      <div style="font-size:.63rem;font-weight:900;color:#9060c0;letter-spacing:.15em;margin-bottom:3px">🍀 球球今天的班 🍀</div>
-      <div style="font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;color:#c060a0">${ballShift.icon} ${ballShift.key}</div>
-      <div class="time-big">${ballTime||ballShift.time}</div>
-      ${cwNames.length?`<div class="cw-box"><div style="font-size:.58rem;font-weight:900;color:#9060c0;margin-bottom:4px">💞 一起上班</div><div style="font-size:.88rem;font-weight:900;color:#c060a0">${cwNames.join('　')}</div></div>`:''}
-    </div>
-    <div class="ig">
-      <div class="ib"><div class="i-icon">♥️</div><div class="i-lbl">早班是誰</div><div class="i-val ${earlyPpl?'':'dim'}">${earlyPpl||'沒有早班'}</div></div>
-      <div class="ib"><div class="i-icon">🙆‍♀️</div><div class="i-lbl">誰來接班</div><div class="i-val ${nextShift?'':'dim'}">${nextShift?pplStr(nextShift.people):'無接班'}</div></div>
-      <div class="ib full ${isClean?'clean':''}">
-        <div class="i-icon">${isClean?'🧹':'🐈'}</div>
-        <div class="i-lbl">${isClean?'今日清潔提醒':'我接誰的班'}</div>
-        <div class="i-val" style="${isClean?'color:#8a5000':''}">${isClean?'🏠 2樓＋3樓 掃地＋拖地':(prevShift?`接 ${prevShift.key} ${pplStr(prevShift.people)} 的班`:'今天第一班！')}</div>
-        ${isClean&&prevShift?`<div style="font-size:.64rem;color:#9060c0;margin-top:3px">🍂 接 ${prevShift.key} ${pplStr(prevShift.people)} 的班</div>`:''}
-      </div>
-    </div>`;
-  }
-  h+=`</div>`;
-
-  // 全日班表（名字＋時間）
-  if(dd){
-    h+=`<div class="card"><div class="sec-lbl">✦ 今日全班表</div>`;
-    SHIFT_DEF.forEach(s=>{
-      const ppl=dd[s.key];if(!ppl||!ppl.length)return;
-      const rows=ppl.map(p=>{
-        const isMe=p.name==='球球';
-        const nm=isMe?`<span class="me-tag">🍀 球球</span>`:p.name;
-        const tm=p.time?` <span class="p-time">${p.time}</span>`:'';
-        return`<span>${nm}${tm}</span>`;
-      }).join('<span style="color:#d0b0c0;margin:0 3px">・</span>');
-      h+=`<div class="srow">
-        <div class="sdot" style="background:${s.color}"></div>
-        <div class="sslot">${s.icon} ${s.key}<div style="font-size:.58rem;color:#c0a0c0">${s.time}</div></div>
-        <div class="speople">${rows}</div>
-      </div>`;
-    });
-    h+=`</div>`;
-  }
-
-  document.getElementById('tab-s').innerHTML=h;
-}
-function selDay(d){selDate=d;renderS()}
-function prevW(){if(curWeekI>0){curWeekI--;selDate=WEEKS[curWeekI].dates[0];renderS()}}
-function nextW(){if(curWeekI<WEEKS.length-1){curWeekI++;selDate=WEEKS[curWeekI].dates[0];renderS()}}
-
-// ════ 日曆 ════
-function renderC(){
-  const days=dim(calY,calM),off=calOff(calY,calM);
-  let grid='';
-  for(let i=0;i<off;i++)grid+=`<div></div>`;
-  for(let d=1;d<=days;d++){
-    const k=`${calY}-${p2(calM+1)}-${p2(d)}`;
-    const hN=TW_RED[k],isT=TODAY===k,offDay=!isBallWork(k);
-    const hasMood=!!(moods[k]&&moods[k].mood);
-    const hasEvt=events.some(e=>e.date===k);
-    const isSel=selCalDate===k;
-    const dow=new Date(calY,calM,d).getDay();
-    const isWE=dow===0||dow===6;
-    let cls='ccell';
-    if(isT)cls+=' ctoday'; else if(hN||isWE&&!offDay)cls+=' cholid'; else if(offDay)cls+=' coff';
-    if(hasMood&&!isT)cls+=' cmood';
-    if(isSel&&!isT)cls+=' csel';
-    grid+=`<div class="${cls}" onclick="selCal('${k}')">
-      <div class="cnum">${d}</div>
-      <div class="cicons">${hN?H_ICON[hN]||'🎌':''}${isT?'🪻':''}${hasMood&&!isT?moods[k].mood:''}${hasEvt&&!hasMood?'🪶':''}</div>
-    </div>`;
-  }
-
-  let hList='';
-  for(let d=1;d<=days;d++){
-    const k=`${calY}-${p2(calM+1)}-${p2(d)}`,hN=TW_RED[k];if(!hN)continue;
-    const dow=['日','一','二','三','四','五','六'][new Date(calY,calM,d).getDay()];
-    hList+=`<div style="display:flex;align-items:center;gap:10px;background:rgba(255,200,200,.2);border:1.5px solid #ffcccc;border-radius:13px;padding:8px 11px;margin-bottom:5px">
-      <div style="font-size:1.2rem">${H_ICON[hN]||'🎌'}</div>
-      <div><div style="font-weight:700;color:#d04060;font-size:.8rem">${calM+1}/${d}（${dow}）</div><div style="font-size:.7rem;color:#e87fa0">${hN}</div></div>
-    </div>`;
-  }
-
-  let detailHtml='';
-  if(selCalDate){
-    const dt=parseD(selCalDate);
-    const moodData=moods[selCalDate]||{};
-    const dayEvts=events.filter(e=>e.date===selCalDate);
-    const bs=getBallShift(selCalDate);
-    const bt=getBallTime(selCalDate);
-    detailHtml=`<div style="background:rgba(255,255,255,.9);border:2px solid #e8b8d8;border-radius:18px;padding:14px;margin-top:10px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div style="font-family:'Nunito',sans-serif;font-weight:900;color:#c060a0;font-size:1rem">${calM+1}/${dt.getDate()}（${'日一二三四五六'[dt.getDay()]}）</div>
-        ${bs?`<div style="background:linear-gradient(135deg,rgba(224,96,160,.18),rgba(144,96,208,.12));border-radius:12px;padding:5px 12px;font-size:.76rem;font-weight:700;color:#c060a0">${bs.icon} ${bs.key} ${bt||bs.time}</div>`
-           :`<div style="background:linear-gradient(135deg,#d0eeff,#b8e0ff);border-radius:12px;padding:5px 12px;font-size:.76rem;font-weight:700;color:#1060a0">🌙 休假</div>`}
-      </div>
-      <div style="font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:6px">💭 今日心情</div>
-      <div class="mood-grid">${MOODS.map(m=>`<div class="mbtn${moodData.mood===m.em?' msel':''}" onclick="setMood('${selCalDate}','${m.em}')"><div class="mem">${m.em}</div><div class="mlbl">${m.lbl}</div></div>`).join('')}</div>
-      <div style="font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:6px">🌤 天氣</div>
-      <div class="wx-row">${WEATHERS.map(w=>`<div class="wxb${moodData.weather===w.em?' wxsel':''}" onclick="setWx('${selCalDate}','${w.em}')"><div class="wxe">${w.em}</div><div class="wxl">${w.lbl}</div></div>`).join('')}</div>
-      <div style="font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:6px">✨ 今天做了什麼</div>
-      <div class="tag-row">${TAGS.map(t=>{const sel=(moodData.tags||[]).includes(t);return`<div class="tbtn${sel?' tsel':''}" onclick="togTag('${selCalDate}','${t}')">${t}</div>`}).join('')}</div>
-      <div style="font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:5px">📝 小日記</div>
-      <textarea class="diary" rows="3" id="diary-${selCalDate}" placeholder="今天發生了什麼？隨便寫幾個字就好 🌸" onchange="saveDiary('${selCalDate}',this.value)">${moodData.diary||''}</textarea>
-      ${dayEvts.length?`<div style="margin-top:10px;font-size:.7rem;font-weight:900;color:#9060c0;margin-bottom:5px">🪻 今日行程</div>${dayEvts.map(e=>`<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.7);border:1.5px solid #e8b8d8;border-radius:11px;padding:7px 10px;margin-bottom:4px"><div>${e.done?'✅':'📌'}</div><div style="font-size:.78rem;font-weight:700;color:#c060a0">${e.time?e.time+' ':''}${e.title}</div></div>`).join('')}`:''}
-      <button class="sbtn" onclick="saveMoodAll('${selCalDate}')">🌸 儲存今日記錄</button>
-    </div>`;
-  }
-
-  document.getElementById('tab-c').innerHTML=`
-  <div class="deco">${['🌙','⭐','💫','⭐','🌙'].map((e,i)=>`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`).join('')}</div>
-  <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <button class="nav-btn" onclick="calPrev()">‹</button>
-      <div style="font-family:'Nunito',sans-serif;font-weight:900;color:#c060a0;font-size:1rem">🌸 ${calY}年 ${calM+1}月</div>
-      <button class="nav-btn" onclick="calNext()">›</button>
-    </div>
-    <div class="cgrid" style="margin-bottom:3px">${['日','一','二','三','四','五','六'].map((d,i)=>`<div style="font-size:.58rem;font-weight:700;color:${i===0||i===6?'#c060a0':'#9060c0'};text-align:center;padding:2px 0">${d}</div>`).join('')}</div>
-    <div class="cgrid">${grid}</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:.6rem;font-weight:700;color:#9060c0">
-      <span style="color:#c060a0">🪶 今天</span><span style="color:#98e0b0">🟢 有心情</span><span style="color:#60b0e8">🔵 休假</span><span>🪻 行程</span>
-    </div>
-    ${detailHtml}
-  </div>
-  ${hList?`<div class="card"><div class="sec-lbl">🎌 ${calM+1}月節假日</div>${hList}</div>`:''}`;
-}
-function selCal(k){selCalDate=selCalDate===k?'':k;renderC()}
-function calPrev(){calM--;if(calM<0){calM=11;calY--;}selCalDate='';renderC()}
-function calNext(){calM++;if(calM>11){calM=0;calY++;}selCalDate='';renderC()}
-function saveMoods(){try{localStorage.setItem('bb_mood',JSON.stringify(moods))}catch{}}
-function setMood(d,em){if(!moods[d])moods[d]={};moods[d].mood=moods[d].mood===em?'':em;saveMoods();renderC()}
-function setWx(d,em){if(!moods[d])moods[d]={};moods[d].weather=moods[d].weather===em?'':em;saveMoods();renderC()}
-function togTag(d,t){if(!moods[d])moods[d]={};if(!moods[d].tags)moods[d].tags=[];const i=moods[d].tags.indexOf(t);if(i>=0)moods[d].tags.splice(i,1);else moods[d].tags.push(t);saveMoods();renderC()}
-function saveDiary(d,txt){if(!moods[d])moods[d]={};moods[d].diary=txt;saveMoods()}
-function saveMoodAll(d){const ta=document.getElementById('diary-'+d);if(ta&&!moods[d])moods[d]={};if(ta)moods[d].diary=ta.value;saveMoods();const btn=event.target;btn.textContent='✅ 儲存成功！';setTimeout(()=>{btn.textContent='🌸 儲存今日記錄'},1500)}
-
-// ════ 行程 ════
-function saveEvts(){try{localStorage.setItem('bb_ev',JSON.stringify(events))}catch{}}
-function addEvt(){const d=document.getElementById('ev-d').value,ti=document.getElementById('ev-t').value,ttl=document.getElementById('ev-ttl').value;if(!d||!ttl)return;events.push({id:Date.now(),date:d,time:ti,title:ttl,done:false});events.sort((a,b)=>a.date.localeCompare(b.date));saveEvts();renderP();checkBanners()}
-function delEvt(id){events=events.filter(e=>e.id!==id);saveEvts();renderP();checkBanners()}
-function togDone(id){const e=events.find(e=>e.id===id);if(e)e.done=!e.done;saveEvts();renderP()}
-function renderP(){
-  const tmr=d2s(new Date(parseD(TODAY).getTime()+86400000));
-  const te=events.filter(e=>e.date===TODAY),tre=events.filter(e=>e.date===tmr);
-  let h=`<div class="deco">${['🐈‍⬛','🐿️','🦔','🐝','💟'].map((e,i)=>`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`).join('')}</div>`;
-  if(tre.length)h+=`<div class="card" style="border-color:#e060a0;background:linear-gradient(135deg,rgba(224,96,160,.08),rgba(144,96,208,.05))"><div class="sec-lbl">🔔 明天的提醒</div>${tre.map(e=>`<div class="erow"><div style="font-size:1rem">🗓️</div><div style="flex:1"><div style="font-weight:700;font-size:.82rem;color:#c060a0">${e.time?e.time+' ':''}${e.title}</div><div style="font-size:.62rem;color:#9060c0">${e.date}</div></div></div>`).join('')}</div>`;
-  if(te.length)h+=`<div class="card"><div class="sec-lbl">⭐ 今天的行程</div>${te.map(e=>`<div class="erow${e.done?' done':''}"><div class="chk${e.done?' ck':''}" onclick="togDone(${e.id})">${e.done?'<span style="color:#fff;font-size:.7rem;font-weight:900">✓</span>':''}</div><div style="flex:1"><div style="font-weight:700;font-size:.82rem;color:${e.done?'#60a070':'#c060a0'};text-decoration:${e.done?'line-through':'none'}">${e.time?e.time+' ':''}${e.title}</div></div><button style="background:none;border:none;color:#e8b8d8;cursor:pointer;font-weight:900" onclick="delEvt(${e.id})">✕</button></div>`).join('')}</div>`;
-  h+=`<div class="card"><div class="sec-lbl">📝 新增行程</div><div class="ig2"><div><div class="ilbl">📅 日期 *</div><input class="inp" type="date" id="ev-d"></div><div><div class="ilbl">⏰ 時間</div><input class="inp" type="time" id="ev-t"></div></div><div style="margin-bottom:10px"><div class="ilbl">🌸 事情 *</div><input class="inp" type="text" id="ev-ttl" placeholder="例：看醫生、約朋友…"></div><button class="abtn" onclick="addEvt()">🌸 加入行程</button></div>`;
-  h+=`<div class="card"><div class="sec-lbl">📋 所有行程</div>${events.length?events.map(e=>{const ip=e.date<TODAY,it=e.date===TODAY;return`<div class="erow${e.done?' done':''}" style="opacity:${ip&&!e.done?.6:1};border-color:${it?'#c060a0':'#e8b8d8'}"><div class="chk${e.done?' ck':''}" onclick="togDone(${e.id})">${e.done?'<span style="color:#fff;font-size:.7rem;font-weight:900">✓</span>':''}</div><div style="flex:1"><div style="font-weight:700;font-size:.8rem;color:${e.done?'#60a070':ip?'#b090a0':'#c060a0'};text-decoration:${e.done?'line-through':'none'}">${e.time?e.time+' ':''}${e.title}</div><div style="font-size:.62rem;color:#9060c0">${e.date}${it?' 今天':''}${e.done?' ✨完成':''}</div></div><button style="background:none;border:none;color:#e8b8d8;cursor:pointer;font-weight:900" onclick="delEvt(${e.id})">✕</button></div>`}).join(''):`<div class="empty">還沒有行程，快加入吧 🌸</div>`}</div>`;
-  document.getElementById('tab-p').innerHTML=h;
-}
-
-// ════ 橫幅 ════
-function checkBanners(){
-  const now=new Date(),tmr=d2s(new Date(now.getTime()+86400000)),bs=[];
-  events.filter(e=>e.date===tmr).forEach(e=>bs.push({...e,type:'tmr'}));
-  events.filter(e=>{if(e.date!==TODAY||!e.time)return false;const[h,m]=e.time.split(':').map(Number);const diff=(h*60+m)-(now.getHours()*60+now.getMinutes());return diff>0&&diff<=60}).forEach(e=>bs.push({...e,type:'soon'}));
-  document.getElementById('banners').innerHTML=bs.map(b=>`<div class="banner ${b.type==='soon'?'ban-soon':'ban-tmr'}"><div style="font-size:1.2rem">${b.type==='soon'?'⏰':'🔔'}</div><div style="flex:1"><div style="font-weight:900;color:#fff;font-size:.82rem">${b.type==='soon'?'⚡ 一小時後！':'🌸 明天有行程'}</div><div style="color:rgba(255,255,255,.9);font-size:.74rem">${b.time?b.time+' ':''}${b.title}</div></div><button class="ban-x" onclick="this.parentElement.remove();updHdr()">✕</button></div>`).join('');
-  updHdr();
-}
-function updHdr(){document.getElementById('hdr').style.top=document.getElementById('banners').children.length*46+'px'}
-</script>
-</body>
-</html>
+/* ── 試算表 ── */
+.sheet-wrap{overflow-x:auto;margin:0 -4px;border-radius:14px}
+.sheet-tbl{border-collapse:separate;border-spacing:2px;min-width:520px;width:100%}
+.sh-th{background:linear-gradient(135deg,rgba(224,96,160,.18),rgba(144,96,208,.12));color:#c060a0;font-size:.65rem;font-weight:900;padding:7px 6px;border-radius:8px;text-align:center;white-space:nowrap}
+.sh-td{background:rgba(255,255,255,.72);border:1.5px solid #e8d0e8;border-radius:8px;padding:0;transition:all .15s}
+.sh-td.edit-cell{background:rgba(255,240,250,.95);border-color:#e060a0}
+.sh-td input{width:100%;padding:6px 7px;border:none;background:transparent;font-family:inherit;font-size:.75rem;color:#9060c0;outline:none;text-align:center}
+.sh-td.row-hdr{background:linear-gradient(135deg,rgba(224,96,160,.1),rgba(144,96,208,.07));min-width:70px}
+.sh-td.row-hdr input{color:#c060a0;font-weight:700}
+.add-row-btn{width:100%;margin-top:6px;padding:7px;background:rgba(255,255,255,.7);border:2px dashed #e8b8d8;border-radius:11px;color:#c060a0;font-weight:700;font-size:.75rem;cursor:pointer}
+.del-row-btn{background:none;border:none;color:#e8b8d8;cursor:pointer;font-size:.9rem;padding:0 4px}
+.del-row-btn:hover{color:#e06090}
+/* ── 同步面板 ── */
+.sync-panel{background:linear-gradient(135deg,rgba(144,96,208,.08),rgba(96,160,240,.06));border:2px dashed #c0a0e0;border-radius:18px;
