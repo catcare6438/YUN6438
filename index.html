@@ -3,126 +3,675 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="球球日曆">
-<meta name="theme-color" content="#e8b8d8">
-<title>球球の魔法日曆 🌸</title>
+<meta name="theme-color" content="#f0d0e8">
+<title>🌸 雅寶 & 熙寶の日曆</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ffe0f0 0%,#f0e0ff 50%,#dde8ff 100%);min-height:100vh;padding-bottom:74px;overflow-x:hidden}
-.hdr{background:rgba(255,255,255,.88);backdrop-filter:blur(14px);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:3px dashed #e8b8d8;transition:top .2s}
-.hdr-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.05rem;background:linear-gradient(135deg,#e060a0,#9060d0);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hdr-today{font-size:.72rem;font-weight:700;color:#c060a0;margin-top:1px}
-.hdr-shift{display:inline-block;background:linear-gradient(135deg,rgba(224,96,160,.18),rgba(144,96,208,.12));border:1.5px solid #e8b8d8;border-radius:20px;padding:2px 10px;font-size:.7rem;font-weight:900;color:#c060a0;margin-top:3px}
-.body{padding:12px 12px 0;max-width:430px;margin:0 auto}
-.card{background:rgba(255,255,255,.84);border-radius:22px;padding:14px;margin-bottom:12px;box-shadow:3px 4px 0 #e8c8e0;position:relative;overflow:hidden;border:2.5px solid #e8b8d8}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#e060a0,#c070d0,#8080e0,#60b0f0)}
-.sec-lbl{font-family:'Nunito',sans-serif;font-weight:900;font-size:.82rem;color:#c060a0;margin-bottom:10px}
-.nav-btn{width:34px;height:34px;border-radius:50%;border:2px solid #e8b8d8;background:rgba(255,255,255,.8);color:#c060a0;font-weight:900;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-/* 日期列 */
-.days-row{display:grid;gap:4px;margin-bottom:12px}
-.day-pill{border-radius:13px;padding:6px 3px;text-align:center;cursor:pointer;transition:all .15s;border:2px solid rgba(200,180,220,.3);background:rgba(255,255,255,.65)}
-.day-pill.act{background:linear-gradient(135deg,#e060a0,#9060d0);border-color:#c040a0}
-.day-pill.off{background:linear-gradient(135deg,#b8e4ff,#7ecfff);border-color:#60b0e8}
-.day-pill.tod{border-color:#c040a0;border-width:2.5px}
-.day-wd{font-size:.52rem;font-weight:700;color:#b080c0;margin-bottom:1px}
-.day-pill.act .day-wd,.day-pill.act .day-num{color:#fff}
-.day-pill.off .day-wd,.day-pill.off .day-num{color:#1060a0}
-.day-pill.red-d .day-num{color:#d04060}
+:root{
+  --ya:#e060a0;--ya2:#f090c0;--ya-bg:rgba(224,96,160,.1);--ya-border:#f0b8d8;
+  --xi:#7050d0;--xi2:#a080e0;--xi-bg:rgba(112,80,208,.1);--xi-border:#c0a8f0;
+  --couple:linear-gradient(135deg,#e060a0,#a060d0);
+}
+body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(160deg,#ffe8f4 0%,#f4e8ff 50%,#e8eeff 100%);min-height:100vh;padding-bottom:74px;overflow-x:hidden}
+
+/* ── 首次設定 Supabase ── */
+#setup-overlay{position:fixed;inset:0;background:linear-gradient(160deg,#ffe8f4,#f4e8ff,#e8eeff);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.setup-card{background:rgba(255,255,255,.95);border-radius:28px;padding:28px 22px;width:100%;max-width:380px;box-shadow:4px 8px 0 #f0c0e0;border:3px solid #f0b8d8}
+.setup-title{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.4rem;background:var(--couple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:4px}
+.setup-sub{font-size:.75rem;color:#b080c0;text-align:center;margin-bottom:20px;line-height:1.7}
+.setup-inp{width:100%;padding:11px 14px;border:2.5px solid #f0b8d8;border-radius:14px;font-family:inherit;font-size:.85rem;color:#9060c0;background:rgba(255,255,255,.9);outline:none;margin-bottom:10px}
+.setup-inp:focus{border-color:var(--ya)}
+.setup-btn{width:100%;padding:13px;background:var(--couple);color:#fff;border:none;border-radius:16px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;cursor:pointer;box-shadow:2px 4px 0 #c040a0;margin-top:6px}
+.setup-hint{font-size:.63rem;color:#c0a0c0;margin-top:12px;text-align:center;line-height:1.8}
+
+/* ── header ── */
+.hdr{background:rgba(255,255,255,.9);backdrop-filter:blur(16px);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,var(--ya),var(--xi)) 1}
+.hdr-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:1rem;background:var(--couple);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sync-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#e06060;margin-right:4px;vertical-align:middle}
+.sync-dot.ok{background:#60d080}
+.sync-dot.ing{background:#e0c060;animation:blink .6s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ── layout ── */
+.body{padding:10px 12px 0;max-width:430px;margin:0 auto}
+.card{background:rgba(255,255,255,.88);border-radius:22px;padding:14px;margin-bottom:12px;box-shadow:2px 4px 0 #f0d0e8;position:relative;overflow:hidden;border:2px solid #f0d8ec}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--couple)}
+.sec-lbl{font-family:'Nunito',sans-serif;font-weight:900;font-size:.82rem;color:var(--ya);margin-bottom:10px}
+.nav-btn{width:32px;height:32px;border-radius:50%;border:2px solid #f0b8d8;background:rgba(255,255,255,.8);color:var(--ya);font-weight:900;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ── 班表 ── */
+.days-row{display:grid;gap:4px;margin-bottom:10px}
+.day-pill{border-radius:12px;padding:6px 3px;text-align:center;cursor:pointer;transition:all .15s;border:2px solid rgba(220,180,220,.25);background:rgba(255,255,255,.65)}
+.day-pill.act{background:var(--couple);border-color:var(--ya)}
+.day-pill.off{background:linear-gradient(135deg,#c8e8ff,#a8d8ff);border-color:#70b8f0}
+.day-pill.tod{border-color:var(--ya);border-width:2.5px}
+.day-wd{font-size:.5rem;font-weight:700;color:#c090c0;margin-bottom:1px}
+.day-pill.act .day-wd,.day-pill.act .day-num,.day-pill.act .day-mark{color:#fff}
+.day-pill.off .day-wd,.day-pill.off .day-num{color:#2060a0}
 .day-num{font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:900;color:#a060b0}
-.day-mark{font-size:.68rem;line-height:1.1}
-/* 班次主卡 */
-.shift-hero{text-align:center;background:linear-gradient(135deg,rgba(224,96,160,.12),rgba(144,96,208,.08));border-radius:18px;padding:14px;margin-bottom:11px;border:2px dashed #e8b8d8}
-.time-big{font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;color:#c060a0;margin:4px 0;letter-spacing:.02em}
-.cw-box{background:rgba(255,255,255,.65);border:1.5px solid #e8b8d8;border-radius:12px;padding:8px 12px;margin-top:8px}
-/* 資訊格 */
+.day-mark{font-size:.5rem;line-height:1.2;min-height:10px}
+.shift-hero{text-align:center;background:linear-gradient(135deg,rgba(224,96,160,.1),rgba(112,80,208,.07));border-radius:18px;padding:14px;margin-bottom:10px;border:2px dashed #f0b8d8}
+.time-big{font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;color:var(--ya);margin:4px 0}
 .ig{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ib{background:rgba(255,255,255,.72);border:2px solid #e8b8d8;border-radius:15px;padding:10px;text-align:center}
+.ib{background:rgba(255,255,255,.75);border:2px solid #f0d8ec;border-radius:14px;padding:10px;text-align:center}
 .ib.full{grid-column:1/-1}
-.ib.clean{background:linear-gradient(135deg,rgba(255,240,180,.6),rgba(255,220,140,.4));border-color:#f0d060}
-.i-icon{font-size:1.15rem;margin-bottom:3px}
-.i-lbl{font-size:.58rem;font-weight:900;color:#a070b0;margin-bottom:3px}
-.i-val{font-size:.72rem;font-weight:700;color:#c060a0}
+.ib.clean{background:linear-gradient(135deg,rgba(255,240,180,.6),rgba(255,224,120,.4));border-color:#f0d050}
+.i-icon{font-size:1.1rem;margin-bottom:2px}
+.i-lbl{font-size:.56rem;font-weight:900;color:#b080b0;margin-bottom:3px}
+.i-val{font-size:.72rem;font-weight:700;color:var(--ya)}
 .i-val.dim{color:#ccc}
-/* 全日班表 */
-.srow{display:flex;align-items:flex-start;gap:9px;background:rgba(255,255,255,.65);border:1.5px solid #e8c0d8;border-radius:13px;padding:8px 11px;margin-bottom:5px}
+.srow{display:flex;align-items:flex-start;gap:8px;background:rgba(255,255,255,.65);border:1.5px solid #f0d0e8;border-radius:12px;padding:8px 10px;margin-bottom:5px}
 .sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.sslot{font-size:.63rem;font-weight:700;color:#a070b0;min-width:56px}
-.speople{font-size:.74rem;font-weight:700;color:#c060a0;line-height:1.75;flex:1}
-.me-tag{background:rgba(224,96,160,.14);border-radius:7px;padding:0 5px;color:#d040a0;font-weight:900}
-.p-time{font-size:.65rem;color:#a070b0;font-weight:500}
-/* 日曆 */
-.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.ccell{border-radius:9px;padding:5px 2px;text-align:center;background:rgba(255,255,255,.55);border:1.5px solid rgba(200,180,220,.2);cursor:pointer;transition:all .15s;min-height:36px}
-.ccell:hover{background:rgba(255,255,255,.85)}
-.ccell.ctoday{background:linear-gradient(135deg,#e060a0,#9060d0);border-color:#c040a0}
-.ccell.cholid{background:rgba(255,200,200,.28);border-color:#ffaacc}
-.ccell.coff{background:linear-gradient(135deg,#d0eeff,#b8e0ff);border-color:#80c0f0}
-.ccell.csel{background:linear-gradient(135deg,#ffe0f4,#f0d8ff);border-color:#c060a0;border-width:2px}
-.ccell.cmood{border-color:#98e0b0;border-width:2px}
-.cnum{font-family:'Nunito',sans-serif;font-size:.74rem;font-weight:700;color:#a060b0}
+.sslot{font-size:.6rem;font-weight:700;color:#b080b0;min-width:54px}
+.speople{font-size:.72rem;font-weight:700;color:var(--ya);line-height:1.75;flex:1}
+.me-tag{background:rgba(224,96,160,.15);border-radius:7px;padding:0 5px;color:#d040a0;font-weight:900}
+.p-time{font-size:.62rem;color:#b090b0}
+
+/* ── 情侶日曆 ── */
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.ccell{border-radius:10px;padding:4px 2px 5px;text-align:center;background:rgba(255,255,255,.6);border:1.5px solid rgba(220,180,230,.2);cursor:pointer;transition:all .15s;min-height:44px;position:relative}
+.ccell:hover{background:rgba(255,255,255,.9)}
+.ccell.ctoday{background:var(--couple);border-color:var(--ya)}
+.ccell.cholid{background:rgba(255,210,220,.3);border-color:#ffb8cc}
+.ccell.coff{background:linear-gradient(135deg,#d8f0ff,#bce4ff);border-color:#80c8f8}
+.ccell.csel{outline:2.5px solid var(--ya);outline-offset:1px}
+.cnum{font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:700;color:#a060b0}
 .ccell.ctoday .cnum{color:#fff}
-.ccell.cholid .cnum{color:#d04060}
+.ccell.cholid .cnum{color:#c04060}
 .ccell.coff .cnum{color:#1060a0}
-.cicons{font-size:.52rem;line-height:1.3;min-height:12px}
-/* 心情 */
+.cmood-row{display:flex;justify-content:center;gap:1px;min-height:16px;align-items:center;flex-wrap:wrap}
+.cmood-pip{font-size:.62rem;line-height:1}
+/* 情侶心情大卡 */
+.couple-mood-card{background:rgba(255,255,255,.92);border:2.5px solid #f0b8d8;border-radius:22px;padding:16px;margin-top:10px;overflow:hidden;position:relative}
+.couple-mood-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--couple)}
+.mood-split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.mood-half{border-radius:18px;padding:12px;text-align:center}
+.mood-half.ya{background:linear-gradient(135deg,rgba(224,96,160,.12),rgba(255,160,200,.08));border:2px solid var(--ya-border)}
+.mood-half.xi{background:linear-gradient(135deg,rgba(112,80,208,.1),rgba(160,120,240,.07));border:2px solid var(--xi-border)}
+.mood-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:.72rem;margin-bottom:4px}
+.mood-name.ya{color:var(--ya)}
+.mood-name.xi{color:var(--xi)}
+.mood-em-big{font-size:2.2rem;line-height:1;margin:4px 0}
+.mood-wx{font-size:.75rem;margin-top:3px}
+.mood-tags-mini{font-size:.58rem;color:#a070b0;margin-top:4px;line-height:1.6;min-height:14px}
+.mood-diary-mini{font-size:.68rem;color:#9060a0;font-style:italic;margin-top:5px;background:rgba(255,255,255,.6);border-radius:8px;padding:5px 8px;min-height:28px;text-align:left;line-height:1.6;word-break:break-all}
+/* 心情編輯區 */
+.edit-section{margin-top:12px}
+.edit-owner-tab{display:flex;gap:8px;margin-bottom:10px}
+.eotab{flex:1;padding:8px 6px;border-radius:14px;border:2px solid #f0b8d8;background:rgba(255,255,255,.7);text-align:center;cursor:pointer;transition:all .18s;font-weight:700;font-size:.75rem;color:#b080b0}
+.eotab.ya.on{background:linear-gradient(135deg,var(--ya),var(--ya2));color:#fff;border-color:var(--ya)}
+.eotab.xi.on{background:linear-gradient(135deg,var(--xi),var(--xi2));color:#fff;border-color:var(--xi)}
 .mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px}
-.mbtn{border:2px solid transparent;border-radius:11px;padding:7px 3px;text-align:center;cursor:pointer;background:rgba(255,255,255,.7);transition:all .18s}
-.mbtn.msel{border-color:#e060a0;background:linear-gradient(135deg,rgba(224,96,160,.18),rgba(144,96,208,.12));transform:scale(1.06)}
-.mem{font-size:1.3rem}
-.mlbl{font-size:.52rem;color:#a070b0;font-weight:700;margin-top:1px}
-.wx-row{display:flex;gap:6px;margin-bottom:10px}
-.wxb{flex:1;border:2px solid #e8b8d8;border-radius:12px;padding:6px 3px;text-align:center;cursor:pointer;background:rgba(255,255,255,.7);transition:all .18s}
-.wxb.wxsel{background:linear-gradient(135deg,rgba(96,160,240,.2),rgba(96,200,240,.12));border-color:#70b0f0}
-.wxe{font-size:1.1rem}
-.wxl{font-size:.56rem;color:#7090b0;font-weight:700;margin-top:1px}
-.tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
-.tbtn{border:2px solid #e8b8d8;border-radius:18px;padding:4px 9px;font-size:.7rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,.7);color:#a070b0;transition:all .18s}
-.tbtn.tsel{background:linear-gradient(135deg,#e060a0,#9060d0);border-color:#c040a0;color:#fff}
-.diary{width:100%;padding:9px 11px;border:2px solid #e8b8d8;border-radius:12px;font-family:inherit;font-size:.82rem;color:#9060c0;background:rgba(255,255,255,.9);outline:none;resize:none}
-.sbtn{width:100%;padding:10px;background:linear-gradient(135deg,#e060a0,#9060d0);color:#fff;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;cursor:pointer;margin-top:8px;box-shadow:2px 3px 0 #b040a0}
-/* 行程 */
-.erow{display:flex;align-items:center;gap:9px;border-radius:13px;padding:9px 12px;margin-bottom:6px;border:1.5px solid #e8b8d8;background:rgba(255,255,255,.68)}
-.erow.done{background:rgba(180,240,200,.25);border-color:#80d0a0}
-.chk{width:22px;height:22px;border-radius:50%;border:2.5px solid #e8b8d8;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.mbtn{border:2px solid transparent;border-radius:11px;padding:6px 2px;text-align:center;cursor:pointer;background:rgba(255,255,255,.7);transition:all .18s}
+.mbtn.msel{transform:scale(1.06)}
+.mbtn.msel.ya{border-color:var(--ya);background:var(--ya-bg)}
+.mbtn.msel.xi{border-color:var(--xi);background:var(--xi-bg)}
+.mem{font-size:1.25rem}.mlbl{font-size:.5rem;color:#b080b0;font-weight:700;margin-top:1px}
+.wx-row{display:flex;gap:5px;margin-bottom:10px}
+.wxb{flex:1;border:2px solid #f0b8d8;border-radius:11px;padding:5px 2px;text-align:center;cursor:pointer;background:rgba(255,255,255,.7);transition:all .18s}
+.wxb.wxsel{background:linear-gradient(135deg,rgba(96,160,240,.2),rgba(96,200,240,.1));border-color:#70b8f8}
+.wxe{font-size:1rem}.wxl{font-size:.54rem;color:#7090b0;font-weight:700;margin-top:1px}
+.tag-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.tbtn{border:2px solid #f0b8d8;border-radius:16px;padding:4px 8px;font-size:.68rem;font-weight:700;cursor:pointer;background:rgba(255,255,255,.7);color:#a070b0;transition:all .18s}
+.tbtn.tsel.ya{background:linear-gradient(135deg,var(--ya),var(--ya2));border-color:var(--ya);color:#fff}
+.tbtn.tsel.xi{background:linear-gradient(135deg,var(--xi),var(--xi2));border-color:var(--xi);color:#fff}
+.diary{width:100%;padding:9px 11px;border:2px solid #f0b8d8;border-radius:12px;font-family:inherit;font-size:.82rem;color:#9060c0;background:rgba(255,255,255,.9);outline:none;resize:none}
+.sbtn{width:100%;padding:10px;background:var(--couple);color:#fff;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;cursor:pointer;margin-top:8px;box-shadow:2px 3px 0 #c040a0}
+
+/* ── 行程 ── */
+.erow{display:flex;align-items:center;gap:8px;border-radius:13px;padding:9px 12px;margin-bottom:6px;border:1.5px solid #f0b8d8;background:rgba(255,255,255,.7)}
+.erow.done{background:rgba(160,240,190,.2);border-color:#80d0a0}
+.chk{width:22px;height:22px;border-radius:50%;border:2.5px solid #f0b8d8;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .chk.ck{background:linear-gradient(135deg,#80d0a0,#50b070);border-color:#60c080}
-.inp{width:100%;padding:9px 11px;border:2px solid #e8b8d8;border-radius:12px;font-family:inherit;font-size:.82rem;color:#9060c0;background:rgba(255,255,255,.9);outline:none}
-.abtn{width:100%;padding:11px;background:linear-gradient(135deg,#e060a0,#9060d0);color:#fff;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;cursor:pointer;box-shadow:2px 3px 0 #b040a0}
+.inp{width:100%;padding:9px 11px;border:2px solid #f0b8d8;border-radius:12px;font-family:inherit;font-size:.82rem;color:#9060c0;background:rgba(255,255,255,.9);outline:none}
+.abtn{width:100%;padding:11px;background:var(--couple);color:#fff;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-weight:900;font-size:.88rem;cursor:pointer;box-shadow:2px 3px 0 #c040a0}
 .ig2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}
-.ilbl{font-size:.63rem;font-weight:700;color:#a070b0;margin-bottom:3px}
-/* 橫幅 */
-#banners{position:fixed;top:0;left:0;right:0;z-index:200}
-.banner{padding:10px 14px;display:flex;align-items:center;gap:10px}
-.ban-tmr{background:linear-gradient(135deg,#c060a0,#8060c0)}
-.ban-soon{background:linear-gradient(135deg,#e05080,#e09030)}
-.ban-x{background:rgba(255,255,255,.25);border:none;color:#fff;border-radius:50%;width:26px;height:26px;cursor:pointer;font-weight:900;margin-left:auto}
-/* Tab Bar */
-.tabbar{display:flex;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-top:3px dashed #e8b8d8;position:fixed;bottom:0;left:0;right:0;padding:7px 0;z-index:50}
-.tb{flex:1;text-align:center;padding:6px 4px;border-radius:14px;border:2px solid transparent;background:none;font-family:'Nunito',sans-serif;font-size:.7rem;font-weight:700;color:#b080c0;cursor:pointer}
-.tb.on{background:linear-gradient(135deg,#e060a0,#9060d0);color:#fff}
+.ilbl{font-size:.63rem;font-weight:700;color:#b080b0;margin-bottom:3px}
+.owner-badge{font-size:.58rem;border-radius:6px;padding:1px 5px;font-weight:900;white-space:nowrap}
+.ob-ya{background:var(--ya-bg);color:var(--ya)}
+.ob-xi{background:var(--xi-bg);color:var(--xi)}
+.ob-co{background:rgba(160,100,220,.12);color:#8050c0}
+/* 情侶行程合體 */
+.couple-event{background:linear-gradient(135deg,var(--ya-bg),var(--xi-bg));border:2px solid #f0b0e0;border-radius:16px;padding:12px;margin-bottom:8px;position:relative;overflow:hidden}
+.couple-event::before{content:'💑';position:absolute;right:10px;top:10px;font-size:1.1rem;opacity:.25}
+/* 試算表 */
+.sheet-wrap{overflow-x:auto;border-radius:12px}
+.sheet-tbl{border-collapse:separate;border-spacing:2px;min-width:460px;width:100%}
+.sh-th{background:linear-gradient(135deg,rgba(224,96,160,.15),rgba(112,80,208,.1));color:var(--ya);font-size:.64rem;font-weight:900;padding:7px 5px;border-radius:8px;text-align:center}
+.sh-td{background:rgba(255,255,255,.75);border:1.5px solid #f0d0e8;border-radius:8px;padding:0}
+.sh-td input{width:100%;padding:6px 7px;border:none;background:transparent;font-family:inherit;font-size:.75rem;color:#9060c0;outline:none;text-align:center;min-width:58px}
+.sh-td.row-hdr input{color:var(--ya);font-weight:700}
+.add-row-btn{width:100%;margin-top:6px;padding:7px;background:rgba(255,255,255,.7);border:2px dashed #f0b8d8;border-radius:11px;color:var(--ya);font-weight:700;font-size:.75rem;cursor:pointer}
+.del-btn-sm{background:none;border:none;color:#f0b8d8;cursor:pointer;font-size:.85rem;padding:0 3px}
+/* tabbar */
+.tabbar{display:flex;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-top:3px solid transparent;border-image:linear-gradient(90deg,var(--ya),var(--xi)) 1;position:fixed;bottom:0;left:0;right:0;padding:6px 0;z-index:50}
+.tb{flex:1;text-align:center;padding:5px 2px;border-radius:12px;border:none;background:none;font-family:'Nunito',sans-serif;font-size:.6rem;font-weight:700;color:#b080c0;cursor:pointer}
+.tb.on{background:var(--couple);color:#fff}
 .float{display:inline-block;animation:float 3s ease-in-out infinite}
-.deco{text-align:center;margin:4px 0 10px;font-size:1.7rem;letter-spacing:5px}
-.empty{text-align:center;color:#d0b0c0;font-size:.82rem;padding:14px}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.deco{text-align:center;margin:4px 0 10px;font-size:1.5rem;letter-spacing:4px}
+.empty{text-align:center;color:#d0a0c0;font-size:.82rem;padding:14px}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(60,20,60,.88);color:#fff;padding:9px 20px;border-radius:20px;font-size:.78rem;font-weight:700;z-index:400;pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap}
+.toast.show{opacity:1}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 </style>
 </head>
 <body>
-<div id="banners"></div>
-<div class="hdr" id="hdr">
-  <div>
-    <div class="hdr-logo">🌸 球球の魔法日曆</div>
-    <div class="hdr-today" id="hdr-today"></div>
-    <div id="hdr-shift"></div>
+
+<!-- 首次 Supabase 設定 -->
+<div id="setup-overlay">
+  <div class="setup-card">
+    <div style="font-size:2.8rem;text-align:center;margin-bottom:6px">💑</div>
+    <div class="setup-title">雅寶 & 熙寶の日曆</div>
+    <div class="setup-sub">第一次使用請填入 Supabase 資訊<br>設定後所有裝置自動共享同步 🌸</div>
+    <input class="setup-inp" id="sb-url" placeholder="Supabase Project URL  (https://xxxx.supabase.co)" type="url">
+    <input class="setup-inp" id="sb-key" placeholder="anon public key" type="text">
+    <button class="setup-btn" id="setup-go" onclick="doSetup()">💑 連線進入</button>
+    <div class="setup-hint">資訊僅存在此裝置，下次自動登入<br>Supabase → Settings → API 取得上面兩項</div>
   </div>
-  <div style="font-size:1.5rem" class="float">🐾</div>
 </div>
-<div class="body">
+
+<div id="toast" class="toast"></div>
+
+<div class="hdr" id="main-hdr" style="display:none">
+  <div>
+    <div class="hdr-logo">💑 雅寶 & 熙寶の日曆</div>
+    <div style="font-size:.68rem;font-weight:700;color:#c060a0;margin-top:1px" id="hdr-today"></div>
+    <div id="hdr-shift" style="margin-top:2px"></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px">
+    <div style="font-size:.6rem;font-weight:700;color:#9060c0;text-align:right;line-height:1.7">
+      <span class="sync-dot" id="sync-dot"></span><span id="sync-lbl">連線中</span>
+    </div>
+    <div style="font-size:1.4rem" class="float">🐾</div>
+  </div>
+</div>
+
+<div class="body" id="main-body" style="display:none">
   <div id="tab-s"></div>
   <div id="tab-c" style="display:none"></div>
   <div id="tab-p" style="display:none"></div>
+  <div id="tab-t" style="display:none"></div>
 </div>
-<div class="tabbar">
+
+<div class="tabbar" id="main-tab" style="display:none">
   <button class="tb on" id="tb-s" onclick="goTab('s')"><div>🐾</div>班表</button>
-  <button class="tb" id="tb-c" onclick="goTab('c')"><div>🌸</div>日曆</button>
-  <button class="tb" id="tb-p" onclick="goTab('p
+  <button class="tb" id="tb-c" onclick="goTab('c')"><div>💑</div>日曆</button>
+  <button class="tb" id="tb-p" onclick="goTab('p')"><div>📅</div>行程</button>
+  <button class="tb" id="tb-t" onclick="goTab('t')"><div>📊</div>試算表</button>
+  <button class="tb" id="tb-cfg" onclick="showCfg()"><div>⚙️</div>設定</button>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// 全域
+// ══════════════════════════════════════
+let sb=null;
+let curTab='s';
+let selDate,calY,calM,selCalDate='';
+let editMoodOwner='雅寶';   // 目前在心情編輯區編輯哪一方
+
+let shiftsCache=[];
+let eventsCache=[];
+let moodsCache={};   // key: 'owner_YYYY-MM-DD'
+let sheetMeta={cols:['項目','數量','單位','備註']};
+let sheetRows=[];
+
+const LS_URL='bb_sb_url2',LS_KEY='bb_sb_key2';
+
+// ══════════════════════════════════════
+// Supabase 設定
+// ══════════════════════════════════════
+async function doSetup(){
+  const url=document.getElementById('sb-url').value.trim();
+  const key=document.getElementById('sb-key').value.trim();
+  if(!url||!key){toast('請填入 URL 和 Key');return}
+  const btn=document.getElementById('setup-go');
+  btn.innerHTML='<span class="spinner"></span>連線中…';btn.disabled=true;
+  try{
+    sb=window.supabase.createClient(url,key);
+    const{error}=await sb.from('shifts').select('id',{count:'exact',head:true});
+    if(error)throw error;
+    localStorage.setItem(LS_URL,url);
+    localStorage.setItem(LS_KEY,key);
+    await enterApp();
+  }catch(e){
+    toast('❌ 連線失敗：'+e.message);
+    btn.innerHTML='💑 連線進入';btn.disabled=false;
+  }
+}
+async function tryAutoLogin(){
+  const url=localStorage.getItem(LS_URL),key=localStorage.getItem(LS_KEY);
+  if(!url||!key)return false;
+  try{
+    sb=window.supabase.createClient(url,key);
+    const{error}=await sb.from('shifts').select('id',{count:'exact',head:true});
+    if(error)throw error;
+    return true;
+  }catch{return false;}
+}
+function showCfg(){
+  if(confirm('要重設 Supabase 連線嗎？')){
+    localStorage.removeItem(LS_URL);localStorage.removeItem(LS_KEY);
+    location.reload();
+  }
+}
+
+// ══════════════════════════════════════
+// 進入主畫面
+// ══════════════════════════════════════
+async function enterApp(){
+  document.getElementById('setup-overlay').style.display='none';
+  ['main-hdr','main-body','main-tab'].forEach(id=>document.getElementById(id).style.display='');
+  document.getElementById('main-tab').style.display='flex';
+  selDate=todayStr();
+  calY=parseD(selDate).getFullYear();
+  calM=parseD(selDate).getMonth();
+  setSyncIng();
+  await Promise.all([loadShifts(),loadEvents(),loadMoods(),loadSheet()]);
+  setSyncOk();
+  buildWeeks();findCurWeek();
+  initHdr();renderS();
+  subscribeRealtime();
+}
+function setSyncIng(){document.getElementById('sync-dot').className='sync-dot ing';document.getElementById('sync-lbl').textContent='同步中'}
+function setSyncOk(){document.getElementById('sync-dot').className='sync-dot ok';document.getElementById('sync-lbl').textContent='已同步'}
+function setSyncErr(){document.getElementById('sync-dot').className='sync-dot';document.getElementById('sync-lbl').textContent='離線'}
+
+// ══════════════════════════════════════
+// Supabase CRUD
+// ══════════════════════════════════════
+async function loadShifts(){const{data}=await sb.from('shifts').select('*').order('work_date').order('shift_key');if(data)shiftsCache=data;}
+async function loadEvents(){const{data}=await sb.from('events').select('*').order('event_date').order('event_time');if(data)eventsCache=data;}
+async function loadMoods(){
+  const{data}=await sb.from('moods').select('*');
+  moodsCache={};
+  (data||[]).forEach(r=>{moodsCache[r.owner+'_'+r.mood_date]=r;});
+}
+async function loadSheet(){
+  const[{data:md},{data:rows}]=await Promise.all([
+    sb.from('spreadsheet_meta').select('*').limit(1).single(),
+    sb.from('spreadsheet_rows').select('*').order('row_order')
+  ]);
+  if(md)sheetMeta={id:md.id,cols:md.cols};
+  sheetRows=rows||[];
+  if(!sheetRows.length)await addSheetRow(true);
+}
+function subscribeRealtime(){
+  sb.channel('all_changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'events'},()=>loadEvents().then(()=>curTab==='p'&&renderP()))
+    .on('postgres_changes',{event:'*',schema:'public',table:'moods'},()=>loadMoods().then(()=>curTab==='c'&&renderC()))
+    .on('postgres_changes',{event:'*',schema:'public',table:'spreadsheet_rows'},()=>loadSheet().then(()=>curTab==='t'&&renderT()))
+    .subscribe();
+}
+
+// ══════════════════════════════════════
+// 輔助
+// ══════════════════════════════════════
+function p2(n){return String(n).padStart(2,'0')}
+function todayStr(){const t=new Date();return`${t.getFullYear()}-${p2(t.getMonth()+1)}-${p2(t.getDate())}`}
+function parseD(s){const a=s.split('-');return new Date(+a[0],+a[1]-1,+a[2])}
+function d2s(d){return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`}
+function dim(y,m){return new Date(y,m+1,0).getDate()}
+function getWD(d){return['日','一','二','三','四','五','六'][parseD(d).getDay()]}
+const TODAY=todayStr();
+
+const SHIFT_DEF=[
+  {key:'凌晨班',time:'05:00-09:00',icon:'🌙',color:'#b3d4ff'},
+  {key:'早班',  time:'08:00-12:00',icon:'☀️',color:'#ffe08a'},
+  {key:'下午班',time:'12:00-18:00',icon:'🌸',color:'#ffb3cc'},
+  {key:'晚班',  time:'18:00-23:00',icon:'🌆',color:'#c8a0ff'},
+  {key:'跨夜班',time:'22:00-07:00',icon:'🌛',color:'#98e0c8'},
+];
+const TW_RED={'2026-04-04':'兒童節','2026-04-05':'清明節','2026-04-06':'清明節補假','2026-05-01':'勞動節','2026-10-10':'國慶日'};
+const H_ICON={'兒童節':'🎈','清明節':'🌿','清明節補假':'🌿','勞動節':'💪','國慶日':'🇹🇼'};
+const MOODS=[{em:'😊',lbl:'開心'},{em:'🥰',lbl:'幸福'},{em:'😌',lbl:'平靜'},{em:'😴',lbl:'疲累'},{em:'😤',lbl:'煩躁'},{em:'😢',lbl:'難過'},{em:'🤩',lbl:'興奮'},{em:'😰',lbl:'焦慮'},{em:'🥳',lbl:'慶祝'},{em:'😑',lbl:'無感'}];
+const WEATHERS=[{em:'☀️',lbl:'晴'},{em:'⛅',lbl:'多雲'},{em:'🌧️',lbl:'雨'},{em:'⛈️',lbl:'雷雨'},{em:'🌫️',lbl:'陰'}];
+const TAGS=['☀️ 好天氣','🌧️ 下雨天','🍜 美食','🧋 手搖杯','☕ 咖啡','🍰 甜點','🛒 購物','💰 省錢','🎁 禮物','🏃 運動','🧘 瑜伽','💤 補眠','🛁 泡澡','💆 放鬆','🏠 宅在家','📱 追劇','🎮 打遊戲','📚 看書','🎵 聽音樂','👯 朋友','💕 約會','🐱 擼貓','💼 工作順','😤 工作累','🌟 被稱讚','✈️ 出遊','🌸 賞花'];
+
+function getMood(owner,d){return moodsCache[owner+'_'+d]||null}
+function isBallWork(d){return shiftsCache.some(r=>r.work_date===d&&r.staff_name==='球球')}
+function getBallShift(d){const r=shiftsCache.find(r=>r.work_date===d&&r.staff_name==='球球');if(!r)return null;return SHIFT_DEF.find(s=>s.key===r.shift_key)||null}
+function getBallTime(d){const r=shiftsCache.find(r=>r.work_date===d&&r.staff_name==='球球');return r?.time_range||null}
+
+// ══════════════════════════════════════
+// 週
+// ══════════════════════════════════════
+let WEEKS=[],curWeekI=0;
+function buildWeeks(){
+  const dates=[...new Set(shiftsCache.map(r=>r.work_date))].sort();
+  const weeks=[],seen={};
+  dates.forEach(s=>{
+    const d=parseD(s),sun=new Date(d-d.getDay()*86400000),k=d2s(sun);
+    if(!seen[k]){seen[k]=[];weeks.push(seen[k]);}
+    if(!seen[k].includes(s))seen[k].push(s);
+  });
+  WEEKS=weeks.map(ds=>{
+    const f=parseD(ds[0]),l=parseD(ds[ds.length-1]);
+    const n=['日','一','二','三','四','五','六'];
+    return{label:`${f.getMonth()+1}/${f.getDate()}（${n[f.getDay()]}）～${l.getMonth()+1}/${l.getDate()}（${n[l.getDay()]}）`,dates:ds};
+  });
+}
+function findCurWeek(){for(let i=0;i<WEEKS.length;i++)if(WEEKS[i].dates.includes(TODAY)){curWeekI=i;return;}curWeekI=WEEKS.length-1;}
+
+// ══════════════════════════════════════
+// Tab
+// ══════════════════════════════════════
+function goTab(t){
+  curTab=t;
+  ['s','c','p','t'].forEach(id=>{document.getElementById('tab-'+id).style.display=id===t?'block':'none';});
+  ['s','c','p','t','cfg'].forEach(id=>{const el=document.getElementById('tb-'+id);if(el)el.className='tb'+(id===t?' on':'');});
+  if(t==='s')renderS();if(t==='c')renderC();if(t==='p')renderP();if(t==='t')renderT();
+  window.scrollTo(0,0);
+}
+
+// ══════════════════════════════════════
+// Header
+// ══════════════════════════════════════
+function initHdr(){
+  const td=parseD(TODAY),n=['日','一','二','三','四','五','六'];
+  document.getElementById('hdr-today').textContent=`${td.getFullYear()}年${td.getMonth()+1}月${td.getDate()}日（週${n[td.getDay()]}）`;
+  const bs=getBallShift(TODAY),bt=getBallTime(TODAY),el=document.getElementById('hdr-shift');
+  if(bs)el.innerHTML=`<span style="display:inline-block;background:linear-gradient(135deg,rgba(224,96,160,.15),rgba(112,80,208,.1));border:1.5px solid #f0b8d8;border-radius:18px;padding:2px 10px;font-size:.68rem;font-weight:900;color:var(--ya)">${bs.icon} ${bs.key}　${bt||bs.time}</span>`;
+  else el.innerHTML=`<span style="display:inline-block;background:rgba(180,220,255,.25);border:1.5px solid #90c8f0;border-radius:18px;padding:2px 10px;font-size:.68rem;font-weight:900;color:#2060a0">🌙 今天休假</span>`;
+}
+
+// ══════════════════════════════════════
+// 班表
+// ══════════════════════════════════════
+function renderS(){
+  if(!WEEKS.length){document.getElementById('tab-s').innerHTML=`<div class="card"><div class="empty">載入中…🌸</div></div>`;return;}
+  const w=WEEKS[curWeekI];
+  const dayRows=shiftsCache.filter(r=>r.work_date===selDate);
+  const bs=getBallShift(selDate),bt=getBallTime(selDate),isOff=!bs;
+  const wdL=getWD(selDate),isClean=!isOff&&(wdL==='一'||wdL==='五');
+  const shiftOrder=SHIFT_DEF.map(s=>s.key);
+  const myIdx=bs?shiftOrder.indexOf(bs.key):-1;
+  let prev=null,next=null;
+  function byShift(sk){return dayRows.filter(r=>r.shift_key===sk&&r.staff_name!=='采淳'&&r.staff_name!=='球球')}
+  function ps(recs){return recs.map(r=>r.time_range?`${r.staff_name}(${r.time_range})`:r.staff_name).join('、')||'—'}
+  if(myIdx>0)for(let i=myIdx-1;i>=0;i--){const v=byShift(shiftOrder[i]);if(v.length){prev={key:shiftOrder[i],recs:v};break;}}
+  if(myIdx>=0)for(let i=myIdx+1;i<shiftOrder.length;i++){const v=byShift(shiftOrder[i]);if(v.length){next={key:shiftOrder[i],recs:v};break;}}
+  const earlyRecs=dayRows.filter(r=>r.shift_key==='早班'&&r.staff_name!=='采淳'&&r.staff_name!=='球球');
+  const cwRecs=bs?dayRows.filter(r=>r.shift_key===bs.key&&r.staff_name!=='球球'&&r.staff_name!=='采淳'):[];
+
+  let h=`<div class="deco">${['🌸','💑','🌸','💑','🌸'].map((e,i)=>`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`).join('')}</div>`;
+  h+=`<div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px">
+    <button class="nav-btn" onclick="prevW()">‹</button>
+    <div style="text-align:center"><div style="font-family:'Nunito',sans-serif;font-weight:900;background:var(--couple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:.88rem">第${curWeekI+1}週</div><div style="font-size:.6rem;color:#a070b0">${w.label}</div></div>
+    <button class="nav-btn" onclick="nextW()">›</button></div>`;
+  h+=`<div class="days-row" style="grid-template-columns:repeat(${w.dates.length},1fr)">`;
+  w.dates.forEach(d=>{
+    const dt=parseD(d),act=d===selDate,isT=d===TODAY,offDay=!isBallWork(d);
+    let cls='day-pill';if(act)cls+=' act';else if(offDay)cls+=' off';if(isT)cls+=' tod';
+    h+=`<div class="${cls}" onclick="selDay('${d}')"><div class="day-wd">${getWD(d)}</div><div class="day-num">${dt.getDate()}</div><div class="day-mark">${isT?'♦️':offDay&&!act?'休':''}</div></div>`;
+  });
+  h+=`</div><div class="card">`;
+  if(isOff){
+    h+=`<div style="text-align:center;padding:22px 10px"><div style="font-family:'Nunito',sans-serif;font-size:4.5rem;font-weight:900;background:linear-gradient(135deg,#a8d8ff,#d8b8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:2px #80a8e0;line-height:1">休</div><div style="font-weight:700;color:#5090c0;margin-top:8px;font-size:.85rem">✦ 好好休息唷 球球 ✦</div><div style="font-size:2rem;margin-top:6px">🌸💤🌙</div></div>`;
+  } else {
+    h+=`<div class="shift-hero"><div style="font-size:.6rem;font-weight:900;color:#b070c0;letter-spacing:.15em;margin-bottom:3px">✦ 球球今天的班 ✦</div><div style="font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:900;background:var(--couple);-webkit-background-clip:text;-webkit-text-fill-color:transparent">${bs.icon} ${bs.key}</div><div class="time-big">${bt||bs.time}</div>${cwRecs.length?`<div style="background:rgba(255,255,255,.65);border:1.5px solid #f0b8d8;border-radius:12px;padding:7px 11px;margin-top:8px"><div style="font-size:.56rem;font-weight:900;color:#b070c0;margin-bottom:3px">👯 今天一起上班</div><div style="font-size:.86rem;font-weight:900;color:var(--ya)">${cwRecs.map(r=>r.time_range?`${r.staff_name} ${r.time_range}`:r.staff_name).join('　')}</div></div>`:''}</div>
+    <div class="ig">
+      <div class="ib"><div class="i-icon">👩‍🏫</div><div class="i-lbl">早班是誰</div><div class="i-val ${earlyRecs.length?'':'dim'}">${earlyRecs.length?ps(earlyRecs):'沒有早班'}</div></div>
+      <div class="ib"><div class="i-icon">🔁</div><div class="i-lbl">誰來接班</div><div class="i-val ${next?'':'dim'}">${next?ps(next.recs):'無接班'}</div></div>
+      <div class="ib full ${isClean?'clean':''}"><div class="i-icon">${isClean?'🧹':'🤝'}</div><div class="i-lbl">${isClean?'今日清潔':'我接誰的班'}</div><div class="i-val" style="${isClean?'color:#8a5000':''}">${isClean?'🏠 2樓＋3樓 掃地＋拖地':(prev?`接 ${prev.key} ${ps(prev.recs)} 的班`:'今天第一班！')}</div></div>
+    </div>`;
+  }
+  h+=`</div>`;
+  const hasData=SHIFT_DEF.some(s=>dayRows.some(r=>r.shift_key===s.key));
+  if(hasData){
+    h+=`<div class="card"><div class="sec-lbl">✦ 今日全班表</div>`;
+    SHIFT_DEF.forEach(s=>{
+      const ppl=dayRows.filter(r=>r.shift_key===s.key);if(!ppl.length)return;
+      const rows=ppl.map(p=>{const isMe=p.staff_name==='球球';return`<span>${isMe?`<span class="me-tag">🐾 球球</span>`:p.staff_name}${p.time_range?` <span class="p-time">${p.time_range}</span>`:''}</span>`}).join('<span style="color:#e0b8d8;margin:0 2px">·</span>');
+      h+=`<div class="srow"><div class="sdot" style="background:${s.color}"></div><div class="sslot">${s.icon} ${s.key}<div style="font-size:.56rem;color:#c0a0b8">${s.time}</div></div><div class="speople">${rows}</div></div>`;
+    });
+    h+=`</div>`;
+  }
+  document.getElementById('tab-s').innerHTML=h;
+}
+function selDay(d){selDate=d;renderS()}
+function prevW(){if(curWeekI>0){curWeekI--;selDate=WEEKS[curWeekI].dates[0];renderS()}}
+function nextW(){if(curWeekI<WEEKS.length-1){curWeekI++;selDate=WEEKS[curWeekI].dates[0];renderS()}}
+
+// ══════════════════════════════════════
+// 情侶日曆
+// ══════════════════════════════════════
+function calOff2(y,m){return new Date(y,m,1).getDay()}
+function renderC(){
+  const days=dim(calY,calM),off=calOff2(calY,calM);
+  let grid='';
+  for(let i=0;i<off;i++)grid+=`<div></div>`;
+  for(let d=1;d<=days;d++){
+    const k=`${calY}-${p2(calM+1)}-${p2(d)}`;
+    const hN=TW_RED[k],isT=TODAY===k,offDay=!isBallWork(k);
+    const ya=getMood('雅寶',k),xi=getMood('熙寶',k);
+    const isSel=selCalDate===k;
+    const dow=new Date(calY,calM,d).getDay();
+    let cls='ccell';
+    if(isT)cls+=' ctoday';else if(hN||dow===0||dow===6)cls+=' cholid';else if(offDay)cls+=' coff';
+    if(isSel&&!isT)cls+=' csel';
+    // 情侶心情小泡泡
+    const yaPip=ya?.mood_emoji?`<span class="cmood-pip" title="雅寶">${ya.mood_emoji}</span>`:'';
+    const xiPip=xi?.mood_emoji?`<span class="cmood-pip" title="熙寶">${xi.mood_emoji}</span>`:'';
+    const hIcon=hN?(H_ICON[hN]||'🎌'):'';
+    grid+=`<div class="${cls}" onclick="selCal('${k}')">
+      <div class="cnum">${isT?'♦':d}</div>
+      <div class="cmood-row">${hIcon?`<span class="cmood-pip">${hIcon}</span>`:''}${yaPip}${xiPip}</div>
+    </div>`;
+  }
+
+  // 情侶心情大卡（點了日期才顯示）
+  let detail='';
+  if(selCalDate){
+    const ya=getMood('雅寶',selCalDate)||{};
+    const xi=getMood('熙寶',selCalDate)||{};
+    const curM=editMoodOwner==='雅寶'?ya:xi;
+    const bs=getBallShift(selCalDate),bt=getBallTime(selCalDate);
+    const dt=parseD(selCalDate);
+    // 情侶雙欄展示
+    const halfCard=(owner,m,cls)=>`<div class="mood-half ${cls}">
+      <div class="mood-name ${cls}">${owner==='雅寶'?'🌸 雅寶':'🌟 熙寶'}</div>
+      <div class="mood-em-big">${m.mood_emoji||'—'}</div>
+      <div class="mood-wx">${m.weather||''}</div>
+      <div class="mood-tags-mini">${(m.tags||[]).slice(0,3).join(' ')}</div>
+      <div class="mood-diary-mini">${m.diary||'<span style="color:#d0b0c0;font-style:italic">還沒有記錄</span>'}</div>
+    </div>`;
+
+    detail=`<div class="couple-mood-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-family:'Nunito',sans-serif;font-weight:900;background:var(--couple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:.95rem">${calM+1}/${dt.getDate()}（${'日一二三四五六'[dt.getDay()]}）</div>
+        ${bs?`<div style="background:linear-gradient(135deg,var(--ya-bg),var(--xi-bg));border:1.5px solid #f0b8d8;border-radius:10px;padding:4px 10px;font-size:.7rem;font-weight:700;color:var(--ya)">${bs.icon} ${bs.key} ${bt||bs.time}</div>`:`<div style="background:rgba(180,220,255,.2);border:1.5px solid #90c8f0;border-radius:10px;padding:4px 10px;font-size:.7rem;font-weight:700;color:#2060a0">🌙 休假</div>`}
+      </div>
+      <!-- 雙欄心情展示 -->
+      <div class="mood-split">
+        ${halfCard('雅寶',ya,'ya')}
+        ${halfCard('熙寶',xi,'xi')}
+      </div>
+      <div style="height:1px;background:linear-gradient(90deg,var(--ya),var(--xi));border-radius:1px;margin-bottom:12px;opacity:.3"></div>
+      <!-- 編輯區：切換誰在填 -->
+      <div style="font-size:.7rem;font-weight:900;color:#b070b0;margin-bottom:7px">✏️ 填入心情</div>
+      <div class="edit-owner-tab">
+        <div class="eotab ya${editMoodOwner==='雅寶'?' on':''}" onclick="switchEditOwner('雅寶','${selCalDate}')">🌸 雅寶</div>
+        <div class="eotab xi${editMoodOwner==='熙寶'?' on':''}" onclick="switchEditOwner('熙寶','${selCalDate}')">🌟 熙寶</div>
+      </div>
+      <div style="font-size:.68rem;font-weight:900;color:#b070b0;margin-bottom:6px">💭 心情</div>
+      <div class="mood-grid">${MOODS.map(m=>`<div class="mbtn${curM.mood_emoji===m.em?' msel '+editMoodOwner.replace('寶',''):''}" onclick="setMood('${selCalDate}','${m.em}')"><div class="mem">${m.em}</div><div class="mlbl">${m.lbl}</div></div>`).join('')}</div>
+      <div style="font-size:.68rem;font-weight:900;color:#b070b0;margin-bottom:6px">🌤 天氣</div>
+      <div class="wx-row">${WEATHERS.map(w=>`<div class="wxb${curM.weather===w.em?' wxsel':''}" onclick="setWx('${selCalDate}','${w.em}')"><div class="wxe">${w.em}</div><div class="wxl">${w.lbl}</div></div>`).join('')}</div>
+      <div style="font-size:.68rem;font-weight:900;color:#b070b0;margin-bottom:6px">✨ 今天做了什麼</div>
+      <div class="tag-row">${TAGS.map(t=>{const sel=(curM.tags||[]).includes(t);return`<div class="tbtn${sel?' tsel '+editMoodOwner.replace('寶',''):''}" onclick="togTag('${selCalDate}','${t}')">${t}</div>`}).join('')}</div>
+      <div style="font-size:.68rem;font-weight:900;color:#b070b0;margin-bottom:5px">📝 日記</div>
+      <textarea class="diary" rows="3" id="diary-${selCalDate}" placeholder="今天想說什麼…💕">${curM.diary||''}</textarea>
+      <button class="sbtn" onclick="saveMoodAll('${selCalDate}')">💑 儲存並同步</button>
+    </div>`;
+  }
+
+  document.getElementById('tab-c').innerHTML=`
+  <div class="deco">${['💑','🌸','💕','🌸','💑'].map((e,i)=>`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`).join('')}</div>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <button class="nav-btn" onclick="calPrev()">‹</button>
+      <div style="font-family:'Nunito',sans-serif;font-weight:900;background:var(--couple);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1rem">💑 ${calY}年 ${calM+1}月</div>
+      <button class="nav-btn" onclick="calNext()">›</button>
+    </div>
+    <div class="cgrid" style="margin-bottom:3px">${['日','一','二','三','四','五','六'].map((d,i)=>`<div style="font-size:.56rem;font-weight:700;color:${i===0||i===6?'var(--ya)':'#a070b0'};text-align:center;padding:2px 0">${d}</div>`).join('')}</div>
+    <div class="cgrid">${grid}</div>
+    <div style="display:flex;gap:10px;margin-top:8px;font-size:.6rem;font-weight:700;color:#a070b0">
+      <span>🌸 雅寶心情</span><span>🌟 熙寶心情</span><span style="color:#2060a0">🔵 球球休假</span>
+    </div>
+    ${detail}
+  </div>`;
+}
+function selCal(k){selCalDate=selCalDate===k?'':k;if(selCalDate)editMoodOwner='雅寶';renderC()}
+function calPrev(){calM--;if(calM<0){calM=11;calY--;}selCalDate='';renderC()}
+function calNext(){calM++;if(calM>11){calM=0;calY++;}selCalDate='';renderC()}
+function switchEditOwner(o,d){editMoodOwner=o;selCalDate=d;renderC()}
+
+async function upsertMood(date,patch){
+  const key=editMoodOwner+'_'+date;
+  const existing=moodsCache[key]||{};
+  moodsCache[key]={...existing,...patch,owner:editMoodOwner,mood_date:date};
+  setSyncIng();
+  const{error}=await sb.from('moods').upsert({owner:editMoodOwner,mood_date:date,...patch},{onConflict:'owner,mood_date'});
+  if(error){setSyncErr();toast('❌ 儲存失敗');}else setSyncOk();
+  renderC();
+}
+async function setMood(d,em){const cur=moodsCache[editMoodOwner+'_'+d]||{};await upsertMood(d,{mood_emoji:cur.mood_emoji===em?null:em})}
+async function setWx(d,em){const cur=moodsCache[editMoodOwner+'_'+d]||{};await upsertMood(d,{weather:cur.weather===em?null:em})}
+async function togTag(d,t){const cur=moodsCache[editMoodOwner+'_'+d]||{};const tags=[...(cur.tags||[])];const i=tags.indexOf(t);if(i>=0)tags.splice(i,1);else tags.push(t);await upsertMood(d,{tags})}
+async function saveMoodAll(d){
+  const ta=document.getElementById('diary-'+d);
+  await upsertMood(d,{diary:ta?ta.value:''});
+  toast('💑 已同步！');
+  const btn=event.target;btn.textContent='✅ 儲存成功！';setTimeout(()=>btn.textContent='💑 儲存並同步',1500);
+}
+
+// ══════════════════════════════════════
+// 情侶行程
+// ══════════════════════════════════════
+function obadge(o){
+  if(o==='雅寶')return'<span class="owner-badge ob-ya">🌸雅</span>';
+  if(o==='熙寶')return'<span class="owner-badge ob-xi">🌟熙</span>';
+  return'<span class="owner-badge ob-co">💑共</span>';
+}
+async function addEvt(){
+  const d=document.getElementById('ev-d').value;
+  const ti=document.getElementById('ev-t').value||null;
+  const ttl=document.getElementById('ev-ttl').value;
+  const ow=document.getElementById('ev-owner').value;
+  if(!d||!ttl){toast('請填日期和事情');return}
+  setSyncIng();
+  const{data,error}=await sb.from('events').insert({owner:ow,event_date:d,event_time:ti,title:ttl,done:false}).select().single();
+  if(error){setSyncErr();toast('❌ 失敗');return}
+  eventsCache.push(data);eventsCache.sort((a,b)=>a.event_date.localeCompare(b.event_date));
+  setSyncOk();renderP();toast('🌸 加入成功！');
+}
+async function delEvt(id){
+  await sb.from('events').delete().eq('id',id);
+  eventsCache=eventsCache.filter(e=>e.id!==id);
+  renderP();
+}
+async function togDone(id){
+  const e=eventsCache.find(e=>e.id===id);if(!e)return;
+  e.done=!e.done;
+  await sb.from('events').update({done:e.done}).eq('id',id);
+  renderP();
+}
+function renderP(){
+  const tmr=d2s(new Date(parseD(TODAY).getTime()+86400000));
+  const te=eventsCache.filter(e=>e.event_date===TODAY);
+  const tre=eventsCache.filter(e=>e.event_date===tmr);
+  // 共用行程特別展示
+  const coEvents=eventsCache.filter(e=>e.owner==='共用'&&e.event_date>=TODAY).slice(0,5);
+  let h=`<div class="deco">${['💕','🌸','💑','🌸','💕'].map((e,i)=>`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`).join('')}</div>`;
+  if(coEvents.length)h+=`<div class="card couple-event"><div class="sec-lbl" style="color:#8050c0">💑 兩人共同行程</div>${coEvents.map(e=>`<div class="erow${e.done?' done':''}" style="border-color:#e0b8f8;background:rgba(255,255,255,.8)"><div class="chk${e.done?' ck':''}" onclick="togDone('${e.id}')">${e.done?'<span style="color:#fff;font-size:.7rem">✓</span>':''}</div><div style="flex:1"><div style="font-weight:700;font-size:.82rem;color:#8050c0;text-decoration:${e.done?'line-through':'none'}">${e.event_time?e.event_time.slice(0,5)+' ':''}${e.title}</div><div style="font-size:.6rem;color:#a080c0">${e.event_date}${e.event_date===TODAY?' 今天':''}</div></div><button style="background:none;border:none;color:#d8b8e8;cursor:pointer" onclick="delEvt('${e.id}')">✕</button></div>`).join('')}</div>`;
+  if(tre.length)h+=`<div class="card" style="border-color:var(--ya)"><div class="sec-lbl">🔔 明天的行程</div>${tre.map(e=>`<div class="erow">${obadge(e.owner)}<div style="flex:1;font-weight:700;font-size:.82rem;color:var(--ya)">${e.event_time?e.event_time.slice(0,5)+' ':''}${e.title}</div></div>`).join('')}</div>`;
+  if(te.length)h+=`<div class="card"><div class="sec-lbl">⭐ 今天的行程</div>${te.map(e=>`<div class="erow${e.done?' done':''}">${obadge(e.owner)}<div class="chk${e.done?' ck':''}" onclick="togDone('${e.id}')">${e.done?'<span style="color:#fff;font-size:.7rem">✓</span>':''}</div><div style="flex:1;font-weight:700;font-size:.82rem;color:${e.done?'#60a070':'var(--ya)'};text-decoration:${e.done?'line-through':'none'}">${e.event_time?e.event_time.slice(0,5)+' ':''}${e.title}</div><button style="background:none;border:none;color:#f0b8d8;cursor:pointer" onclick="delEvt('${e.id}')">✕</button></div>`).join('')}</div>`;
+  h+=`<div class="card"><div class="sec-lbl">📝 新增行程</div>
+    <div class="ig2">
+      <div><div class="ilbl">📅 日期 *</div><input class="inp" type="date" id="ev-d"></div>
+      <div><div class="ilbl">⏰ 時間</div><input class="inp" type="time" id="ev-t"></div>
+    </div>
+    <div style="margin-bottom:8px"><div class="ilbl">🌸 事情 *</div><input class="inp" type="text" id="ev-ttl" placeholder="例：一起看電影、約會…"></div>
+    <div style="margin-bottom:10px"><div class="ilbl">👤 誰的行程</div>
+      <select class="inp" id="ev-owner"><option value="共用">💑 共用</option><option value="雅寶">🌸 雅寶</option><option value="熙寶">🌟 熙寶</option></select></div>
+    <button class="abtn" onclick="addEvt()">💑 加入並同步</button></div>`;
+  const upcoming=eventsCache.filter(e=>e.event_date>=TODAY&&e.owner!=='共用'||e.event_date>=TODAY).slice(0,30);
+  h+=`<div class="card"><div class="sec-lbl">📋 全部行程</div>${eventsCache.length?eventsCache.map(e=>{const ip=e.event_date<TODAY,it=e.event_date===TODAY;return`<div class="erow${e.done?' done':''}" style="opacity:${ip&&!e.done?.55:1};border-color:${it?'var(--ya)':'#f0b8d8'}">${obadge(e.owner)}<div class="chk${e.done?' ck':''}" onclick="togDone('${e.id}')">${e.done?'<span style="color:#fff;font-size:.7rem">✓</span>':''}</div><div style="flex:1"><div style="font-weight:700;font-size:.78rem;color:${e.done?'#60a070':ip?'#c090a0':'var(--ya)'};text-decoration:${e.done?'line-through':'none'}">${e.event_time?e.event_time.slice(0,5)+' ':''}${e.title}</div><div style="font-size:.58rem;color:#a080a0">${e.event_date}${it?' 今天':''}${e.done?' ✨':''}</div></div><button style="background:none;border:none;color:#f0b8d8;cursor:pointer" onclick="delEvt('${e.id}')">✕</button></div>`}).join(''):`<div class="empty">還沒有行程，快一起規劃吧 💑</div>`}</div>`;
+  document.getElementById('tab-p').innerHTML=h;
+}
+
+// ══════════════════════════════════════
+// 試算表
+// ══════════════════════════════════════
+async function addSheetRow(silent){
+  const newOrder=sheetRows.length?Math.max(...sheetRows.map(r=>r.row_order))+1:0;
+  const cells=new Array(sheetMeta.cols.length).fill('');
+  const{data,error}=await sb.from('spreadsheet_rows').insert({row_order:newOrder,cells}).select().single();
+  if(!error&&data)sheetRows.push(data);
+  if(!silent)renderT();
+}
+async function delSheetRow(id){await sb.from('spreadsheet_rows').delete().eq('id',id);sheetRows=sheetRows.filter(r=>r.id!==id);renderT();}
+async function updateCell(rowId,ci,val){
+  const row=sheetRows.find(r=>r.id===rowId);if(!row)return;
+  row.cells[ci]=val;
+  await sb.from('spreadsheet_rows').update({cells:row.cells}).eq('id',rowId);setSyncOk();
+}
+async function updateColName(ci,val){sheetMeta.cols[ci]=val;await sb.from('spreadsheet_meta').update({cols:sheetMeta.cols}).eq('id',sheetMeta.id);}
+async function addColAction(){
+  sheetMeta.cols.push('新欄位');
+  sheetRows.forEach(r=>{while(r.cells.length<sheetMeta.cols.length)r.cells.push('');});
+  await sb.from('spreadsheet_meta').update({cols:sheetMeta.cols}).eq('id',sheetMeta.id);
+  await Promise.all(sheetRows.map(r=>sb.from('spreadsheet_rows').update({cells:r.cells}).eq('id',r.id)));
+  renderT();
+}
+async function delColAction(ci){
+  if(sheetMeta.cols.length<=1)return;
+  sheetMeta.cols.splice(ci,1);sheetRows.forEach(r=>r.cells.splice(ci,1));
+  await sb.from('spreadsheet_meta').update({cols:sheetMeta.cols}).eq('id',sheetMeta.id);
+  await Promise.all(sheetRows.map(r=>sb.from('spreadsheet_rows').update({cells:r.cells}).eq('id',r.id)));
+  renderT();
+}
+function renderT(){
+  let h=`<div class="deco">${['📊','💕','📋','💕','📊'].map((e,i)=>`<span class="float" style="animation-delay:${i*.3}s">${e}</span>`).join('')}</div>`;
+  h+=`<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div class="sec-lbl" style="margin:0">📊 共用試算表</div>
+    <div style="display:flex;gap:6px">
+      <button onclick="addColAction()" style="padding:5px 10px;border:2px solid #f0b8d8;border-radius:10px;background:rgba(255,255,255,.8);color:var(--ya);font-weight:700;font-size:.7rem;cursor:pointer">+ 欄</button>
+      <button onclick="addSheetRow()" style="padding:5px 10px;border:none;border-radius:10px;background:var(--couple);color:#fff;font-weight:700;font-size:.7rem;cursor:pointer">+ 列</button>
+    </div>
+  </div>
+  <div class="sheet-wrap"><table class="sheet-tbl">
+  <thead><tr>
+    <th class="sh-th">#</th>
+    ${sheetMeta.cols.map((c,i)=>`<th class="sh-th"><div style="display:flex;align-items:center;gap:2px;justify-content:center"><input value="${(c||'').replace(/"/g,'&quot;')}" onchange="updateColName(${i},this.value)" style="width:68px;border:none;background:transparent;font:inherit;color:inherit;text-align:center;outline:none">${sheetMeta.cols.length>1?`<span onclick="delColAction(${i})" style="cursor:pointer;opacity:.45;font-size:.65rem">✕</span>`:''}</div></th>`).join('')}
+    <th class="sh-th"></th>
+  </tr></thead>
+  <tbody>
+  ${sheetRows.map((row,ri)=>`<tr>
+    <td class="sh-td" style="text-align:center;font-size:.62rem;color:#c0a0b8;min-width:24px">${ri+1}</td>
+    ${sheetMeta.cols.map((_,ci)=>`<td class="sh-td${ci===0?' row-hdr':''}"><input value="${((row.cells||[])[ci]||'').replace(/"/g,'&quot;')}" onchange="updateCell('${row.id}',${ci},this.value)"></td>`).join('')}
+    <td class="sh-td" style="text-align:center"><button class="del-btn-sm" onclick="delSheetRow('${row.id}')">✕</button></td>
+  </tr>`).join('')}
+  </tbody></table></div></div>`;
+  document.getElementById('tab-t').innerHTML=h;
+}
+
+// ══════════════════════════════════════
+// Toast & 啟動
+// ══════════════════════════════════════
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200)}
+
+(async()=>{
+  const ok=await tryAutoLogin();
+  if(ok){document.getElementById('setup-overlay').style.display='none';await enterApp();}
+  else{const s=localStorage.getItem(LS_URL);if(s)document.getElementById('sb-url').value=s;}
+})();
+</script>
+</body>
+</html>
