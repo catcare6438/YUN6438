@@ -1,464 +1,302 @@
-
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>\u7199&\u96c5 \ud83d\udc95 \u6200\u611b\u65e5\u8a18</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --pk:#ff8fab;--pk2:#ffb3c6;--pk3:#ffd6e0;--pk4:#fff0f3;
-  --sky:#74c0fc;--sky2:#a5d8ff;--sky3:#d0ebff;--sky4:#e7f5ff;
-  --pur:#cc5de8;--gold:#fcc419;
-  --txt:#3d1a24;--txt2:#6b3a4a;--txt3:#a06070;
-  --card:#fffafc;--border:#f8c8d4;
-}
-body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#fff0f3 0%,#e7f5ff 100%);min-height:100vh;padding:0;color:var(--txt)}
-
-.phone-frame{max-width:400px;margin:0 auto;background:white;border-radius:36px;overflow:hidden;box-shadow:0 8px 40px #ffb3c640;border:2px solid var(--pk3)}
-
-.status-bar{background:linear-gradient(90deg,#ff8fab,#74c0fc);padding:10px 20px 6px;display:flex;justify-content:space-between;align-items:center}
-.status-bar .time{color:white;font-size:13px;font-weight:600}
-.status-bar .icons{color:white;font-size:11px}
-
-.app-header{background:linear-gradient(135deg,#ff8fab 0%,#cc5de8 50%,#74c0fc 100%);padding:16px 20px 12px;text-align:center}
-.app-title{color:white;font-size:18px;font-weight:700;letter-spacing:1px}
-.app-sub{color:rgba(255,255,255,0.85);font-size:11px;margin-top:2px}
-.heart-deco{font-size:14px;margin:0 4px}
-
-.tab-bar{display:flex;background:white;border-bottom:1.5px solid var(--pk3);position:sticky;top:0;z-index:10}
-.tab{flex:1;padding:10px 4px 8px;text-align:center;cursor:pointer;font-size:11px;color:var(--txt3);transition:all 0.2s;border-bottom:2.5px solid transparent}
-.tab.active{color:var(--pk);border-bottom-color:var(--pk);font-weight:600}
-.tab .tab-icon{font-size:18px;display:block;margin-bottom:2px}
-
-.content{background:linear-gradient(180deg,#fff8fa 0%,#f0f8ff 100%);min-height:520px;padding:0 0 80px}
-
-/* === 班表頁 === */
-.shift-page{padding:16px}
-.week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.week-nav button{background:var(--pk3);border:none;border-radius:20px;padding:5px 12px;color:var(--pk);font-size:13px;cursor:pointer}
-.week-nav .week-label{font-size:13px;font-weight:600;color:var(--txt2)}
-
-.my-shift-hero{background:linear-gradient(135deg,#ff8fab,#cc5de8);border-radius:20px;padding:18px;margin-bottom:14px;color:white;text-align:center;position:relative;overflow:hidden}
-.my-shift-hero::before{content:'♡';position:absolute;right:16px;top:10px;font-size:40px;opacity:0.2}
-.my-shift-hero .label{font-size:11px;opacity:0.85;margin-bottom:4px}
-.my-shift-hero .name{font-size:22px;font-weight:700;margin-bottom:2px}
-.my-shift-hero .time{font-size:28px;font-weight:800;letter-spacing:1px}
-.my-shift-hero .date{font-size:11px;opacity:0.8;margin-top:4px}
-
-.shift-context{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.shift-ctx-card{background:white;border-radius:16px;padding:12px;border:1.5px solid var(--pk3)}
-.shift-ctx-card .ctx-label{font-size:10px;color:var(--txt3);margin-bottom:6px;display:flex;align-items:center;gap:4px}
-.shift-ctx-card .ctx-name{font-size:13px;font-weight:600;color:var(--txt2)}
-.shift-ctx-card .ctx-time{font-size:11px;color:var(--txt3);margin-top:2px}
-
-.day-list{background:white;border-radius:16px;overflow:hidden;border:1.5px solid var(--pk3)}
-.day-item{padding:10px 14px;border-bottom:1px solid var(--pk4);display:flex;justify-content:space-between;align-items:center}
-.day-item:last-child{border-bottom:none}
-.day-item.today{background:linear-gradient(90deg,#fff0f3,white)}
-.day-name{font-size:12px;font-weight:600;color:var(--txt2)}
-.day-date{font-size:10px;color:var(--txt3)}
-.shift-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:220px}
-.stag{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:500}
-.stag.me{background:#ffe0ea;color:#c2335a}
-.stag.other{background:#e7f5ff;color:#1971c2}
-.stag.early{background:#fff3bf;color:#7c5700}
-
-/* === 日歷頁 === */
-.cal-page{padding:14px}
-.cal-header{text-align:center;margin-bottom:12px}
-.cal-month{font-size:20px;font-weight:700;color:var(--pk);margin-bottom:2px}
-.cal-year{font-size:11px;color:var(--txt3)}
-.cal-holiday-info{background:white;border-radius:12px;padding:8px 12px;margin-bottom:10px;font-size:11px;color:var(--txt2);display:flex;align-items:center;gap:6px;border:1px solid var(--pk3)}
-
-.cal-grid-header{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px}
-.cal-gh{text-align:center;font-size:10px;font-weight:600;color:var(--txt3);padding:4px 0}
-.cal-gh.sun{color:#e03131}.cal-gh.sat{color:var(--sky)}
-
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:14px}
-.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;position:relative;transition:all 0.15s}
-.cal-day .cnum{font-size:13px;font-weight:500}
-.cal-day .cico{font-size:9px}
-.cal-day.empty{opacity:0}
-.cal-day.today{background:linear-gradient(135deg,var(--pk),var(--pur));color:white}
-.cal-day.today .cnum{color:white;font-weight:700}
-.cal-day.holiday .cnum{color:#e03131;font-weight:600}
-.cal-day.sat .cnum{color:#1971c2}
-.cal-day.selected{outline:2px solid var(--pk);outline-offset:1px}
-.cal-day:not(.empty):hover{background:#fff0f3}
-.cal-day.has-note::after{content:'';position:absolute;bottom:2px;width:4px;height:4px;background:var(--pk);border-radius:50%}
-
-.mood-panel{background:white;border-radius:20px;padding:16px;border:1.5px solid var(--pk3)}
-.mood-date{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.mood-sides{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.mood-side{border-radius:14px;padding:10px;border:1.5px solid}
-.mood-side.boy{border-color:var(--sky2);background:#f0f8ff}
-.mood-side.girl{border-color:var(--pk2);background:#fff0f3}
-.mood-side-label{font-size:10px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:3px}
-.mood-side.boy .mood-side-label{color:#1971c2}
-.mood-side.girl .mood-side-label{color:#c2335a}
-.mood-row{margin-bottom:6px}
-.mood-row-label{font-size:9px;color:var(--txt3);margin-bottom:3px}
-.emoji-row{display:flex;gap:3px;flex-wrap:wrap}
-.emo-btn{font-size:16px;padding:2px 3px;border-radius:6px;cursor:pointer;border:1.5px solid transparent;transition:all 0.15s;background:transparent;line-height:1}
-.emo-btn.selected{border-color:var(--pk);background:#fff0f3;transform:scale(1.15)}
-.emo-btn:hover{transform:scale(1.1)}
-.tag-row{display:flex;gap:4px;flex-wrap:wrap}
-.mood-tag{font-size:9px;padding:3px 7px;border-radius:10px;cursor:pointer;border:1px solid;transition:all 0.15s}
-.mood-tag.bt{border-color:var(--sky2);color:#1971c2;background:transparent}
-.mood-tag.bt.sel{background:var(--sky2);color:white}
-.mood-tag.gt{border-color:var(--pk2);color:#c2335a;background:transparent}
-.mood-tag.gt.sel{background:var(--pk2);color:white}
-
-/* === 行程頁 === */
-.sched-page{padding:14px}
-.sched-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.sched-title{font-size:15px;font-weight:700;color:var(--txt)}
-.add-btn{background:linear-gradient(135deg,var(--pk),var(--pur));color:white;border:none;border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer}
-
-.quick-add{background:white;border-radius:16px;padding:14px;border:1.5px solid var(--pk3);margin-bottom:12px}
-.qa-label{font-size:11px;font-weight:600;color:var(--txt2);margin-bottom:8px}
-.qa-who{display:flex;gap:6px;margin-bottom:8px}
-.who-btn{flex:1;padding:6px;border-radius:10px;border:1.5px solid;font-size:11px;cursor:pointer;transition:all 0.2s;font-weight:600}
-.who-btn.b{border-color:var(--sky2);color:#1971c2;background:transparent}
-.who-btn.b.sel{background:var(--sky3);border-color:var(--sky)}
-.who-btn.g{border-color:var(--pk2);color:#c2335a;background:transparent}
-.who-btn.g.sel{background:var(--pk3);border-color:var(--pk);}
-.who-btn.both{border-color:#cc5de8;color:#862e9c;background:transparent}
-.who-btn.both.sel{background:#f3d9fa;border-color:#cc5de8}
-
-.qa-types{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
-.qtype{background:var(--pk4);border:1.5px solid var(--border);border-radius:10px;padding:6px 4px;text-align:center;cursor:pointer;transition:all 0.15s}
-.qtype.sel{background:var(--pk2);border-color:var(--pk)}
-.qtype .qico{font-size:18px;display:block;line-height:1.2}
-.qtype .qtxt{font-size:9px;color:var(--txt2);margin-top:2px}
-.qtype.sel .qtxt{color:white;font-weight:600}
-
-.time-picker{display:flex;gap:6px;align-items:center;margin-bottom:8px}
-.time-picker select{flex:1;padding:6px 8px;border-radius:8px;border:1px solid var(--pk3);font-size:12px;color:var(--txt2);background:white}
-.time-picker span{font-size:11px;color:var(--txt3)}
-
-.save-btn{width:100%;background:linear-gradient(90deg,var(--pk),var(--pur));color:white;border:none;border-radius:12px;padding:8px;font-size:12px;font-weight:600;cursor:pointer}
-
-.sched-list{display:flex;flex-direction:column;gap:8px}
-.sched-item{background:white;border-radius:14px;padding:12px;border-left:4px solid;display:flex;align-items:center;gap:10px}
-.sched-item.boy{border-color:var(--sky)}
-.sched-item.girl{border-color:var(--pk)}
-.sched-item.together{border-color:#cc5de8}
-.si-ico{font-size:22px;line-height:1}
-.si-info{flex:1}
-.si-what{font-size:13px;font-weight:600;color:var(--txt)}
-.si-time{font-size:10px;color:var(--txt3);margin-top:2px}
-.si-who{font-size:9px;padding:2px 8px;border-radius:10px;font-weight:600}
-.si-who.b{background:var(--sky3);color:#1971c2}
-.si-who.g{background:var(--pk3);color:#c2335a}
-.si-who.t{background:#f3d9fa;color:#862e9c}
-
-.bottom-love{text-align:center;padding:12px;font-size:11px;color:var(--txt3)}
-</style>
-
-<div class="phone-frame">
-  <div class="status-bar">
-    <span class="time">9:41 AM</span>
-    <span class="icons">♡ ●●●</span>
-  </div>
-  <div class="app-header">
-    <div class="app-title"><span class="heart-deco">♡</span>球球的戀愛行事曆<span class="heart-deco">♡</span></div>
-    <div class="app-sub">和你在一起的每一天都是禮物 🌸</div>
-  </div>
-  <div class="tab-bar">
-    <div class="tab active" onclick="switchTab('shift',this)"><span class="tab-icon">🗓</span>班表</div>
-    <div class="tab" onclick="switchTab('cal',this)"><span class="tab-icon">📅</span>日歷</div>
-    <div class="tab" onclick="switchTab('sched',this)"><span class="tab-icon">💕</span>行程</div>
-  </div>
-  <div class="content" id="content-area"></div>
-</div>
-
-<script>
-const SHIFT_DATA = {
-  "0401": { me: ["12:00-16:00","14:00-17:30"], label:"球球", before:"采淳 02:00-12:00", after:"萱汶 14:00-24:00", day:"週三 4/1" },
-  "0403": { me: ["14:00-17:30"], label:"球球", before:"Ying 12:00-18:00", after:"韶芸 18:00-24:00", day:"週五 4/3" },
-  "0406": { me: ["12:00-16:00"], label:"球球", before:"Emily 09:00-12:00", after:"萱汶 14:00-24:00", day:"週一 4/6" },
-  "0407": { me: ["12:00-16:00"], label:"球球", before:"采淳 02:00-12:00", after:"韶芸 18:00-24:00", day:"週二 4/7" },
-  "0408": { me: ["12:00-16:00"], label:"球球", before:"萱汶 09:00-19:00", after:"韶芸 18:00-24:00", day:"週三 4/8" },
-  "0409": { me: ["12:00-16:00"], label:"球球", before:"Emily 09:00-12:00", after:"阿瑛 18:00-23:00", day:"週四 4/9" },
-  "0410": { me: ["14:00-17:30"], label:"球球", before:"Emily 09:00-12:00", after:"韶芸 18:00-24:00", day:"週五 4/10" },
-  "0413": { me: ["12:00-16:00"], label:"球球", before:"Ying 12:00-18:00", after:"萱汶 14:00-24:00", day:"週一 4/13" },
-  "0414": { me: ["12:00-16:00"], label:"球球", before:"Ying 12:00-18:00", after:"韶芸 18:00-24:00", day:"週二 4/14" },
-  "0416": { me: ["12:00-16:00"], label:"球球", before:"Ying 13:00-19:00", after:"阿瑛 18:00-23:00", day:"週四 4/16" },
-  "0417": { me: ["14:00-17:30"], label:"球球", before:"Ying 12:00-18:00", after:"韶芸 18:00-24:00", day:"週五 4/17" },
-  "0420": { me: ["12:00-16:00"], label:"球球", before:"Ying 12:00-18:00", after:"萱汶 14:00-24:00", day:"週一 4/20" },
-  "0421": { me: ["12:00-16:00"], label:"球球", before:"群翔 12:00-17:00", after:"韶芸 18:00-24:00", day:"週二 4/21" },
-  "0423": { me: ["12:00-16:00"], label:"球球", before:"Ying 13:00-19:00", after:"阿瑛 18:00-23:00", day:"週四 4/23" },
-  "0424": { me: ["14:00-17:30"], label:"球球", before:"Emily 09:00-12:00", after:"韶芸 18:00-24:00", day:"週五 4/24" },
-  "0427": { me: ["12:00-16:00"], label:"球球", before:"Ying 12:00-18:00", after:"萱汶 14:00-24:00", day:"週一 4/27" },
-  "0428": { me: ["12:00-16:00"], label:"球球", before:"Ying 12:00-18:00", after:"韶芸 18:00-24:00", day:"週二 4/28" },
-  "0430": { me: ["12:00-16:00"], label:"球球", before:"Ying 13:00-19:00", after:"阿瑛 18:00-23:00", day:"週四 4/30" },
-};
-const TW_HOLIDAYS_2026 = {
-  "0101":"元旦","0228":"228紀念日","0404":"兒童節","0405":"清明節",
-  "0501":"勞動節","0629":"端午節","0919":"中秋節","1010":"國慶日","1231":"跨年"
-};
-const HOLIDAY_ICONS = { "0101":"🎊","0228":"🕊","0404":"🧸","0405":"🌸","0501":"✊","0629":"🐉","0919":"🌕","1010":"🎏","1231":"🎆" };
-
-let currentTab = 'shift';
-let selectedDate = null;
-let moodData = {};
-let schedItems = [
-  {who:'g',icon:'🏥',what:'看醫生',time:'14:00',date:'4/8'},
-  {who:'b',icon:'⚽',what:'踢球',time:'19:00',date:'4/9'},
-  {who:'t',icon:'🍜',what:'吃晚餐約會',time:'18:30',date:'4/12'},
-];
-let currentWho = 'g';
-let currentType = null;
-
-function today() {
-  return '0408';
+:root {
+  --pink: #FF8FAB;
+  --pink-light: #FFD6E0;
+  --pink-pale: #FFF0F4;
+  --blue: #74C0FC;
+  --blue-light: #C5E8FF;
+  --blue-pale: #EEF7FF;
+  --purple: #C77DFF;
+  --grad: linear-gradient(135deg, #FF8FAB 0%, #C77DFF 50%, #74C0FC 100%);
+  --grad-soft: linear-gradient(135deg, #FFD6E0 0%, #E8D5FF 50%, #C5E8FF 100%);
+  --white: #FFFFFF;
+  --text: #4A3560;
+  --text-light: #9B8AB4;
+  --radius: 20px;
+  --shadow: 0 8px 32px rgba(199,125,255,0.15);
+  --shadow-card: 0 4px 20px rgba(255,143,171,0.2);
 }
 
-function switchTab(tab, el) {
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  currentTab = tab;
-  render();
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--grad-soft);
+  min-height: 100vh;
+  color: var(--text);
+  overflow-x: hidden;
+  padding-bottom: 80px;
 }
 
-function getWeekDays(startKey) {
-  const days = ['週一','週二','週三','週四','週五','週六','週日'];
-  const dates = [];
-  const [m,d] = [parseInt(startKey.slice(0,2)),parseInt(startKey.slice(2))];
-  for(let i=0;i<7;i++) {
-    const day = d+i;
-    const key = String(m).padStart(2,'0')+String(day).padStart(2,'0');
-    dates.push({key,label:days[i],d:day});
-  }
-  return dates;
+/* ===== TOP HEADER ===== */
+.app-header {
+  background: var(--grad);
+  padding: 16px 20px 12px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(199,125,255,0.3);
+}
+.app-header h1 {
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: white;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.app-header p { font-size: 11px; color: rgba(255,255,255,0.85); margin-top: 2px; }
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: white;
+  display: flex;
+  border-top: 1.5px solid var(--pink-light);
+  z-index: 200;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 20px rgba(199,125,255,0.15);
+}
+.nav-btn {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 8px 4px;
+  border: none; background: none; cursor: pointer;
+  font-size: 9px; color: var(--text-light);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 600;
+  transition: all 0.2s;
+  gap: 3px;
+}
+.nav-btn .icon { font-size: 22px; line-height: 1; }
+.nav-btn.active { color: var(--pink); }
+.nav-btn.active .icon { transform: scale(1.1); }
+
+/* ===== PAGES ===== */
+.page { display: none; padding: 16px; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ===== CARDS ===== */
+.card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-card);
+  border: 1.5px solid rgba(255,143,171,0.1);
+}
+.card-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
 }
 
-let shiftWeek = '0406';
-function renderShift() {
-  const todayKey = today();
-  const nextShiftKey = Object.keys(SHIFT_DATA).find(k=>k>=todayKey&&SHIFT_DATA[k])||todayKey;
-  const shift = SHIFT_DATA[nextShiftKey]||SHIFT_DATA['0408'];
-  const weekDays = getWeekDays(shiftWeek);
+/* ===== PAGE 1: \u73ed\u8868 ===== */
+.schedule-date-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--grad);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  color: white;
+}
+.schedule-date-nav button {
+  background: rgba(255,255,255,0.3);
+  border: none; color: white; font-size: 18px;
+  width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+}
+.schedule-date-nav .date-label { font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; }
 
-  return `<div class="shift-page">
-    <div class="week-nav">
-      <button onclick="prevWeek()">&#8249; 上週</button>
-      <span class="week-week-label">4月班表</span>
-      <button onclick="nextWeek()">下週 &#8250;</button>
-    </div>
-    <div class="my-shift-hero">
-      <div class="label">✨ 球球今天的班</div>
-      <div class="name">球球</div>
-      <div class="time">${shift.me.join('  /  ')}</div>
-      <div class="date">${shift.day}</div>
-    </div>
-    <div class="shift-context">
-      <div class="shift-ctx-card">
-        <div class="ctx-label">⬆ 早班（接我的班）</div>
-        <div class="ctx-name">${shift.before.split(' ')[0]}</div>
-        <div class="ctx-time">${shift.before.split(' ').slice(1).join(' ')}</div>
-      </div>
-      <div class="shift-ctx-card">
-        <div class="ctx-label">⬇ 晚班（我交接給）</div>
-        <div class="ctx-name">${shift.after.split(' ')[0]}</div>
-        <div class="ctx-time">${shift.after.split(' ').slice(1).join(' ')}</div>
-      </div>
-    </div>
-    <div class="day-list">
-      ${weekDays.map(({key,label,d})=>{
-        const s = SHIFT_DATA['04'+String(d).padStart(2,'0')];
-        const isToday = '04'+String(d).padStart(2,'0')===todayKey;
-        const holiday = TW_HOLIDAYS_2026['04'+String(d).padStart(2,'0')];
-        return `<div class="day-item${isToday?' today':''}">
-          <div>
-            <div class="day-name">${label} ${holiday?'🔴':''}</div>
-            <div class="day-date">4/${d}${holiday?' '+holiday:''}</div>
-          </div>
-          <div class="shift-tags">
-            ${s?s.me.map(t=>`<span class="stag me">球球 ${t}</span>`).join(''):`<span class="stag other">休假</span>`}
-            ${s?`<span class="stag early">${s.before.split(' ')[0]}</span>`:''}
-          </div>
-        </div>`;
-      }).join('')}
-    </div>
-    <div class="bottom-love">💕 下班了要記得傳訊息喔～</div>
-  </div>`;
+.my-shift-card {
+  background: linear-gradient(135deg, #FF8FAB, #FF6B9D);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 14px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 6px 24px rgba(255,107,157,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.my-shift-card::before {
+  content: '\u2728';
+  position: absolute; top: -10px; right: -10px;
+  font-size: 60px; opacity: 0.15;
+}
+.my-shift-card .label { font-size: 12px; opacity: 0.9; margin-bottom: 4px; }
+.my-shift-card .shift-name { font-family:'Nunito',sans-serif; font-size: 28px; font-weight:900; }
+.my-shift-card .shift-time { font-size: 18px; font-weight:700; margin-top: 4px; letter-spacing: 1px; }
+.my-shift-card .shift-rest { font-size: 11px; opacity:0.85; margin-top: 6px; }
+
+.handover-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;
+}
+.handover-card {
+  border-radius: 16px;
+  padding: 14px;
+  text-align: center;
+}
+.handover-card.prev { background: linear-gradient(135deg, #C5E8FF, #74C0FC); }
+.handover-card.next { background: linear-gradient(135deg, #FFD6E0, #FF8FAB); }
+.handover-card .h-label { font-size: 10px; font-weight:700; color: rgba(74,53,96,0.7); margin-bottom: 4px; }
+.handover-card .h-person { font-family:'Nunito',sans-serif; font-size: 16px; font-weight:800; color: var(--text); }
+.handover-card .h-time { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+.full-schedule-title {
+  font-family:'Nunito',sans-serif; font-size:14px; font-weight:800;
+  color: var(--text); margin-bottom: 10px; display:flex; align-items:center; gap:6px;
+}
+.shift-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  background: var(--pink-pale);
+  border: 1.5px solid rgba(255,143,171,0.15);
+}
+.shift-row.my-row {
+  background: linear-gradient(90deg, rgba(255,143,171,0.15), rgba(199,125,255,0.1));
+  border-color: var(--pink);
+}
+.shift-row .s-type { font-size: 12px; font-weight:700; color: var(--pink); }
+.shift-row .s-person { font-size: 13px; font-weight:700; }
+.shift-row .s-time { font-size: 11px; color: var(--text-light); }
+.me-badge {
+  background: var(--pink); color: white;
+  font-size: 9px; padding: 2px 7px; border-radius: 10px; font-weight:700;
 }
 
-function prevWeek() {
-  const d = parseInt(shiftWeek.slice(2))-7;
-  shiftWeek = '04'+String(Math.max(1,d)).padStart(2,'0');
-  document.getElementById('content-area').innerHTML = renderShift();
+/* ===== PAGE 2: \u65e5\u66c6 ===== */
+.calendar-nav {
+  display: flex; align-items:center; justify-content:space-between;
+  padding: 10px 0; margin-bottom: 10px;
 }
-function nextWeek() {
-  const d = parseInt(shiftWeek.slice(2))+7;
-  shiftWeek = '04'+String(Math.min(28,d)).padStart(2,'0');
-  document.getElementById('content-area').innerHTML = renderShift();
+.calendar-nav button {
+  background: var(--pink-light); border:none; color: var(--text);
+  font-size: 16px; width:36px; height:36px; border-radius:50%; cursor:pointer;
+}
+.calendar-nav .month-label {
+  font-family:'Nunito',sans-serif; font-size:18px; font-weight:900; color: var(--text);
+}
+.weekday-row {
+  display: grid; grid-template-columns: repeat(7,1fr);
+  text-align: center; margin-bottom: 6px;
+}
+.weekday-row span {
+  font-size: 10px; font-weight:700; color: var(--text-light); padding: 4px;
+}
+.weekday-row span:first-child { color: #FF6B6B; }
+.weekday-row span:last-child { color: #74C0FC; }
+
+.calendar-grid {
+  display: grid; grid-template-columns: repeat(7,1fr); gap: 3px;
+}
+.cal-day {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  display: flex; flex-direction: column; align-items:center; justify-content:center;
+  font-size: 13px; font-weight:600;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  background: rgba(255,255,255,0.6);
+  gap: 1px;
+}
+.cal-day:hover { transform: scale(1.05); }
+.cal-day.today {
+  background: var(--grad);
+  color: white;
+  box-shadow: 0 4px 12px rgba(199,125,255,0.4);
+}
+.cal-day.holiday { color: #FF4444; }
+.cal-day.sunday { color: #FF6B6B; }
+.cal-day.saturday { color: var(--blue); }
+.cal-day.other-month { opacity: 0.3; }
+.cal-day.has-note::after {
+  content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%);
+  width:4px; height:4px; border-radius:50%; background: var(--pink);
+}
+.cal-day .day-emoji { font-size: 8px; line-height:1; }
+.holiday-badge {
+  background: rgba(255,68,68,0.1); border: 1px solid rgba(255,68,68,0.2);
+  border-radius: 8px; padding: 3px 8px; font-size: 10px; color: #FF4444;
+  font-weight:600; margin-bottom: 6px; display: inline-block;
 }
 
-function renderCal() {
-  const todayKey = today();
-  const selKey = selectedDate||todayKey;
-  const daysInMonth = 30;
-  const firstDow = 2;
-  const cells = [];
-  for(let i=0;i<firstDow-1;i++) cells.push(null);
-  for(let d=1;d<=daysInMonth;d++) cells.push(d);
+/* Mood Modal */
+.modal-overlay {
+  display: none; position: fixed; inset:0;
+  background: rgba(74,53,96,0.4); backdrop-filter: blur(4px);
+  z-index: 500; align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-sheet {
+  background: white; border-radius: 24px 24px 0 0;
+  padding: 20px 16px 32px;
+  width: 100%; max-height: 80vh; overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.modal-handle { width:40px; height:4px; background: var(--pink-light); border-radius:2px; margin: 0 auto 16px; }
+.modal-title { font-family:'Nunito',sans-serif; font-size:16px; font-weight:900; margin-bottom:14px; color:var(--text); }
 
-  const moodEntry = moodData[selKey]||{boyMood:null,girlMood:null,boyTags:[],girlTags:[]};
-  const boyMoods = ['😊','😍','😴','😤','😢','😂','🥰','😎'];
-  const girlMoods = ['🥰','😊','😭','😡','😴','✨','😘','🤩'];
-  const boyTags = ['工作忙','運動了','吃好料','陪球球','打遊戲','看電影','很累'];
-  const girlTags = ['上班囉','想你了','好開心','買東西','看劇','吃甜食','超累'];
+/* Mood picker */
+.mood-section-title { font-size:12px; font-weight:700; color:var(--text-light); margin:12px 0 8px; }
+.mood-grid { display:grid; grid-template-columns: repeat(5,1fr); gap:8px; }
+.mood-option {
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding: 8px 4px; border-radius:12px; cursor:pointer;
+  border: 2px solid transparent; transition: all 0.2s;
+  background: var(--pink-pale);
+}
+.mood-option.selected { border-color: var(--pink); background: var(--pink-light); }
+.mood-option .m-emoji { font-size:22px; }
+.mood-option .m-label { font-size:9px; font-weight:700; color: var(--text-light); }
 
-  return `<div class="cal-page">
-    <div class="cal-header">
-      <div class="cal-month">2026年 4月</div>
-      <div class="cal-year">🌸 清明節連假 4/4-4/5</div>
-    </div>
-    <div class="cal-holiday-info">🗓 本月假日：清明節 4/4、4/5 連假｜勞動節 5/1</div>
-    <div class="cal-grid-header">
-      ${['一','二','三','四','五','六','日'].map((d,i)=>`<div class="cal-gh${i===5?' sat':i===6?' sun':''}">${d}</div>`).join('')}
-    </div>
-    <div class="cal-grid">
-      ${cells.map(d=>{
-        if(!d) return `<div class="cal-day empty"></div>`;
-        const key='04'+String(d).padStart(2,'0');
-        const isToday=key===todayKey, isSel=key===selKey;
-        const hol=TW_HOLIDAYS_2026[key];
-        const dow=(firstDow-1+d-1)%7;
-        const isSat=dow===5,isSun=dow===6;
-        const hasNote=moodData[key];
-        const icon=HOLIDAY_ICONS[key]||'';
-        return `<div class="cal-day${isToday?' today':''}${hol?' holiday':''}${isSat?' sat':''}${isSun?' sun':''}${isSel&&!isToday?' selected':''}${hasNote?' has-note':''}" onclick="selectDay('${key}')">
-          <span class="cnum">${d}</span>
-          ${icon?`<span class="cico">${icon}</span>`:''}
-        </div>`;
-      }).join('')}
-    </div>
-    <div class="mood-panel">
-      <div class="mood-date">💝 ${selKey==='0408'?'今天':selKey.replace('04','4月').replace(/^4月0?/,'4月')+' 日'} 心情日記</div>
-      <div class="mood-sides">
-        <div class="mood-side boy">
-          <div class="mood-side-label">💙 他</div>
-          <div class="mood-row">
-            <div class="mood-row-label">心情</div>
-            <div class="emoji-row">
-              ${boyMoods.map(e=>`<button class="emo-btn${moodEntry.boyMood===e?' selected':''}" onclick="setMood('boy','${e}')">${e}</button>`).join('')}
-            </div>
-          </div>
-          <div class="mood-row">
-            <div class="mood-row-label">今天做了</div>
-            <div class="tag-row">
-              ${boyTags.map(t=>`<span class="mood-tag bt${(moodEntry.boyTags||[]).includes(t)?' sel':''}" onclick="toggleTag('boy','${t}')">${t}</span>`).join('')}
-            </div>
-          </div>
-        </div>
-        <div class="mood-side girl">
-          <div class="mood-side-label">💗 她</div>
-          <div class="mood-row">
-            <div class="mood-row-label">心情</div>
-            <div class="emoji-row">
-              ${girlMoods.map(e=>`<button class="emo-btn${moodEntry.girlMood===e?' selected':''}" onclick="setMood('girl','${e}')">${e}</button>`).join('')}
-            </div>
-          </div>
-          <div class="mood-row">
-            <div class="mood-row-label">今天做了</div>
-            <div class="tag-row">
-              ${girlTags.map(t=>`<span class="mood-tag gt${(moodEntry.girlTags||[]).includes(t)?' sel':''}" onclick="toggleTag('girl','${t}')">${t}</span>`).join('')}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>`;
+.activity-grid { display:flex; flex-wrap:wrap; gap:6px; }
+.act-tag {
+  padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight:700;
+  background: var(--blue-pale); color: var(--text); cursor:pointer;
+  border: 2px solid transparent; transition: all 0.2s;
+}
+.act-tag.selected { border-color: var(--blue); background: var(--blue-light); }
+.act-tag.his { background: var(--blue-pale); }
+.act-tag.her { background: var(--pink-pale); }
+.act-tag.his.selected { border-color: var(--blue); background: var(--blue-light); }
+.act-tag.her.selected { border-color: var(--pink); background: var(--pink-light); }
+
+.save-btn {
+  width:100%; padding: 14px; border-radius: 16px;
+  background: var(--grad); border: none; color: white;
+  font-size: 14px; font-weight:700; cursor:pointer; margin-top: 16px;
+  font-family:'Nunito',sans-serif;
 }
 
-function selectDay(key) {
-  selectedDate = key;
-  document.getElementById('content-area').innerHTML = renderCal();
+/* ===== PAGE 3: \u884c\u7a0b\u8868 ===== */
+.schedule-tabs { display:flex; gap:8px; margin-bottom:14px; }
+.sched-tab {
+  flex:1; padding:10px; text-align:center; border-radius:12px;
+  font-size:12px; font-weight:700; cursor:pointer; border: 2px solid transparent;
+  transition: all 0.2s;
+  background: white; color: var(--text-light);
 }
-function setMood(who, emo) {
-  const key = selectedDate||today();
-  if(!moodData[key]) moodData[key]={boyMood:null,girlMood:null,boyTags:[],girlTags:[]};
-  if(who==='boy') moodData[key].boyMood=emo; else moodData[key].girlMood=emo;
-  document.getElementById('content-area').innerHTML = renderCal();
-}
-function toggleTag(who, tag) {
-  const key = selectedDate||today();
-  if(!moodData[key]) moodData[key]={boyMood:null,girlMood:null,boyTags:[],girlTags:[]};
-  const arr = who==='boy'?moodData[key].boyTags:moodData[key].girlTags;
-  const i=arr.indexOf(tag);
-  if(i>-1) arr.splice(i,1); else arr.push(tag);
-  document.getElementById('content-area').innerHTML = renderCal();
-}
+.sched-tab.active.his { background: var(--blue-light); border-color: var(--blue); color: var(--text); }
+.sched-tab.active.her { background: var(--pink-light); border-color: var(--pink); color: var(--text); }
 
-function renderSched() {
-  const types=[
-    {ico:'🍜',txt:'吃飯'},
-    {ico:'🎬',txt:'看電影'},
-    {ico:'🛍',txt:'購物'},
-    {ico:'🏥',txt:'看診'},
-    {ico:'✈',txt:'出遊'},
-    {ico:'💪',txt:'運動'},
-    {ico:'📚',txt:'讀書'},
-    {ico:'💤',txt:'休息'},
-  ];
-  return `<div class="sched-page">
-    <div class="sched-top">
-      <span class="sched-title">💌 雙人行程本</span>
-    </div>
-    <div class="quick-add">
-      <div class="qa-label">✏ 快速記錄行程</div>
-      <div class="qa-who">
-        <button class="who-btn b${currentWho==='b'?' sel':''}" onclick="setWho('b')">💙 他的</button>
-        <button class="who-btn g${currentWho==='g'?' sel':''}" onclick="setWho('g')">💗 她的</button>
-        <button class="who-btn both${currentWho==='t'?' sel':''}" onclick="setWho('t')">💜 一起</button>
-      </div>
-      <div class="qa-types">
-        ${types.map(t=>`<div class="qtype${currentType===t.txt?' sel':''}" onclick="setType('${t.txt}','${t.ico}')">
-          <span class="qico">${t.ico}</span><div class="qtxt">${t.txt}</div>
-        </div>`).join('')}
-      </div>
-      <div class="time-picker">
-        <select id="tp-month"><option>4月</option><option>5月</option></select>
-        <select id="tp-day">${Array.from({length:30},(_,i)=>`<option>${i+1}日</option>`).join('')}</select>
-        <select id="tp-hour">${Array.from({length:24},(_,i)=>`<option>${String(i).padStart(2,'0')}:00</option>`).join('')}</select>
-      </div>
-      <button class="save-btn" onclick="addSched()">💾 記錄這個行程</button>
-    </div>
-    <div class="sched-list">
-      ${schedItems.slice().reverse().map(s=>`
-        <div class="sched-item ${s.who==='b'?'boy':s.who==='g'?'girl':'together'}">
-          <div class="si-ico">${s.icon}</div>
-          <div class="si-info">
-            <div class="si-what">${s.what}</div>
-            <div class="si-time">${s.date} ${s.time}</div>
-          </div>
-          <span class="si-who ${s.who==='b'?'b':s.who==='g'?'g':'t'}">${s.who==='b'?'他的':s.who==='g'?'她的':'一起'}</span>
-        </div>
-      `).join('')}
-    </div>
-    <div class="bottom-love">💕 每個約定都要好好珍惜喔 ✨</div>
-  </div>`;
-}
-
-let currentTypeIcon = '📌';
-function setWho(w) { currentWho=w; document.getElementById('content-area').innerHTML=renderSched(); }
-function setType(t,ico) { currentType=t; currentTypeIcon=ico; document.getElementById('content-area').innerHTML=renderSched(); }
-function addSched() {
-  if(!currentType) { alert('請先選擇行程類型！'); return; }
-  const m=document.getElementById('tp-month').value;
-  const d=document.getElementById('tp-day').value;
-  const h=document.getElementById('tp-hour').value;
-  schedItems.push({who:currentWho,icon:currentTypeIcon,what:currentType,time:h,date:m+d});
-  currentType=null;
-  document.getElementById('content-area').innerHTML=renderSched();
-}
-
-function render() {
-  const area = document.getElementById('content-area');
-  if(currentTab==='shift') area.innerHTML=renderShift();
-  else if(currentTab==='cal') area.innerHTML=renderCal();
-  else area.innerHTML=renderSched();
-}
-
-render();
-</script>
+.trip-card {
+  border-radius: 16px;
