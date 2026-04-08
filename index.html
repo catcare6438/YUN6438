@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>熙&雅 💕 戀愛日記</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --pink: #FF8FAB;
+  --pink-light: #FFD6E0;
+  --pink-pale: #FFF0F4;
+  --blue: #74C0FC;
+  --blue-light: #C5E8FF;
+  --blue-pale: #EEF7FF;
+  --purple: #C77DFF;
+  --grad: linear-gradient(135deg, #FF8FAB 0%, #C77DFF 50%, #74C0FC 100%);
+  --grad-soft: linear-gradient(135deg, #FFD6E0 0%, #E8D5FF 50%, #C5E8FF 100%);
+  --white: #FFFFFF;
+  --text: #4A3560;
+  --text-light: #9B8AB4;
+  --radius: 20px;
+  --shadow: 0 8px 32px rgba(199,125,255,0.15);
+  --shadow-card: 0 4px 20px rgba(255,143,171,0.2);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--grad-soft);
+  min-height: 100vh;
+  color: var(--text);
+  overflow-x: hidden;
+  padding-bottom: 80px;
+}
+
+/* ===== TOP HEADER ===== */
+.app-header {
+  background: var(--grad);
+  padding: 16px 20px 12px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(199,125,255,0.3);
+}
+.app-header h1 {
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: white;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.app-header p { font-size: 11px; color: rgba(255,255,255,0.85); margin-top: 2px; }
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: white;
+  display: flex;
+  border-top: 1.5px solid var(--pink-light);
+  z-index: 200;
+  padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 20px rgba(199,125,255,0.15);
+}
+.nav-btn {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 8px 4px;
+  border: none; background: none; cursor: pointer;
+  font-size: 9px; color: var(--text-light);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-weight: 600;
+  transition: all 0.2s;
+  gap: 3px;
+}
+.nav-btn .icon { font-size: 22px; line-height: 1; }
+.nav-btn.active { color: var(--pink); }
+.nav-btn.active .icon { transform: scale(1.1); }
+
+/* ===== PAGES ===== */
+.page { display: none; padding: 16px; animation: fadeIn 0.3s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ===== CARDS ===== */
+.card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-card);
+  border: 1.5px solid rgba(255,143,171,0.1);
+}
+.card-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ===== PAGE 1: 班表 ===== */
+.schedule-date-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--grad);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  color: white;
+}
+.schedule-date-nav button {
+  background: rgba(255,255,255,0.3);
+  border: none; color: white; font-size: 18px;
+  width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+}
+.schedule-date-nav .date-label { font-family:'Nunito',sans-serif; font-weight:800; font-size:16px; }
+
+.my-shift-card {
+  background: linear-gradient(135deg, #FF8FAB, #FF6B9D);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 14px;
+  color: white;
+  text-align: center;
+  box-shadow: 0 6px 24px rgba(255,107,157,0.4);
+  position: relative;
+  overflow: hidden;
+}
+.my-shift-card::before {
+  content: '✨';
+  position: absolute; top: -10px; right: -10px;
+  font-size: 60px; opacity: 0.15;
+}
+.my-shift-card .label { font-size: 12px; opacity: 0.9; margin-bottom: 4px; }
+.my-shift-card .shift-name { font-family:'Nunito',sans-serif; font-size: 28px; font-weight:900; }
+.my-shift-card .shift-time { font-size: 18px; font-weight:700; margin-top: 4px; letter-spacing: 1px; }
+.my-shift-card .shift-rest { font-size: 11px; opacity:0.85; margin-top: 6px; }
+
+.handover-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;
+}
+.handover-card {
+  border-radius: 16px;
+  padding: 14px;
+  text-align: center;
+}
+.handover-card.prev { background: linear-gradient(135deg, #C5E8FF, #74C0FC); }
+.handover-card.next { background: linear-gradient(135deg, #FFD6E0, #FF8FAB); }
+.handover-card .h-label { font-size: 10px; font-weight:700; color: rgba(74,53,96,0.7); margin-bottom: 4px; }
+.handover-card .h-person { font-family:'Nunito',sans-serif; font-size: 16px; font-weight:800; color: var(--text); }
+.handover-card .h-time { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+.full-schedule-title {
+  font-family:'Nunito',sans-serif; font-size:14px; font-weight:800;
+  color: var(--text); margin-bottom: 10px; display:flex; align-items:center; gap:6px;
+}
+.shift-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  background: var(--pink-pale);
+  border: 1.5px solid rgba(255,143,171,0.15);
+}
+.shift-row.my-row {
+  background: linear-gradient(90deg, rgba(255,143,171,0.15), rgba(199,125,255,0.1));
+  border-color: var(--pink);
+}
+.shift-row .s-type { font-size: 12px; font-weight:700; color: var(--pink); }
+.shift-row .s-person { font-size: 13px; font-weight:700; }
+.shift-row .s-time { font-size: 11px; color: var(--text-light); }
+.me-badge {
+  background: var(--pink); color: white;
+  font-size: 9px; padding: 2px 7px; border-radius: 10px; font-weight:700;
+}
+
+/* ===== PAGE 2: 日曆 ===== */
+.calendar-nav {
+  display: flex; align-items:center; justify-content:space-between;
+  padding: 10px 0; margin-bottom: 10px;
+}
+.calendar-nav button {
+  background: var(--pink-light); border:none; color: var(--text);
+  font-size: 16px; width:36px; height:36px; border-radius:50%; cursor:pointer;
+}
+.calendar-nav .month-label {
+  font-family:'Nunito',sans-serif; font-size:18px; font-weight:900; color: var(--text);
+}
+.weekday-row {
+  display: grid; grid-template-columns: repeat(7,1fr);
+  text-align: center; margin-bottom: 6px;
+}
+.weekday-row span {
+  font-size: 10px; font-weight:700; color: var(--text-light); padding: 4px;
+}
+.weekday-row span:first-child { color: #FF6B6B; }
+.weekday-row span:last-child { color: #74C0FC; }
+
+.calendar-grid {
+  display: grid; grid-template-columns: repeat(7,1fr); gap: 3px;
+}
+.cal-day {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  display: flex; flex-direction: column; align-items:center; justify-content:center;
+  font-size: 13px; font-weight:600;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  background: rgba(255,255,255,0.6);
+  gap: 1px;
+}
+.cal-day:hover { transform: scale(1.05); }
+.cal-day.today {
+  background: var(--grad);
+  color: white;
+  box-shadow: 0 4px 12px rgba(199,125,255,0.4);
+}
+.cal-day.holiday { color: #FF4444; }
+.cal-day.sunday { color: #FF6B6B; }
+.cal-day.saturday { color: var(--blue); }
+.cal-day.other-month { opacity: 0.3; }
+.cal-day.has-note::after {
+  content:''; position:absolute; bottom:3px; left:50%; transform:translateX(-50%);
+  width:4px; height:4px; border-radius:50%; background: var(--pink);
+}
+.cal-day .day-emoji { font-size: 8px; line-height:1; }
+.holiday-badge {
+  background: rgba(255,68,68,0.1); border: 1px solid rgba(255,68,68,0.2);
+  border-radius: 8px; padding: 3px 8px; font-size: 10px; color: #FF4444;
+  font-weight:600; margin-bottom: 6px; display: inline-block;
+}
+
+/* Mood Modal */
+.modal-overlay {
+  display: none; position: fixed; inset:0;
+  background: rgba(74,53,96,0.4); backdrop-filter: blur(4px);
+  z-index: 500; align-items: flex-end; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-sheet {
+  background: white; border-radius: 24px 24px 0 0;
+  padding: 20px 16px 32px;
+  width: 100%; max-height: 80vh; overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.modal-handle { width:40px; height:4px; background: var(--pink-light); border-radius:2px; margin: 0 auto 16px; }
+.modal-title { font-family:'Nunito',sans-serif; font-size:16px; font-weight:900; margin-bottom:14px; color:var(--text); }
+
+/* Mood picker */
+.mood-section-title { font-size:12px; font-weight:700; color:var(--text-light); margin:12px 0 8px; }
+.mood-grid { display:grid; grid-template-columns: repeat(5,1fr); gap:8px; }
+.mood-option {
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding: 8px 4px; border-radius:12px; cursor:pointer;
+  border: 2px solid transparent; transition: all 0.2s;
+  background: var(--pink-pale);
+}
+.mood-option.selected { border-color: var(--pink); background: var(--pink-light); }
+.mood-option .m-emoji { font-size:22px; }
+.mood-option .m-label { font-size:9px; font-weight:700; color: var(--text-light); }
+
+.activity-grid { display:flex; flex-wrap:wrap; gap:6px; }
+.act-tag {
+  padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight:700;
+  background: var(--blue-pale); color: var(--text); cursor:pointer;
+  border: 2px solid transparent; transition: all 0.2s;
+}
+.act-tag.selected { border-color: var(--blue); background: var(--blue-light); }
+.act-tag.his { background: var(--blue-pale); }
+.act-tag.her { background: var(--pink-pale); }
+.act-tag.his.selected { border-color: var(--blue); background: var(--blue-light); }
+.act-tag.her.selected { border-color: var(--pink); background: var(--pink-light); }
+
+.save-btn {
+  width:100%; padding: 14px; border-radius: 16px;
+  background: var(--grad); border: none; color: white;
+  font-size: 14px; font-weight:700; cursor:pointer; margin-top: 16px;
+  font-family:'Nunito',sans-serif;
+}
+
+/* ===== PAGE 3: 行程表 ===== */
+.schedule-tabs { display:flex; gap:8px; margin-bottom:14px; }
+.sched-tab {
+  flex:1; padding:10px; text-align:center; border-radius:12px;
+  font-size:12px; font-weight:700; cursor:pointer; border: 2px solid transparent;
+  transition: all 0.2s;
+  background: white; color: var(--text-light);
+}
+.sched-tab.active.his { background: var(--blue-light); border-color: var(--blue); color: var(--text); }
+.sched-tab.active.her { background: var(--pink-light); border-color: var(--pink); color: var(--text); }
+
+.trip-card {
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.trip-card.his { background: linear-gradient(135deg, var(--blue-pale), var(--blue-light)); border: 1.5px solid var(--blue-light); }
+.trip-card.her { background: linear-gradient(135deg, var(--pink-pale), var(--pink-light)); border: 1.5px solid var(--pink-light); }
+.trip-date { font-size:11px; color: var(--text-light); font-weight:600; margin-bottom:4px; }
+.trip-title { font-size:14px; font-weight:700; }
+.trip-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+.trip-tag { padding:3px 10px; border-radius:10px; font-size:10px; font-weight:700; background: rgba(255,255,255,0.7); }
+
+.add-trip-btn {
+  width:100%; padding:12px; border-radius:14px;
+  background: white; border: 2px dashed var(--pink-light);
+  color: var(--pink); font-size:13px; font-weight:700; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  margin-bottom: 14px;
+}
+
+/* ===== PAGE 4: 紀念日 ===== */
+.anni-hero {
+  background: var(--grad);
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+.anni-days {
+  font-family:'Nunito',sans-serif;
+  font-size: 56px; font-weight:900; line-height:1;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.anni-days-label { font-size:13px; opacity:0.9; margin-top:4px; }
+.anni-date-label { font-size:11px; opacity:0.75; margin-top:2px; }
+
+.anni-card {
+  background: white; border-radius: 16px; padding: 14px 16px;
+  margin-bottom: 10px; display:flex; align-items:center; justify-content:space-between;
+  box-shadow: var(--shadow-card);
+}
+.anni-left { display:flex; align-items:center; gap:10px; }
+.anni-emoji { font-size: 28px; }
+.anni-info .a-name { font-size:13px; font-weight:700; }
+.anni-info .a-date { font-size:11px; color: var(--text-light); }
+.anni-right { text-align:right; }
+.anni-count { font-family:'Nunito',sans-serif; font-size:18px; font-weight:900; color: var(--pink); }
+.anni-next { font-size:10px; color: var(--text-light); }
+
+.add-anni-form {
+  background: white; border-radius: 16px; padding: 16px;
+  margin-bottom: 14px; box-shadow: var(--shadow-card);
+}
+.form-row { margin-bottom: 12px; }
+.form-label { font-size:11px; font-weight:700; color: var(--text-light); margin-bottom:4px; display:block; }
+.form-input {
+  width:100%; padding: 10px 14px; border-radius: 12px;
+  border: 1.5px solid var(--pink-light); font-size:13px;
+  background: var(--pink-pale); color: var(--text); outline:none;
+  font-family:'Noto Sans TC',sans-serif;
+}
+.form-input:focus { border-color: var(--pink); }
+.emoji-picker-row { display:flex; gap:8px; flex-wrap:wrap; }
+.emoji-pick-btn {
+  font-size:22px; padding: 8px; border-radius:12px; border: 2px solid transparent;
+  background: var(--pink-pale); cursor:pointer; transition: all 0.2s;
+}
+.emoji-pick-btn.selected { border-color: var(--pink); background: var(--pink-light); }
+
+/* ===== PAGE 5: 更新班表 ===== */
+.update-hero {
+  background: linear-gradient(135deg, #74C0FC, #C77DFF);
+  border-radius: 20px; padding: 20px; text-align:center; color:white;
+  margin-bottom: 16px;
+}
+.update-hero .title { font-family:'Nunito',sans-serif; font-size:20px; font-weight:900; }
+.update-hero p { font-size:12px; opacity:0.9; margin-top:6px; }
+
+.url-history-item {
+  background: white; border-radius: 14px; padding: 12px 14px;
+  margin-bottom: 8px; display:flex; align-items:center; gap:10px;
+  box-shadow: var(--shadow-card);
+}
+.url-history-item .url-icon { font-size:20px; }
+.url-history-item .url-info { flex:1; overflow:hidden; }
+.url-history-item .url-month { font-size:12px; font-weight:700; }
+.url-history-item .url-text { font-size:10px; color:var(--text-light); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.url-history-item .url-status { font-size:10px; font-weight:700; color: #4CAF50; }
+
+.sync-btn {
+  width:100%; padding: 14px; border-radius: 16px;
+  background: linear-gradient(135deg, #74C0FC, #C77DFF);
+  border: none; color: white; font-size:14px; font-weight:700;
+  cursor:pointer; font-family:'Nunito',sans-serif; margin-top:8px;
+}
+
+/* ===== FLOATING HEARTS ===== */
+.float-deco {
+  position: fixed; pointer-events:none; z-index:1;
+  font-size: 20px; opacity: 0.06;
+  animation: floatUp 8s infinite ease-in-out;
+}
+@keyframes floatUp {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(15deg); }
+}
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-60px);
+  background: var(--grad); color: white;
+  padding: 10px 20px; border-radius: 30px; font-size:13px; font-weight:700;
+  z-index: 999; transition: transform 0.3s; white-space:nowrap;
+  box-shadow: 0 4px 16px rgba(199,125,255,0.4);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* Loading */
+.loading-dot {
+  display: inline-block; width:8px; height:8px; border-radius:50%;
+  background: var(--pink); margin: 0 2px;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+.loading-dot:nth-child(2) { animation-delay:0.2s; background: var(--purple); }
+.loading-dot:nth-child(3) { animation-delay:0.4s; background: var(--blue); }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-8px)} }
+
+.empty-state { text-align:center; padding:30px; color: var(--text-light); }
+.empty-state .e-emoji { font-size:40px; margin-bottom:8px; }
+.empty-state p { font-size:13px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--pink-light); border-radius:2px; }
+</style>
+</head>
+<body>
+
+<!-- Floating deco -->
+<div class="float-deco" style="top:20%;left:5%">💕</div>
+<div class="float-deco" style="top:40%;right:5%;animation-delay:2s">🌸</div>
+<div class="float-deco" style="top:70%;left:8%;animation-delay:4s">✨</div>
+
+<!-- Header -->
+<div class="app-header">
+  <h1>💕 熙 & 雅 💕</h1>
+  <p>我們的戀愛日記 ♡</p>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== PAGE 1: 班表 ===== -->
+<div class="page active" id="page-schedule">
+  <div class="schedule-date-nav">
+    <button onclick="changeScheduleDay(-1)">‹</button>
+    <div class="date-label" id="schedDateLabel">載入中...</div>
+    <button onclick="changeScheduleDay(1)">›</button>
+  </div>
+
+  <div class="my-shift-card" id="myShiftCard">
+    <div class="label">🌸 球球今天的班</div>
+    <div class="shift-name" id="myShiftName">早班</div>
+    <div class="shift-time" id="myShiftTime">06:00 – 14:00</div>
+    <div class="shift-rest" id="myShiftExtra">👧 接早班的人：小花</div>
+  </div>
+
+  <div class="handover-row">
+    <div class="handover-card prev">
+      <div class="h-label">🌙 上一班</div>
+      <div class="h-person" id="prevPerson">-</div>
+      <div class="h-time" id="prevTime">-</div>
+    </div>
+    <div class="handover-card next">
+      <div class="h-label">☀️ 下一班</div>
+      <div class="h-person" id="nextPerson">-</div>
+      <div class="h-time" id="nextTime">-</div>
+    </div>
+  </div>
+
+  <div class="full-schedule-title">📋 今日完整班表</div>
+  <div id="fullScheduleList"></div>
+</div>
+
+<!-- ===== PAGE 2: 日曆 ===== -->
+<div class="page" id="page-calendar">
+  <div class="card">
+    <div class="calendar-nav">
+      <button onclick="changeCalMonth(-1)">‹</button>
+      <div class="month-label" id="calMonthLabel">2026年 1月</div>
+      <button onclick="changeCalMonth(1)">›</button>
+    </div>
+    <div class="weekday-row">
+      <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+  </div>
+
+  <!-- Selected day mood -->
+  <div class="card" id="selectedDayCard" style="display:none">
+    <div class="card-title" id="selectedDayTitle">💝 選擇日期</div>
+    <div id="selectedDayMood"></div>
+    <button class="save-btn" style="margin-top:10px" onclick="openMoodModal()">
+      ✏️ 記錄今天心情
+    </button>
+  </div>
+</div>
+
+<!-- ===== PAGE 3: 行程表 ===== -->
+<div class="page" id="page-trips">
+  <div class="schedule-tabs">
+    <div class="sched-tab active his" id="tripTab-his" onclick="switchTripTab('his')">💙 熙的行程</div>
+    <div class="sched-tab her" id="tripTab-her" onclick="switchTripTab('her')">💗 雅的行程</div>
+    <div class="sched-tab" id="tripTab-both" onclick="switchTripTab('both')">💕 一起的</div>
+  </div>
+
+  <button class="add-trip-btn" onclick="openTripModal()">
+    ➕ 新增行程
+  </button>
+
+  <div id="tripList"></div>
+</div>
+
+<!-- ===== PAGE 4: 紀念日 ===== -->
+<div class="page" id="page-anni">
+  <div class="anni-hero">
+    <div style="font-size:28px;margin-bottom:8px">💑</div>
+    <div class="anni-days" id="togetherDays">---</div>
+    <div class="anni-days-label">在一起的第幾天</div>
+    <div class="anni-date-label" id="togetherSince">設定紀念日後顯示</div>
+  </div>
+
+  <div id="anniList"></div>
+
+  <!-- Add anniversary form -->
+  <div class="card">
+    <div class="card-title">➕ 新增紀念日 / 生日</div>
+    <div class="add-anni-form" style="padding:0;box-shadow:none">
+      <div class="form-row">
+        <label class="form-label">名稱</label>
+        <input class="form-input" id="anniName" placeholder="例：在一起紀念日 🎂 雅的生日" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">日期</label>
+        <input class="form-input" type="date" id="anniDate" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">選個圖示</label>
+        <div class="emoji-picker-row" id="anniEmojiPicker">
+          <button class="emoji-pick-btn selected" data-emoji="💕" onclick="selectAnniEmoji(this)">💕</button>
+          <button class="emoji-pick-btn" data-emoji="🎂" onclick="selectAnniEmoji(this)">🎂</button>
+          <button class="emoji-pick-btn" data-emoji="💍" onclick="selectAnniEmoji(this)">💍</button>
+          <button class="emoji-pick-btn" data-emoji="🌸" onclick="selectAnniEmoji(this)">🌸</button>
+          <button class="emoji-pick-btn" data-emoji="🎉" onclick="selectAnniEmoji(this)">🎉</button>
+          <button class="emoji-pick-btn" data-emoji="✈️" onclick="selectAnniEmoji(this)">✈️</button>
+          <button class="emoji-pick-btn" data-emoji="🏠" onclick="selectAnniEmoji(this)">🏠</button>
+          <button class="emoji-pick-btn" data-emoji="🐾" onclick="selectAnniEmoji(this)">🐾</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">類型</label>
+        <div style="display:flex;gap:8px">
+          <button class="act-tag selected her" id="anniType-anniversary" onclick="selectAnniType('anniversary')">📅 週年紀念</button>
+          <button class="act-tag his" id="anniType-birthday" onclick="selectAnniType('birthday')">🎂 生日</button>
+          <button class="act-tag" id="anniType-other" onclick="selectAnniType('other')">⭐ 其他</button>
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveAnniversary()">💾 儲存紀念日</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE 5: 更新班表 ===== -->
+<div class="page" id="page-update">
+  <div class="update-hero">
+    <div class="title">📋 更新班表</div>
+    <p>每月貼上最新 Google 試算表連結<br>自動同步球球的班表資料 ✨</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📎 新增試算表連結</div>
+    <div class="form-row">
+      <label class="form-label">月份</label>
+      <input class="form-input" type="month" id="updateMonth" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">Google 試算表連結</label>
+      <input class="form-input" id="updateUrl" placeholder="https://docs.google.com/spreadsheets/..." />
+    </div>
+    <button class="sync-btn" onclick="saveSheetUrl()">🔄 儲存並同步</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📚 連結記錄</div>
+    <div id="urlHistoryList">
+      <div class="empty-state">
+        <div class="e-emoji">📋</div>
+        <p>還沒有連結記錄</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="background:linear-gradient(135deg,#FFF0F4,#EEF7FF)">
+    <div class="card-title">💡 班表說明</div>
+    <p style="font-size:12px;color:var(--text-light);line-height:1.8">
+      🌅 <b>早班</b>：06:00 – 14:00<br>
+      ☀️ <b>白班</b>：08:00 – 16:00<br>
+      🌆 <b>中班</b>：14:00 – 22:00<br>
+      🌙 <b>晚班</b>：22:00 – 06:00<br>
+      🌜 <b>大夜</b>：00:00 – 08:00<br>
+      📅 <b>休假</b>：今天放假囉！
+    </p>
+  </div>
+</div>
+
+<!-- ===== BOTTOM NAV ===== -->
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-schedule" onclick="switchPage('schedule')">
+    <span class="icon">🏥</span>班表
+  </button>
+  <button class="nav-btn" id="nav-calendar" onclick="switchPage('calendar')">
+    <span class="icon">📅</span>日曆
+  </button>
+  <button class="nav-btn" id="nav-trips" onclick="switchPage('trips')">
+    <span class="icon">🗺️</span>行程表
+  </button>
+  <button class="nav-btn" id="nav-anni" onclick="switchPage('anni')">
+    <span class="icon">💕</span>紀念日
+  </button>
+  <button class="nav-btn" id="nav-update" onclick="switchPage('update')">
+    <span class="icon">🔄</span>更新班表
+  </button>
+</div>
+
+<!-- ===== MOOD MODAL ===== -->
+<div class="modal-overlay" id="moodModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="moodModalTitle">💝 記錄今天心情</div>
+
+    <div class="mood-section-title">💙 熙的心情</div>
+    <div class="mood-grid" id="hisMoodGrid"></div>
+
+    <div class="mood-section-title">💕 雅的心情</div>
+    <div class="mood-grid" id="herMoodGrid"></div>
+
+    <div class="mood-section-title">💙 熙今天做了什麼</div>
+    <div class="activity-grid" id="hisActGrid"></div>
+
+    <div class="mood-section-title">💗 雅今天做了什麼</div>
+    <div class="activity-grid" id="herActGrid"></div>
+
+    <div class="mood-section-title">💑 一起做的事</div>
+    <div class="activity-grid" id="bothActGrid"></div>
+
+    <div class="mood-section-title">🌤️ 天氣</div>
+    <div class="mood-grid" id="weatherGrid"></div>
+
+    <button class="save-btn" onclick="saveMoodRecord()">💾 儲存今天記錄</button>
+    <button onclick="closeMoodModal()" style="width:100%;padding:12px;border:none;background:none;color:var(--text-light);font-size:13px;margin-top:8px;cursor:pointer">取消</button>
+  </div>
+</div>
+
+<!-- ===== TRIP MODAL ===== -->
+<div class="modal-overlay" id="tripModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🗺️ 新增行程</div>
+
+    <div class="form-row">
+      <label class="form-label">日期</label>
+      <input class="form-input" type="date" id="tripDate" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">行程名稱</label>
+      <input class="form-input" id="tripName" placeholder="例：去台中玩 🎡" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">誰的行程</label>
+      <div style="display:flex;gap:8px">
+        <button class="act-tag his selected" id="tripOwner-his" onclick="selectTripOwner('his')">💙 熙</button>
+        <button class="act-tag her" id="tripOwner-her" onclick="selectTripOwner('her')">💗 雅</button>
+        <button class="act-tag" id="tripOwner-both" onclick="selectTripOwner('both')">💕 一起</button>
+      </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">行程類型（可多選）</label>
+      <div class="activity-grid" id="tripTypeGrid"></div>
+    </div>
+    <button class="save-btn" onclick="saveTripRecord()">💾 儲存行程</button>
+    <button onclick="closeTripModal()" style="width:100%;padding:12px;border:none;background:none;color:var(--text-light);font-size:13px;margin-top:8px;cursor:pointer">取消</button>
+  </div>
+</div>
+
+<script>
+// ===== SUPABASE INIT =====
+const { createClient } = supabase;
+const sb = createClient(
+  'https://raupmwembebxoxzmdppe.supabase.co',
+  'sb_publishable_84WIu59Amgf_k0GVIJZ4Ow_ivEBpZRR'
+);
+
+// ===== CONSTANTS =====
+const MOODS = [
+  {e:'😍',l:'超幸福'},{e:'😊',l:'開心'},{e:'😌',l:'平靜'},
+  {e:'😴',l:'好累'},{e:'😢',l:'難過'},{e:'😠',l:'生氣'},
+  {e:'🥰',l:'甜蜜'},{e:'😤',l:'煩躁'},{e:'🤒',l:'不舒服'},{e:'😎',l:'超帥'}
+];
+const WEATHERS = [
+  {e:'☀️',l:'晴天'},{e:'⛅',l:'多雲'},{e:'🌧️',l:'下雨'},
+  {e:'❄️',l:'好冷'},{e:'🌈',l:'彩虹'},{e:'🌪️',l:'強風'}
+];
+const HIS_ACTS = ['🏋️上健身房','🎮打遊戲','🍺喝酒','🚗開車兜風','📺看劇','😴補眠','👨‍👩‍👧家庭聚餐','🍜吃美食','🎵聽音樂','📱滑手機','🏀打球','🧹打掃家裡','💻工作加班','✈️出差'];
+const HER_ACTS = ['💆按摩','🛍️購物','☕喝咖啡','💅做美甲','🧘瑜珈','👗換新衣','📚看書','🎨畫畫','🐱陪貓咪','🍰吃甜點','💄做造型','🏃運動','🧸抱抱玩具','📷拍照'];
+const BOTH_ACTS = ['💑約會','🍽️吃飯','🎬看電影','🛒逛街','🏖️旅遊','🏠窩在家','🎡遊樂園','👫牽手散步','🥂慶祝','💤一起睡覺','📱視訊','🍲吃火鍋'];
+const TRIP_TYPES = ['☕咖啡廳','🍽️吃飯','🎬電影','🛒購物','🏖️旅遊','🎡遊樂園','🏥醫院','🏫學校','💼工作','🏋️健身','✈️出差','🎂生日活動','👨‍👩‍👧家庭聚餐','🎊派對','🏠居家','🚗兜風'];
+
+// 2026 Taiwan Holidays
+const TW_HOLIDAYS_2026 = {
+  '2026-01-01': {name:'元旦', emoji:'🎉'},
+  '2026-01-26': {name:'除夕', emoji:'🧧'},
+  '2026-01-27': {name:'春節', emoji:'🧧'},
+  '2026-01-28': {name:'初二', emoji:'🧧'},
+  '2026-01-29': {name:'初三', emoji:'🧧'},
+  '2026-01-30': {name:'初四補假', emoji:'🧧'},
+  '2026-02-28': {name:'和平紀念日', emoji:'🕊️'},
+  '2026-04-03': {name:'兒童節補假', emoji:'🎈'},
+  '2026-04-04': {name:'兒童節/清明', emoji:'🌸'},
+  '2026-04-05': {name:'清明節補假', emoji:'🌸'},
+  '2026-05-01': {name:'勞動節', emoji:'💼'},
+  '2026-06-19': {name:'端午節', emoji:'🐉'},
+  '2026-09-26': {name:'中秋節補假', emoji:'🌕'},
+  '2026-09-27': {name:'中秋節', emoji:'🌕'},
+  '2026-10-09': {name:'重陽節補假', emoji:'🏔️'},
+  '2026-10-10': {name:'國慶日', emoji:'🇹🇼'},
+};
+
+// ===== SHIFT DATA =====
+const SHIFT_TIMES = {
+  '早': {name:'早班', start:'06:00', end:'14:00', icon:'🌅'},
+  '白': {name:'白班', start:'08:00', end:'16:00', icon:'☀️'},
+  '中': {name:'中班', start:'14:00', end:'22:00', icon:'🌆'},
+  '晚': {name:'晚班', start:'22:00', end:'06:00', icon:'🌙'},
+  '大夜': {name:'大夜班', start:'00:00', end:'08:00', icon:'🌜'},
+  '休': {name:'休假', start:'-', end:'-', icon:'🌴'},
+  '例': {name:'例假', start:'-', end:'-', icon:'🛋️'},
+  '國': {name:'國定假日', start:'-', end:'-', icon:'🎉'},
+};
+
+// 班表資料（從 Google Sheet 結構對應，以 2026 年替換 2025）
+// 固定範例班表資料（依照實際試算表格式）
+let scheduleData = {}; // 格式: { 'YYYY-MM-DD': { my: '早', people: [{name,shift},...] } }
+let sheetUrls = {};
+
+// ===== STATE =====
+let currentScheduleDate = new Date();
+let currentCalYear = 2026;
+let currentCalMonth = 0; // Jan
+let selectedCalDate = null;
+let currentTripTab = 'his';
+let selectedAnniEmoji = '💕';
+let selectedAnniType = 'anniversary';
+let selectedTripOwner = 'his';
+let selectedTripTypes = [];
+let moodData = {};
+let anniData = [];
+let tripData = [];
+
+// Selected mood state
+let moodState = {
+  his: null, her: null,
+  hisActs: [], herActs: [], bothActs: [],
+  weather: null
+};
+
+// ===== INIT =====
+async function init() {
+  setupMoodModal();
+  setupTripModal();
+  renderSchedule();
+  renderCalendar();
+  renderTrips();
+  await loadFromSupabase();
+  setDefaultAnniDate();
+  setDefaultTripDate();
+  setDefaultUpdateMonth();
+}
+
+function setDefaultAnniDate() {
+  document.getElementById('anniDate').value = new Date().toISOString().split('T')[0];
+}
+function setDefaultTripDate() {
+  document.getElementById('tripDate').value = new Date().toISOString().split('T')[0];
+}
+function setDefaultUpdateMonth() {
+  const now = new Date();
+  document.getElementById('updateMonth').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+}
+
+// ===== SUPABASE LOAD =====
+async function loadFromSupabase() {
+  try {
+    // Load anniversaries
+    const {data: anniRows} = await sb.from('anniversaries').select('*').order('date');
+    if (anniRows) { anniData = anniRows; renderAnniversaries(); }
+
+    // Load trips
+    const {data: tripRows} = await sb.from('trips').select('*').order('date', {ascending:false});
+    if (tripRows) { tripData = tripRows; renderTrips(); }
+
+    // Load mood data
+    const {data: moodRows} = await sb.from('mood_records').select('*');
+    if (moodRows) {
+      moodRows.forEach(r => { moodData[r.date] = r; });
+      renderCalendar();
+    }
+
+    // Load sheet urls
+    const {data: urlRows} = await sb.from('sheet_urls').select('*').order('month', {ascending:false});
+    if (urlRows) {
+      urlRows.forEach(r => { sheetUrls[r.month] = r.url; });
+      renderUrlHistory();
+    }
+
+    // Load schedule data
+    const {data: schedRows} = await sb.from('schedule_data').select('*');
+    if (schedRows) {
+      schedRows.forEach(r => { scheduleData[r.date] = r.data; });
+      renderSchedule();
+    }
+
+  } catch(e) { console.log('Supabase load error:', e); }
+}
+
+// ===== PAGE SWITCH =====
+function switchPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+
+  if (page === 'calendar') renderCalendar();
+  if (page === 'anni') renderAnniversaries();
+  if (page === 'trips') renderTrips();
+  if (page === 'update') renderUrlHistory();
+}
+
+// ===== SCHEDULE PAGE =====
+function changeScheduleDay(delta) {
+  currentScheduleDate = new Date(currentScheduleDate);
+  currentScheduleDate.setDate(currentScheduleDate.getDate() + delta);
+  renderSchedule();
+}
+
+function renderSchedule() {
+  const d = currentScheduleDate;
+  const dateStr = formatDate(d);
+  const wdays = ['日','一','二','三','四','五','六'];
+  document.getElementById('schedDateLabel').textContent =
+    `${d.getMonth()+1}月${d.getDate()}日 (${wdays[d.getDay()]})`;
+
+  const dayData = scheduleData[dateStr];
+  if (!dayData) {
+    renderDefaultSchedule();
+    return;
+  }
+
+  // My shift (球球)
+  const myShift = SHIFT_TIMES[dayData.my] || SHIFT_TIMES['早'];
+  document.getElementById('myShiftName').textContent = myShift.icon + ' ' + myShift.name;
+  if (myShift.start !== '-') {
+    document.getElementById('myShiftTime').textContent = `${myShift.start} – ${myShift.end}`;
+  } else {
+    document.getElementById('myShiftTime').textContent = '今天放假 🎉';
+  }
+
+  // People list
+  const people = dayData.people || [];
+  const myIdx = people.findIndex(p => p.isMe);
+  const prevPerson = myIdx > 0 ? people[myIdx-1] : null;
+  const nextPerson = myIdx < people.length-1 ? people[myIdx+1] : null;
+
+  if (prevPerson) {
+    document.getElementById('prevPerson').textContent = prevPerson.name;
+    const ps = SHIFT_TIMES[prevPerson.shift];
+    document.getElementById('prevTime').textContent = ps ? `${ps.start}–${ps.end}` : '-';
+  } else {
+    document.getElementById('prevPerson').textContent = '無';
+    document.getElementById('prevTime').textContent = '-';
+  }
+  if (nextPerson) {
+    document.getElementById('nextPerson').textContent = nextPerson.name;
+    const ns = SHIFT_TIMES[nextPerson.shift];
+    document.getElementById('nextTime').textContent = ns ? `${ns.start}–${ns.end}` : '-';
+  } else {
+    document.getElementById('nextPerson').textContent = '無';
+    document.getElementById('nextTime').textContent = '-';
+  }
+
+  // Full schedule
+  const list = document.getElementById('fullScheduleList');
+  list.innerHTML = people.map(p => {
+    const s = SHIFT_TIMES[p.shift] || {name:p.shift, start:'-', end:'-', icon:'📋'};
+    return `<div class="shift-row ${p.isMe?'my-row':''}">
+      <div>
+        <div class="s-type">${s.icon} ${s.name}</div>
+        <div class="s-person">${p.name} ${p.isMe?'<span class="me-badge">我</span>':''}</div>
+      </div>
+      <div class="s-time">${s.start !== '-' ? s.start+'–'+s.end : '休假'}</div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><div class="e-emoji">😴</div><p>今天沒有班表資料</p></div>';
+}
+
+function renderDefaultSchedule() {
+  // Demo data when no real data
+  const demos = [
+    {name:'小美', shift:'早', isMe:false},
+    {name:'球球', shift:'白', isMe:true},
+    {name:'小花', shift:'中', isMe:false},
+    {name:'大明', shift:'晚', isMe:false},
+  ];
+  const my = demos.find(p=>p.isMe);
+  const myS = SHIFT_TIMES[my.shift];
+  document.getElementById('myShiftName').textContent = myS.icon + ' ' + myS.name;
+  document.getElementById('myShiftTime').textContent = `${myS.start} – ${myS.end}`;
+
+  const myIdx = demos.indexOf(my);
+  const prev = demos[myIdx-1];
+  const next = demos[myIdx+1];
+  document.getElementById('prevPerson').textContent = prev ? prev.name : '無';
+  document.getElementById('prevTime').textContent = prev ? `${SHIFT_TIMES[prev.shift].start}–${SHIFT_TIMES[prev.shift].end}` : '-';
+  document.getElementById('nextPerson').textContent = next ? next.name : '無';
+  document.getElementById('nextTime').textContent = next ? `${SHIFT_TIMES[next.shift].start}–${SHIFT_TIMES[next.shift].end}` : '-';
+
+  document.getElementById('fullScheduleList').innerHTML = demos.map(p => {
+    const s = SHIFT_TIMES[p.shift];
+    return `<div class="shift-row ${p.isMe?'my-row':''}">
+      <div>
+        <div class="s-type">${s.icon} ${s.name}</div>
+        <div class="s-person">${p.name} ${p.isMe?'<span class="me-badge">我</span>':''}</div>
+      </div>
+      <div class="s-time">${s.start}–${s.end}</div>
+    </div>`;
+  }).join('');
+}
+
+// ===== CALENDAR =====
+function changeCalMonth(delta) {
+  currentCalMonth += delta;
+  if (currentCalMonth > 11) { currentCalMonth = 0; currentCalYear++; }
+  if (currentCalMonth < 0) { currentCalMonth = 11; currentCalYear--; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  document.getElementById('calMonthLabel').textContent = `${currentCalYear}年 ${monthNames[currentCalMonth]}`;
+
+  const grid = document.getElementById('calendarGrid');
+  const today = new Date();
+  const firstDay = new Date(currentCalYear, currentCalMonth, 1);
+  const lastDay = new Date(currentCalYear, currentCalMonth+1, 0);
+  const startDow = firstDay.getDay();
+
+  let html = '';
+  // Prev month padding
+  for (let i = 0; i < startDow; i++) {
+    const d = new Date(currentCalYear, currentCalMonth, -startDow+i+1);
+    html += `<div class="cal-day other-month">${d.getDate()}</div>`;
+  }
+
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const dateStr = `${currentCalYear}-${String(currentCalMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dow = new Date(currentCalYear, currentCalMonth, d).getDay();
+    const isToday = today.getFullYear()===currentCalYear && today.getMonth()===currentCalMonth && today.getDate()===d;
+    const holiday = TW_HOLIDAYS_2026[dateStr];
+    const hasMood = moodData[dateStr];
+    const isSelected = selectedCalDate === dateStr;
+
+    let classes = 'cal-day';
+    if (isToday) classes += ' today';
+    else if (holiday) classes += ' holiday';
+    else if (dow === 0) classes += ' sunday';
+    else if (dow === 6) classes += ' saturday';
+    if (hasMood) classes += ' has-note';
+
+    const emoji = holiday ? holiday.emoji : '';
+
+    html += `<div class="${classes}" onclick="selectCalDay('${dateStr}', ${d})">
+      <span>${d}</span>
+      ${emoji ? `<span class="day-emoji">${emoji}</span>` : ''}
+    </div>`;
+  }
+
+  // Next month padding
+  const total = startDow + lastDay.getDate();
+  const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let i = 1; i <= remaining; i++) {
+    html += `<div class="cal-day other-month">${i}</div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+function selectCalDay(dateStr, day) {
+  selectedCalDate = dateStr;
+  const card = document.getElementById('selectedDayCard');
+  card.style.display = 'block';
+
+  const parts = dateStr.split('-');
+  const wdays = ['日','一','二','三','四','五','六'];
+  const d = new Date(dateStr);
+  const holiday = TW_HOLIDAYS_2026[dateStr];
+
+  let title = `💝 ${parts[1]}月${parts[2]}日 (${wdays[d.getDay()]})`;
+  if (holiday) title += ` ${holiday.emoji} ${holiday.name}`;
+  document.getElementById('selectedDayTitle').textContent = title;
+
+  const mood = moodData[dateStr];
+  if (mood) {
+    document.getElementById('selectedDayMood').innerHTML = `
+      <div style="display:flex;gap:16px;justify-content:center;padding:12px 0">
+        <div style="text-align:center">
+          <div style="font-size:10px;color:var(--text-light);margin-bottom:4px">💙 熙</div>
+          <div style="font-size:28px">${mood.his_mood || '❓'}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:var(--text-light);margin-bottom:4px">💗 雅</div>
+          <div style="font-size:28px">${mood.her_mood || '❓'}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:var(--text-light);margin-bottom:4px">天氣</div>
+          <div style="font-size:28px">${mood.weather || '❓'}</div>
+        </div>
+      </div>
+      ${mood.both_acts ? `<div style="font-size:11px;color:var(--text-light);text-align:center">💑 ${JSON.parse(mood.both_acts||'[]').join(' · ')}</div>` : ''}
+    `;
+  } else {
+    document.getElementById('selectedDayMood').innerHTML = `<p style="font-size:12px;color:var(--text-light);text-align:center;padding:10px 0">還沒有記錄 ✨</p>`;
+  }
+
+  card.scrollIntoView({behavior:'smooth', block:'start'});
+  renderCalendar();
+}
+
+// ===== MOOD MODAL =====
+function setupMoodModal() {
+  // His mood
+  document.getElementById('hisMoodGrid').innerHTML = MOODS.map(m =>
+    `<div class="mood-option" onclick="selectMood('his','${m.e}',this)">
+      <span class="m-emoji">${m.e}</span><span class="m-label">${m.l}</span>
+    </div>`
+  ).join('');
+
+  // Her mood
+  document.getElementById('herMoodGrid').innerHTML = MOODS.map(m =>
+    `<div class="mood-option" onclick="selectMood('her','${m.e}',this)">
+      <span class="m-emoji">${m.e}</span><span class="m-label">${m.l}</span>
+    </div>`
+  ).join('');
+
+  // Activities
+  document.getElementById('hisActGrid').innerHTML = HIS_ACTS.map(a =>
+    `<span class="act-tag his" onclick="toggleAct('his','${a}',this)">${a}</span>`
+  ).join('');
+  document.getElementById('herActGrid').innerHTML = HER_ACTS.map(a =>
+    `<span class="act-tag her" onclick="toggleAct('her','${a}',this)">${a}</span>`
+  ).join('');
+  document.getElementById('bothActGrid').innerHTML = BOTH_ACTS.map(a =>
+    `<span class="act-tag" onclick="toggleAct('both','${a}',this)">${a}</span>`
+  ).join('');
+
+  // Weather
+  document.getElementById('weatherGrid').innerHTML = WEATHERS.map(w =>
+    `<div class="mood-option" onclick="selectWeather('${w.e}',this)">
+      <span class="m-emoji">${w.e}</span><span class="m-label">${w.l}</span>
+    </div>`
+  ).join('');
+}
+
+function openMoodModal() {
+  moodState = {his:null, her:null, hisActs:[], herActs:[], bothActs:[], weather:null};
+  // Reset UI
+  document.querySelectorAll('#moodModal .mood-option').forEach(el=>el.classList.remove('selected'));
+  document.querySelectorAll('#moodModal .act-tag').forEach(el=>el.classList.remove('selected'));
+
+  const d = selectedCalDate ? new Date(selectedCalDate) : new Date();
+  const wdays = ['日','一','二','三','四','五','六'];
+  document.getElementById('moodModalTitle').textContent =
+    `💝 ${d.getMonth()+1}月${d.getDate()}日 (${wdays[d.getDay()]}) 記錄`;
+
+  // Pre-fill if exists
+  const existing = moodData[selectedCalDate || formatDate(new Date())];
+  if (existing) {
+    moodState.his = existing.his_mood;
+    moodState.her = existing.her_mood;
+    moodState.weather = existing.weather;
+  }
+
+  document.getElementById('moodModal').classList.add('open');
+}
+
+function closeMoodModal() {
+  document.getElementById('moodModal').classList.remove('open');
+}
+
+function selectMood(who, emoji, el) {
+  moodState[who] = emoji;
+  const grid = document.getElementById(who+'MoodGrid');
+  grid.querySelectorAll('.mood-option').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function toggleAct(who, act, el) {
+  const key = who+'Acts';
+  if (moodState[key].includes(act)) {
+    moodState[key] = moodState[key].filter(a=>a!==act);
+    el.classList.remove('selected');
+  } else {
+    moodState[key].push(act);
+    el.classList.add('selected');
+  }
+}
+
+function selectWeather(emoji, el) {
+  moodState.weather = emoji;
+  document.querySelectorAll('#weatherGrid .mood-option').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+async function saveMoodRecord() {
+  const dateStr = selectedCalDate || formatDate(new Date());
+  const record = {
+    date: dateStr,
+    his_mood: moodState.his,
+    her_mood: moodState.her,
+    his_acts: JSON.stringify(moodState.hisActs),
+    her_acts: JSON.stringify(moodState.herActs),
+    both_acts: JSON.stringify(moodState.bothActs),
+    weather: moodState.weather
+  };
+
+  try {
+    const {error} = await sb.from('mood_records').upsert(record, {onConflict:'date'});
+    if (!error) {
+      moodData[dateStr] = record;
+      showToast('💝 心情記錄已儲存！');
+      closeMoodModal();
+      renderCalendar();
+      selectCalDay(dateStr, parseInt(dateStr.split('-')[2]));
+    } else throw error;
+  } catch(e) {
+    console.error(e);
+    moodData[dateStr] = record; // local fallback
+    showToast('💝 心情記錄已儲存！');
+    closeMoodModal();
+    renderCalendar();
+  }
+}
+
+// ===== TRIP MODAL =====
+function setupTripModal() {
+  document.getElementById('tripTypeGrid').innerHTML = TRIP_TYPES.map(t =>
+    `<span class="act-tag" onclick="toggleTripType('${t}',this)">${t}</span>`
+  ).join('');
+}
+
+function openTripModal() {
+  selectedTripTypes = [];
+  selectedTripOwner = 'his';
+  document.querySelectorAll('#tripModal .act-tag').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('tripOwner-his').classList.add('selected');
+  document.getElementById('tripModal').classList.add('open');
+}
+
+function closeTripModal() {
+  document.getElementById('tripModal').classList.remove('open');
+}
+
+function selectTripOwner(who) {
+  selectedTripOwner = who;
+  ['his','her','both'].forEach(w => {
+    const btn = document.getElementById('tripOwner-'+w);
+    btn.classList.remove('selected','his','her');
+    if (w === who) {
+      btn.classList.add('selected', w === 'both' ? '' : w);
+      btn.classList.add(w !== 'both' ? w : '');
+    }
+  });
+}
+
+function toggleTripType(type, el) {
+  if (selectedTripTypes.includes(type)) {
+    selectedTripTypes = selectedTripTypes.filter(t=>t!==type);
+    el.classList.remove('selected');
+  } else {
+    selectedTripTypes.push(type);
+    el.classList.add('selected');
+  }
+}
+
+async function saveTripRecord() {
+  const name = document.getElementById('tripName').value.trim();
+  const date = document.getElementById('tripDate').value;
+  if (!name || !date) { showToast('⚠️ 請填寫日期和名稱'); return; }
+
+  const record = {
+    date, name,
+    owner: selectedTripOwner,
+    types: JSON.stringify(selectedTripTypes),
+    created_at: new Date().toISOString()
+  };
+
+  try {
+    const {data, error} = await sb.from('trips').insert(record).select().single();
+    if (!error && data) {
+      tripData.unshift(data);
+    } else throw error;
+  } catch(e) {
+    record.id = Date.now();
+    tripData.unshift(record);
+  }
+
+  showToast('🗺️ 行程已新增！');
+  closeTripModal();
+  document.getElementById('tripName').value = '';
+  renderTrips();
+}
+
+function switchTripTab(tab) {
+  currentTripTab = tab;
+  ['his','her','both'].forEach(t => {
+    const btn = document.getElementById('tripTab-'+t);
+    btn.classList.remove('active','his','her');
+    if (t === tab) { btn.classList.add('active', t !== 'both' ? t : ''); }
+  });
+  renderTrips();
+}
+
+function renderTrips() {
+  const list = document.getElementById('tripList');
+  if (!list) return;
+  const filtered = currentTripTab === 'both'
+    ? tripData.filter(t => t.owner === 'both')
+    : tripData.filter(t => t.owner === currentTripTab || t.owner === 'both');
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="e-emoji">${currentTripTab==='his'?'💙':'💗'}</div><p>還沒有行程記錄</p></div>`;
+    return;
+  }
+  list.innerHTML = filtered.map(t => {
+    const types = JSON.parse(t.types||'[]');
+    return `<div class="trip-card ${t.owner}">
+      <div class="trip-date">📅 ${t.date}</div>
+      <div class="trip-title">${t.owner==='both'?'💕':''}${t.owner==='his'?'💙':''}${t.owner==='her'?'💗':''} ${t.name}</div>
+      <div class="trip-tags">${types.map(tp=>`<span class="trip-tag">${tp}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+// ===== ANNIVERSARIES =====
+function selectAnniEmoji(btn) {
+  selectedAnniEmoji = btn.dataset.emoji;
+  document.querySelectorAll('.emoji-pick-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function selectAnniType(type) {
+  selectedAnniType = type;
+  ['anniversary','birthday','other'].forEach(t => {
+    document.getElementById('anniType-'+t).classList.remove('selected','his','her');
+  });
+  const btn = document.getElementById('anniType-'+type);
+  btn.classList.add('selected', type==='birthday'?'his':type==='anniversary'?'her':'');
+}
+
+async function saveAnniversary() {
+  const name = document.getElementById('anniName').value.trim();
+  const date = document.getElementById('anniDate').value;
+  if (!name || !date) { showToast('⚠️ 請填寫名稱和日期'); return; }
+
+  const record = {
+    name, date,
+    emoji: selectedAnniEmoji,
+    type: selectedAnniType
+  };
+
+  try {
+    const {data, error} = await sb.from('anniversaries').insert(record).select().single();
+    if (!error && data) anniData.push(data);
+    else throw error;
+  } catch(e) { record.id = Date.now(); anniData.push(record); }
+
+  showToast('💕 紀念日已新增！');
+  document.getElementById('anniName').value = '';
+  renderAnniversaries();
+}
+
+function renderAnniversaries() {
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Find main anniversary (first one that's type 'anniversary')
+  const mainAnni = anniData.find(a => a.type === 'anniversary');
+  if (mainAnni) {
+    const anniDate = new Date(mainAnni.date);
+    const days = Math.floor((today - anniDate) / 86400000);
+    document.getElementById('togetherDays').textContent = days >= 0 ? days + 1 : 0;
+    document.getElementById('togetherSince').textContent =
+      `${mainAnni.date} 開始 · ${mainAnni.name}`;
+  }
+
+  const list = document.getElementById('anniList');
+  if (!list) return;
+
+  if (anniData.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="e-emoji">💕</div><p>新增你們的紀念日吧！</p></div>`;
+    return;
+  }
+
+  list.innerHTML = anniData.map(a => {
+    const aDate = new Date(a.date);
+    const days = Math.floor((today - aDate) / 86400000) + 1;
+
+    // Next occurrence (for birthday/anniversary)
+    let nextInfo = '';
+    if (a.type === 'birthday' || a.type === 'anniversary') {
+      const thisYear = new Date(today.getFullYear(), aDate.getMonth(), aDate.getDate());
+      const nextOcc = thisYear < today
+        ? new Date(today.getFullYear()+1, aDate.getMonth(), aDate.getDate())
+        : thisYear;
+      const daysUntil = Math.floor((nextOcc - today) / 86400000);
+      nextInfo = daysUntil === 0 ? '🎉 就是今天！' : `還有 ${daysUntil} 天`;
+    }
+
+    return `<div class="anni-card">
+      <div class="anni-left">
+        <div class="anni-emoji">${a.emoji}${a.type==='birthday'?'🎂':''}</div>
+        <div class="anni-info">
+          <div class="a-name">${a.name}</div>
+          <div class="a-date">📅 ${a.date}</div>
+        </div>
+      </div>
+      <div class="anni-right">
+        ${days > 0 ? `<div class="anni-count">第 ${days} 天</div>` : ''}
+        ${nextInfo ? `<div class="anni-next">${nextInfo}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== UPDATE SHEET URL =====
+async function saveSheetUrl() {
+  const month = document.getElementById('updateMonth').value;
+  const url = document.getElementById('updateUrl').value.trim();
+  if (!month || !url) { showToast('⚠️ 請填寫月份和連結'); return; }
+
+  try {
+    await sb.from('sheet_urls').upsert({month, url}, {onConflict:'month'});
+  } catch(e) {}
+
+  sheetUrls[month] = url;
+  showToast('✅ 連結已儲存！正在嘗試同步...');
+  document.getElementById('updateUrl').value = '';
+  renderUrlHistory();
+
+  // Attempt to parse schedule data
+  tryParseSheet(month, url);
+}
+
+async function tryParseSheet(month, url) {
+  // Convert Google Sheets URL to CSV export URL
+  const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  if (!match) return;
+  const sheetId = match[1];
+  const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
+
+  try {
+    const res = await fetch(csvUrl);
+    if (!res.ok) throw new Error('Cannot fetch');
+    const text = await res.text();
+    parseScheduleCSV(text, month);
+    showToast('🎉 班表同步成功！');
+  } catch(e) {
+    showToast('⚠️ 無法自動同步，請確認試算表為公開');
+  }
+}
+
+function parseScheduleCSV(csv, month) {
+  const rows = csv.split('\n').map(r => r.split(',').map(c => c.trim().replace(/"/g,'')));
+  const year = month.split('-')[0];
+  const mon = month.split('-')[1];
+
+  // Expected format: Date | 早班 | 白班 | 中班 | 晚班 | 大夜 or similar
+  // Try to detect header row
+  let headerRow = -1;
+  for (let i=0; i<Math.min(5, rows.length); i++) {
+    if (rows[i].some(c => c.includes('日期') || c.includes('早') || c.includes('班'))) {
+      headerRow = i; break;
+    }
+  }
+
+  // Parse by looking for date patterns
+  rows.forEach(row => {
+    const dateMatch = row[0] && row[0].match(/(\d{1,2})[\/\-](\d{1,2})/);
+    if (dateMatch) {
+      const d = String(dateMatch[2] || dateMatch[1]).padStart(2,'0');
+      const dateStr = `${year}-${mon}-${d}`;
+      // Try to find ball person (球球) and their shift
+      // This is a simplified parser - actual parsing depends on sheet structure
+      const people = [];
+      for (let i=1; i<row.length; i++) {
+        if (row[i] && row[i].length > 0) {
+          people.push({name: row[i], shift:'早', isMe: row[i].includes('球')});
+        }
+      }
+      if (people.length > 0) {
+        const myShift = people.find(p=>p.isMe)?.shift || '早';
+        scheduleData[dateStr] = {my: myShift, people};
+      }
+    }
+  });
+
+  // Save to Supabase
+  Object.entries(scheduleData).forEach(async ([date, data]) => {
+    try { await sb.from('schedule_data').upsert({date, data}); } catch(e){}
+  });
+}
+
+function renderUrlHistory() {
+  const list = document.getElementById('urlHistoryList');
+  const entries = Object.entries(sheetUrls).sort((a,b) => b[0].localeCompare(a[0]));
+  if (entries.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="e-emoji">📋</div><p>還沒有連結記錄</p></div>`;
+    return;
+  }
+  list.innerHTML = entries.map(([month, url]) => `
+    <div class="url-history-item">
+      <div class="url-icon">📋</div>
+      <div class="url-info">
+        <div class="url-month">${month}</div>
+        <div class="url-text">${url}</div>
+      </div>
+      <div class="url-status">✓ 已儲存</div>
+    </div>
+  `).join('');
+}
+
+// ===== HELPERS =====
+function formatDate(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Close modals on overlay click
+document.getElementById('moodModal').addEventListener('click', function(e) {
+  if (e.target === this) closeMoodModal();
+});
+document.getElementById('tripModal').addEventListener('click', function(e) {
+  if (e.target === this) closeTripModal();
+});
+
+// Start
+init();
+</script>
+</body>
+</html>
