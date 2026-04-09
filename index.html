@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>球球&熙寶的戀愛行事曆 💕</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --pk:#ff6b9d;--pk2:#ff8fab;--pk3:#ffb3c6;--pk4:#ffeef4;--pk5:#fff5f8;
+  --sky:#4dabf7;--sky2:#74c0fc;--sky3:#a5d8ff;--sky4:#e7f5ff;
+  --pur:#cc5de8;--pur2:#e599f7;--pur3:#f3d9fa;
+  --gold:#fcc419;--mint:#51cf66;
+  --txt:#2d1b2e;--txt2:#6b3a5a;--txt3:#a06080;--txt4:#c49ab0;
+  --white:#ffffff;--bg:#fff5f8;
+  --grad:linear-gradient(135deg,#ff8fab 0%,#cc5de8 50%,#74c0fc 100%);
+  --grad2:linear-gradient(135deg,#ffeef4 0%,#f3d9fa 50%,#e7f5ff 100%);
+}
+html,body{height:100%;background:var(--bg);font-family:-apple-system,'Segoe UI',sans-serif;color:var(--txt);overflow:hidden}
+
+/* Phone frame */
+.app{max-width:430px;height:100vh;max-height:900px;margin:0 auto;display:flex;flex-direction:column;background:var(--white);overflow:hidden;position:relative}
+@media(min-width:500px){.app{border-radius:36px;margin:20px auto;box-shadow:0 20px 60px #ff8fab40}}
+
+/* Header */
+.app-header{background:var(--grad);padding:env(safe-area-inset-top,12px) 16px 12px;flex-shrink:0}
+.header-inner{display:flex;align-items:center;justify-content:space-between}
+.app-title{color:white;font-size:17px;font-weight:700;letter-spacing:.5px}
+.header-date{color:rgba(255,255,255,.8);font-size:11px;margin-top:1px}
+.couple-avatars{display:flex;align-items:center;gap:4px}
+.avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid rgba(255,255,255,.6);background:rgba(255,255,255,.25);color:white;font-weight:700}
+
+/* Tab bar */
+.tab-bar{display:flex;background:var(--white);border-bottom:1px solid #fce4ec;flex-shrink:0;padding:0 4px}
+.tab{flex:1;padding:8px 2px 6px;text-align:center;cursor:pointer;border-bottom:2.5px solid transparent;transition:.2s;user-select:none}
+.tab.active{border-bottom-color:var(--pk)}
+.tab-ico{font-size:20px;line-height:1.2}
+.tab-lbl{font-size:10px;color:var(--txt3);margin-top:1px;font-weight:500}
+.tab.active .tab-lbl{color:var(--pk)}
+
+/* Scrollable content */
+.page{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.page-inner{padding:14px 14px 80px}
+
+/* ═══════════════════════════════
+   SHIFT PAGE
+═══════════════════════════════ */
+.shift-hero{background:var(--grad);border-radius:22px;padding:20px;color:white;margin-bottom:14px;position:relative;overflow:hidden}
+.shift-hero::before{content:'💕';position:absolute;right:12px;top:8px;font-size:60px;opacity:.12;transform:rotate(-10deg)}
+.shift-hero .sh-label{font-size:11px;opacity:.85;margin-bottom:6px}
+.shift-hero .sh-name{font-size:26px;font-weight:800}
+.shift-hero .sh-time{font-size:32px;font-weight:900;letter-spacing:.5px;margin:4px 0}
+.shift-hero .sh-date{font-size:11px;opacity:.8}
+
+.coworker-box{background:var(--white);border-radius:18px;padding:14px;border:1.5px solid var(--pk3);margin-bottom:14px}
+.cb-title{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:10px}
+.coworker-list{display:flex;flex-direction:column;gap:6px}
+.cw-row{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;background:var(--pk5)}
+.cw-ico{font-size:14px;width:24px;text-align:center}
+.cw-name{font-size:12px;font-weight:600;color:var(--txt2);flex:1}
+.cw-time{font-size:11px;color:var(--txt3)}
+.cw-badge{font-size:9px;padding:2px 7px;border-radius:8px;font-weight:600}
+.cw-badge.me{background:#ffe0ea;color:#c2335a}
+.cw-badge.early{background:#fff3bf;color:#7c5700}
+.cw-badge.late{background:#d3f9d8;color:#2b8a3e}
+.cw-badge.night{background:#e5dbff;color:#5f3dc4}
+
+.week-section{background:var(--white);border-radius:18px;overflow:hidden;border:1.5px solid var(--pk3)}
+.week-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--pk4)}
+.wn-btn{background:var(--pk4);border:none;border-radius:16px;padding:5px 12px;color:var(--pk);font-size:13px;cursor:pointer;font-weight:600}
+.wn-label{font-size:12px;font-weight:600;color:var(--txt2)}
+.week-day{display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid var(--pk4)}
+.week-day:last-child{border-bottom:none}
+.week-day.today{background:linear-gradient(90deg,#fff0f3,var(--white))}
+.wd-left{min-width:70px}
+.wd-name{font-size:12px;font-weight:600;color:var(--txt2)}
+.wd-date{font-size:10px;color:var(--txt3)}
+.wd-shifts{display:flex;flex-wrap:wrap;gap:4px;flex:1;justify-content:flex-end}
+.ws-tag{font-size:9px;padding:2px 8px;border-radius:8px;font-weight:500}
+.ws-tag.me{background:linear-gradient(90deg,#ff8fab,#cc5de8);color:white}
+.ws-tag.peer{background:var(--sky4);color:#1971c2}
+.ws-tag.off{background:var(--pk4);color:var(--txt4)}
+
+/* ═══════════════════════════════
+   CALENDAR PAGE
+═══════════════════════════════ */
+.cal-month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cmn-btn{background:var(--pk4);border:none;border-radius:16px;padding:5px 14px;color:var(--pk);font-size:14px;font-weight:700;cursor:pointer}
+.cmn-label{font-size:18px;font-weight:700;color:var(--txt)}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px}
+.cal-dow div{text-align:center;font-size:10px;font-weight:600;color:var(--txt3);padding:3px 0}
+.cal-dow div:first-child{color:#e03131}.cal-dow div:last-child{color:var(--sky)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:14px}
+.cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;position:relative;transition:.15s;font-size:13px}
+.cal-cell:not(.empty):hover{background:var(--pk4)}
+.cal-cell.empty{pointer-events:none}
+.cal-cell.today{background:var(--grad);color:white !important}
+.cal-cell.today .cc-num{color:white !important;font-weight:800}
+.cal-cell.selected:not(.today){outline:2px solid var(--pk);outline-offset:1px}
+.cal-cell.holiday .cc-num{color:#e03131;font-weight:600}
+.cal-cell.sat .cc-num{color:#1971c2}
+.cc-num{font-size:13px;font-weight:500;line-height:1}
+.cc-ico{font-size:9px;line-height:1}
+.cc-dots{position:absolute;bottom:2px;display:flex;gap:2px}
+.cc-dot{width:4px;height:4px;border-radius:50%}
+.cc-dot.has-mood{background:var(--pk)}
+.cc-dot.has-sched{background:var(--sky)}
+
+/* Holiday banner */
+.holiday-banner{background:linear-gradient(90deg,#fff0f3,#f3d9fa);border-radius:12px;padding:8px 12px;margin-bottom:12px;font-size:11px;color:var(--txt2);border:1px solid var(--pk3)}
+
+/* Mood diary */
+.mood-diary{background:var(--white);border-radius:20px;border:1.5px solid var(--pk3);overflow:hidden;margin-bottom:12px}
+.md-header{background:var(--grad);padding:12px 16px;color:white}
+.md-header-title{font-size:14px;font-weight:700}
+.md-header-sub{font-size:10px;opacity:.8;margin-top:2px}
+.md-body{padding:14px}
+.md-sides{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.md-side{border-radius:14px;padding:12px;border:1.5px solid}
+.md-side.xi{border-color:var(--sky2);background:var(--sky4)}
+.md-side.ya{border-color:var(--pk2);background:var(--pk4)}
+.md-side-title{font-size:12px;font-weight:700;margin-bottom:10px}
+.md-side.xi .md-side-title{color:#1971c2}
+.md-side.ya .md-side-title{color:#c2335a}
+.md-section{margin-bottom:10px}
+.md-sec-label{font-size:10px;color:var(--txt3);font-weight:600;margin-bottom:5px}
+.mood-chips{display:flex;flex-wrap:wrap;gap:3px}
+.mchip{font-size:10px;padding:3px 7px;border-radius:10px;cursor:pointer;border:1.5px solid transparent;transition:.15s;user-select:none}
+.mchip.xi-chip{border-color:var(--sky2);color:#1864ab;background:var(--white)}
+.mchip.xi-chip.sel{background:var(--sky2);color:white;border-color:var(--sky)}
+.mchip.ya-chip{border-color:var(--pk2);color:#c2335a;background:var(--white)}
+.mchip.ya-chip.sel{background:var(--pk2);color:white;border-color:var(--pk)}
+.photo-upload{margin-top:8px}
+.photo-upload-btn{width:100%;padding:8px;border-radius:10px;border:1.5px dashed;cursor:pointer;font-size:10px;text-align:center;transition:.15s;background:transparent}
+.photo-upload-btn.xi-btn{border-color:var(--sky2);color:#1864ab}
+.photo-upload-btn.ya-btn{border-color:var(--pk2);color:#c2335a}
+.photo-upload-btn:hover{opacity:.7}
+.photo-preview{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.photo-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;border:1.5px solid var(--pk3)}
+.photo-thumb-del{position:relative;display:inline-block}
+.photo-thumb-del::after{content:'✕';position:absolute;top:-4px;right:-4px;background:var(--pk);color:white;border-radius:50%;width:14px;height:14px;font-size:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:14px;text-align:center}
+.md-save{width:100%;margin-top:12px;background:var(--grad);color:white;border:none;border-radius:14px;padding:10px;font-size:13px;font-weight:700;cursor:pointer}
+
+.cw-same{background:linear-gradient(90deg,#fff0f3,#f3d9fa) !important;border:1px solid var(--pk3)}
+
+/* ═══════════════════════════════
+   ANNIVERSARY PAGE
+═══════════════════════════════ */
+.anni-hero{background:var(--grad);border-radius:22px;padding:20px;color:white;text-align:center;margin-bottom:14px;position:relative;overflow:hidden}
+.anni-hero::before{content:'💍';position:absolute;right:14px;top:10px;font-size:56px;opacity:.15}
+.anni-days{font-size:52px;font-weight:900;line-height:1}
+.anni-days-lbl{font-size:12px;opacity:.85;margin-top:4px}
+.anni-couple{font-size:14px;font-weight:600;margin-top:8px;opacity:.9}
+.anni-next{background:rgba(255,255,255,.2);border-radius:12px;padding:8px 14px;margin-top:10px;font-size:12px}
+
+.anni-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.anni-card{background:var(--white);border-radius:16px;padding:14px;border:1.5px solid var(--pk3);display:flex;align-items:center;gap:12px}
+.anni-card.passed{opacity:.6}
+.anni-card-ico{font-size:28px;flex-shrink:0}
+.anni-card-body{flex:1;min-width:0}
+.anni-card-name{font-size:13px;font-weight:600;color:var(--txt)}
+.anni-card-date{font-size:11px;color:var(--txt3);margin-top:2px}
+.anni-card-count{text-align:right;flex-shrink:0}
+.anni-card-days{font-size:20px;font-weight:800;color:var(--pk)}
+.anni-card-days-lbl{font-size:9px;color:var(--txt3)}
+
+.anni-add-form{background:var(--white);border-radius:18px;padding:14px;border:1.5px solid var(--pk3);margin-bottom:14px}
+.anni-add-title{font-size:13px;font-weight:700;color:var(--txt2);margin-bottom:12px}
+.anni-sticker-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.anni-stk{font-size:22px;cursor:pointer;padding:3px 5px;border-radius:8px;border:2px solid transparent;transition:.15s}
+.anni-stk:hover{background:var(--pk4);transform:scale(1.1)}
+.anni-stk.sel{border-color:var(--pk);background:var(--pk4)}
+
+.sched-tabs{display:flex;gap:8px;margin-bottom:14px}
+.stab{flex:1;padding:8px;border-radius:12px;border:1.5px solid var(--pk3);text-align:center;cursor:pointer;font-size:12px;font-weight:600;color:var(--txt3);transition:.2s}
+.stab.active{background:var(--grad);color:white;border-color:transparent}
+
+/* Add schedule */
+.add-sched-btn{width:100%;background:var(--grad);color:white;border:none;border-radius:16px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:12px}
+.add-form{background:var(--white);border-radius:18px;padding:14px;border:1.5px solid var(--pk3);margin-bottom:14px}
+.af-title{font-size:13px;font-weight:700;color:var(--txt2);margin-bottom:12px}
+.af-row{margin-bottom:10px}
+.af-label{font-size:10px;color:var(--txt3);font-weight:600;margin-bottom:5px}
+.af-who{display:flex;gap:6px}
+.who-btn{flex:1;padding:7px;border-radius:10px;border:1.5px solid;font-size:11px;cursor:pointer;font-weight:600;transition:.2s;background:transparent}
+.who-btn.b{border-color:var(--sky2);color:#1971c2}
+.who-btn.b.sel{background:var(--sky3);border-color:var(--sky)}
+.who-btn.g{border-color:var(--pk2);color:#c2335a}
+.who-btn.g.sel{background:var(--pk3);border-color:var(--pk)}
+.who-btn.t{border-color:var(--pur2);color:#862e9c}
+.who-btn.t.sel{background:var(--pur3);border-color:var(--pur)}
+
+/* Sticker picker */
+.sticker-section{margin-bottom:10px}
+.sticker-cats{display:flex;gap:5px;margin-bottom:8px;overflow-x:auto;padding-bottom:2px}
+.sticker-cats::-webkit-scrollbar{display:none}
+.scat{font-size:10px;padding:3px 10px;border-radius:10px;border:1px solid var(--pk3);cursor:pointer;white-space:nowrap;background:var(--pk5);color:var(--txt2)}
+.scat.active{background:var(--pk);color:white;border-color:var(--pk)}
+.sticker-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
+.stk{font-size:22px;text-align:center;cursor:pointer;padding:4px 2px;border-radius:8px;border:2px solid transparent;transition:.15s;line-height:1.2}
+.stk:hover{background:var(--pk4);transform:scale(1.1)}
+.stk.sel{border-color:var(--pk);background:var(--pk4)}
+.stk-selected-display{font-size:28px;text-align:center;padding:4px}
+
+.af-input{width:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--pk3);font-size:13px;color:var(--txt);background:var(--pk5)}
+.af-input:focus{outline:none;border-color:var(--pk)}
+.af-row-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.af-save{width:100%;background:var(--grad);color:white;border:none;border-radius:12px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px}
+
+/* Schedule list */
+.sched-list{display:flex;flex-direction:column;gap:8px}
+.sched-item{background:var(--white);border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px;border:1px solid var(--pk3);border-left:4px solid}
+.sched-item.b{border-left-color:var(--sky)}
+.sched-item.g{border-left-color:var(--pk)}
+.sched-item.t{border-left-color:var(--pur)}
+.si-ico{font-size:26px;line-height:1;flex-shrink:0}
+.si-body{flex:1;min-width:0}
+.si-title{font-size:13px;font-weight:600;color:var(--txt)}
+.si-meta{font-size:10px;color:var(--txt3);margin-top:2px}
+.si-badge{font-size:9px;padding:2px 8px;border-radius:8px;font-weight:600;flex-shrink:0}
+.si-badge.b{background:var(--sky4);color:#1864ab}
+.si-badge.g{background:var(--pk4);color:#c2335a}
+.si-badge.t{background:var(--pur3);color:#862e9c}
+.si-del{background:none;border:none;font-size:16px;cursor:pointer;color:var(--txt4);padding:4px;flex-shrink:0}
+.empty-state{text-align:center;padding:40px 20px;color:var(--txt3)}
+.empty-state .es-ico{font-size:48px;margin-bottom:8px}
+.empty-state p{font-size:13px}
+
+/* Toast */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(45,27,46,.9);color:white;padding:8px 20px;border-radius:20px;font-size:12px;z-index:999;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* Loading overlay */
+.loading{position:fixed;inset:0;background:var(--grad2);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;transition:.4s}
+.loading.hide{opacity:0;pointer-events:none}
+.loading-ico{font-size:64px;animation:pulse 1s infinite alternate}
+.loading-txt{font-size:16px;font-weight:700;color:var(--pk);margin-top:16px}
+.loading-sub{font-size:12px;color:var(--txt3);margin-top:6px}
+@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.15)}}
+
+/* Hidden file input */
+input[type=file]{display:none}
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading">
+  <div class="loading-ico">💕</div>
+  <div class="loading-txt">球球&熙寶的戀愛日記</div>
+  <div class="loading-sub">載入中，請稍候...</div>
+</div>
+
+<div class="app">
+  <div class="app-header">
+    <div class="header-inner">
+      <div>
+        <div class="app-title">💕 熙雅愛情日記</div>
+        <div class="header-date" id="hdr-date"></div>
+      </div>
+      <div class="couple-avatars">
+        <div class="avatar" style="background:rgba(116,192,252,.5)">熙</div>
+        <div style="color:white;font-size:14px">♡</div>
+        <div class="avatar" style="background:rgba(255,107,157,.5)">雅</div>
+      </div>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('shift',this)">
+      <div class="tab-ico">🗓</div><div class="tab-lbl">班表</div>
+    </div>
+    <div class="tab" onclick="switchTab('cal',this)">
+      <div class="tab-ico">📅</div><div class="tab-lbl">日歷</div>
+    </div>
+    <div class="tab" onclick="switchTab('sched',this)">
+      <div class="tab-ico">💌</div><div class="tab-lbl">行程</div>
+    </div>
+    <div class="tab" onclick="switchTab('anni',this)">
+      <div class="tab-ico">💍</div><div class="tab-lbl">紀念日</div>
+    </div>
+  </div>
+  <div class="page" id="page-content"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Hidden file inputs -->
+<input type="file" id="xi-photo-input" accept="image/*" multiple onchange="handlePhoto('xi',this)">
+<input type="file" id="ya-photo-input" accept="image/*" multiple onchange="handlePhoto('ya',this)">
+
+<script>
+// ═══════════════════ SUPABASE ═══════════════════
+const SUPA_URL = 'https://raupmwembebxoxzmdppe.supabase.co';
+const SUPA_KEY = 'sb_publishable_84WIu59Amgf_k0GVIJZ4Ow_ivEBpZRR';
+const { createClient } = supabase;
+const db = createClient(SUPA_URL, SUPA_KEY);
+
+// ═══════════════════ SHIFT DATA ═══════════════════
+const SHIFTS = {
+  "0404":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","萱汶 14:00-24:00","群翔 18:00-23:00"]},
+  "0405":{"ball":"球球 14:00-17:30","coworkers":["采淳 02:00-11:00","Ying 12:00-18:00","韶芸 18:00-24:00","萱汶 18:00-23:00"]},
+  "0407":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","Emily 09:00-12:00","小茹 12:00-18:00","韶芸 18:00-24:00","阿瑛 18:00-22:00","雅琳"]},
+  "0409":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","Emily 09:00-12:00","萱汶 14:00-24:00","阿瑛 18:00-23:00"]},
+  "0410":{"ball":"球球 14:00-17:30","coworkers":["采淳 02:00-12:00","曾姐 06:00-10:00","Emily 09:00-12:00","Ying 12:00-18:00","韶芸 18:00-24:00","群翔 18:00-24:00"]},
+  "0413":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","Ying 12:00-18:00","萱汶 14:00-24:00","小茹 18:00-23:00","群翔 03:00-07:00"]},
+  "0414":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","Ying 12:00-18:00","韶芸 18:00-24:00","阿瑛 18:00-22:00"]},
+  "0416":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","Ying 13:00-19:00","萱汶 14:00-24:00","阿瑛 18:00-23:00"]},
+  "0417":{"ball":"球球 14:00-17:30","coworkers":["采淳 02:00-12:00","Ying 12:00-18:00","韶芸 18:00-24:00","小茹 18:00-23:00"]},
+  "0420":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","Emily 09:00-12:00","Ying 12:00-18:00","萱汶 14:00-24:00","雅琳"]},
+  "0421":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","Emily 09:00-12:00","群翔 12:00-17:00","韶芸 18:00-24:00","雅琳"]},
+  "0423":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","曾姐 06:00-10:00","Emily 09:00-12:00","Ying 13:00-19:00","萱汶 14:00-24:00","阿瑛 18:00-23:00"]},
+  "0424":{"ball":"球球 14:00-17:30","coworkers":["采淳 02:00-12:00","Emily 09:00-12:00","Ying 12:00-18:00","萱汶 13:00-23:00","韶芸 18:00-24:00"]},
+  "0427":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","曾姐 06:00-10:00","Ying 12:00-18:00","萱汶 14:00-24:00","小茹 18:00-23:00","群翔 03:00-07:00"]},
+  "0428":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","Ying 12:00-18:00","韶芸 18:00-24:00","阿瑛 18:00-22:00"]},
+  "0430":{"ball":"球球 12:00-16:00","coworkers":["采淳 02:00-12:00","Ying 13:00-19:00","阿瑛 18:00-23:00","萱汶 19:00-24:00"]}
+};
+
+// TW Holidays 2026
+const TW_HOLIDAYS = {
+  "0101":"元旦 🎊","0228":"228紀念日 🕊","0404":"兒童節 🧸","0405":"清明節 🌸",
+  "0501":"勞動節 ✊","0629":"端午節 🐉","0919":"中秋節 🌕","1010":"國慶日 🎏"
+};
+const HOLI_ICO = {"0101":"🎊","0228":"🕊","0404":"🧸","0405":"🌸","0501":"✊","0629":"🐉","0919":"🌕","1010":"🎏"};
+
+// Sticker categories
+const STICKERS = {
+  "約會":{ico:"💑",items:["🍜","🍣","☕","🧋","🎬","🎡","🎠","🌅","🏖","🏔"]},
+  "心情":{ico:"😊",items:["😊","🥰","😍","😎","😤","😢","😭","🤩","😴","✨"]},
+  "活動":{ico:"⚽",items:["⚽","🏋","🧘","🎮","📚","🛍","🎵","🎨","🚴","🏊"]},
+  "節日":{ico:"🎉",items:["🎉","🎂","🎁","💐","🌹","🍰","🥂","🎆","🎇","🪅"]},
+  "生活":{ico:"🏠",items:["🏠","🚗","✈","🏥","💊","💪","😷","🛁","🛒","💻"]},
+  "愛心":{ico:"💕",items:["💕","💗","💝","💖","💞","💓","❤","🧡","💛","💚"]}
+};
+
+// Mood options - 30 per category
+const MOODS = {
+  feeling:["開心","喜悅","幸福","感恩","興奮","期待","平靜","放鬆","疲憊","無聊","難過","委屈","思念","擔心","緊張","憤怒","失落","後悔","羨慕","嫉妒","驚喜","感動","溫暖","甜蜜","寂寞","崩潰","加班哭哭","過勞","不想上班","愛你喔"],
+  body:["精神很好","有點累","非常疲憊","頭痛","胃痛","肌肉痠","睡眠充足","失眠","感冒了","生理期","身體不適","精力充沛","很有食慾","沒胃口","喉嚨痛","過敏發作","頭暈","心跳加速","放鬆舒適","需要抱抱"],
+  activity:["工作忙碌","準時下班","加班","在家休息","出去玩","吃好料","買東西","看電影","運動了","讀書","玩手機","煮飯","打掃","見朋友","陪家人","想你了","傳訊息給你","看你照片","做夢夢到你","偷偷想你"]
+};
+
+// ═══════════════════ STATE ═══════════════════
+let currentTab = 'shift';
+let currentMonth = new Date().getMonth()+1;
+let currentYear = 2026;
+let selectedDate = null;
+let moodState = {};
+let schedItems = [];
+let shiftWeekOffset = 0;
+let schedFilter = 'all';
+let showAddForm = false;
+let addFormData = {who:'t', sticker:'💕', stickerCat:'愛心', title:'', date:'', time:''};
+let xiPhotos = {}; // date -> [dataURLs]
+let yaPhotos = {};
+let isLoading = false;
+
+function todayKey(){
+  const n=new Date();
+  return String(n.getMonth()+1).padStart(2,'0')+String(n.getDate()).padStart(2,'0');
+}
+
+// ═══════════════════ SUPABASE HELPERS ═══════════════════
+async function loadData(){
+  try{
+    const [m1,m2,m3]=await Promise.all([
+      db.from('moods').select('*'),
+      db.from('schedules').select('*'),
+      db.from('anniversaries').select('*')
+    ]);
+    if(m1.data) m1.data.forEach(r=>{moodState[r.date]=r});
+    if(m2.data) schedItems=m2.data;
+    if(m3.data) anniItems=m3.data;
+  }catch(e){console.log('Load error',e)}
+}
+
+async function saveMood(dateKey, data){
+  try{
+    const {error}=await db.from('moods').upsert({date:dateKey,...data},{onConflict:'date'});
+    if(!error) showToast('💕 日記已儲存！');
+  }catch(e){showToast('儲存失敗，請稍後再試')}
+}
+
+async function saveSchedule(item){
+  try{
+    const {data,error}=await db.from('schedules').insert(item).select();
+    if(!error&&data){schedItems.push(data[0]);showToast('💌 行程已記錄！');}
+  }catch(e){showToast('儲存失敗')}
+}
+
+async function deleteSchedule(id){
+  try{
+    await db.from('schedules').delete().eq('id',id);
+    schedItems=schedItems.filter(s=>s.id!==id);
+    showToast('已刪除');
+  }catch(e){showToast('刪除失敗')}
+}
+
+// ═══════════════════ UI ═══════════════════
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+function switchTab(tab, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  currentTab=tab;
+  if(tab==='cal'&&!selectedDate) selectedDate=todayKey();
+  render();
+}
+
+function render(){
+  const p=document.getElementById('page-content');
+  if(currentTab==='shift') p.innerHTML=renderShift();
+  else if(currentTab==='cal') p.innerHTML=renderCal();
+  else if(currentTab==='anni') p.innerHTML=renderAnni();
+  else p.innerHTML=renderSched();
+}
+
+// ═══════════════════ SHIFT ═══════════════════
+function getWeekDates(offset){
+  // Find the Monday of current week + offset
+  const now=new Date(2026,3,9); // April 9 2026
+  const dow=now.getDay();
+  const mon=new Date(now);
+  mon.setDate(now.getDate()-(dow===0?6:dow-1)+offset*7);
+  const days=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);d.setDate(mon.getDate()+i);
+    days.push({m:d.getMonth()+1,d:d.getDate(),dow:i});
+  }
+  return days;
+}
+
+function renderShift(){
+  const tk=todayKey();
+  const shift=SHIFTS[tk];
+  const nextKey=Object.keys(SHIFTS).sort().find(k=>k>=tk)||Object.keys(SHIFTS).sort()[0];
+  const displayShift=SHIFTS[nextKey]||{ball:'今日休假 🌸',coworkers:[]};
+  
+  const displayDate=nextKey?`4/${parseInt(nextKey.slice(2))}`:'今日';
+  const days=getWeekDates(shiftWeekOffset);
+
+  const coworkers=displayShift.coworkers||[];
+  const ballTimeStr=displayShift.ball.replace('球球 ','');
+  
+  // Parse ball's start/end times in minutes
+  function toMin(t){
+    const m=t.match(/(\d{1,2})[:\.]?(\d{2})/);
+    if(!m) return -1;
+    return parseInt(m[1])*60+parseInt(m[2]);
+  }
+  const [bs,be]=ballTimeStr.split('-');
+  const ballStart=toMin(bs), ballEnd=toMin(be);
+
+  // Check overlap: worker overlaps with ball if their time window intersects ball's window
+  function overlaps(worker){
+    const m=worker.match(/(\d{1,2})[:\.](\d{2})-(\d{1,2})[:\.](\d{2})/);
+    if(!m) return false;
+    const ws=parseInt(m[1])*60+parseInt(m[2]);
+    const we=parseInt(m[3])*60+parseInt(m[4]);
+    return ws<ballEnd && we>ballStart;
+  }
+
+  function classify(worker){
+    const m=worker.match(/(\d{1,2})[:\.](\d{2})-/);
+    if(!m) return 'peer';
+    const h=parseInt(m[1])*60+parseInt(m[2]);
+    if(h<ballStart) return 'early';
+    if(h>=ballEnd) return 'late';
+    return 'same';
+  }
+
+  const sameShift=coworkers.filter(cw=>overlaps(cw));
+  const otherShift=coworkers.filter(cw=>!overlaps(cw));
+
+  const labels={'early':'早班','late':'晚班','night':'過夜','same':'同時段','peer':'搭班'};
+  const icons={'early':'🌅','late':'🌙','night':'⭐','same':'🤝','peer':'☀'};
+
+  return `<div class="page-inner">
+    <div class="shift-hero">
+      <div class="sh-label">✨ 球球今天的班 — ${displayDate}</div>
+      <div class="sh-name">球球</div>
+      <div class="sh-time">${ballTimeStr}</div>
+      <div class="sh-date">${shift?'今天有班 💪':'最近一班日期：'+displayDate}</div>
+      ${sameShift.length?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.3)">
+        <div style="font-size:10px;opacity:.8;margin-bottom:6px">🤝 同時段搭班夥伴</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">
+          ${sameShift.map(cw=>`<div style="background:rgba(255,255,255,.22);border-radius:10px;padding:4px 10px;font-size:11px;font-weight:600">
+            ${cw.split(' ')[0]} <span style="opacity:.8;font-weight:400">${cw.split(' ').slice(1).join(' ')}</span>
+          </div>`).join('')}
+        </div>
+      </div>`:''}
+    </div>
+
+    <div class="coworker-box">
+      <div class="cb-title">👥 全部搭班人員 &nbsp;<span style="font-weight:400;color:var(--txt3)">(${displayDate})</span></div>
+      <div class="coworker-list">
+        ${coworkers.length?coworkers.map(cw=>{
+          const cl=classify(cw);
+          const isSame=cl==='same';
+          return `<div class="cw-row${isSame?' cw-same':''}">
+            <span class="cw-ico">${icons[cl]||'☀'}</span>
+            <span class="cw-name">${cw.split(' ')[0]}</span>
+            <span class="cw-time">${cw.split(' ').slice(1).join(' ')}</span>
+            <span class="cw-badge ${isSame?'me':cl}">${isSame?'同時段':labels[cl]||'搭班'}</span>
+          </div>`;
+        }).join(''):`<div class="cw-row"><span class="cw-ico">🌸</span><span class="cw-name">今日無班</span></div>`}
+      </div>
+    </div>
+
+    <div class="week-section">
+      <div class="week-nav">
+        <button class="wn-btn" onclick="shiftWeekOffset--;render()">‹ 上週</button>
+        <span class="wn-label">4月 週班表</span>
+        <button class="wn-btn" onclick="shiftWeekOffset++;render()">下週 ›</button>
+      </div>
+      ${days.map(({m,d,dow})=>{
+        const key=`${String(m).padStart(2,'0')}${String(d).padStart(2,'0')}`;
+        const s=SHIFTS[key];
+        const isToday=key===tk;
+        const hol=TW_HOLIDAYS[key];
+        return `<div class="week-day${isToday?' today':''}">
+          <div class="wd-left">
+            <div class="wd-name">${['一','二','三','四','五','六','日'][dow]}${hol?` ${HOLI_ICO[key]||''}`:''}</div>
+            <div class="wd-date">${m}/${d}${hol?' 假':''}${isToday?' 今天':''}</div>
+          </div>
+          <div class="wd-shifts">
+            ${s?`<span class="ws-tag me">${s.ball.replace('球球 ','')}</span>`:`<span class="ws-tag off">休假</span>`}
+            ${s?s.coworkers.filter(cw=>{
+              const bts=s.ball.replace('球球 ','').split('-');
+              const bsm=toMin(bts[0]),bem=toMin(bts[1]);
+              const mm=cw.match(/(\d{1,2})[:\.](\d{2})-(\d{1,2})[:\.](\d{2})/);
+              if(!mm) return false;
+              const ws=parseInt(mm[1])*60+parseInt(mm[2]),we=parseInt(mm[3])*60+parseInt(mm[4]);
+              return ws<bem&&we>bsm;
+            }).map(cw=>`<span class="ws-tag peer">${cw.split(' ')[0]}</span>`).join(''):''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="text-align:center;padding:16px;font-size:11px;color:var(--txt4)">下班要傳訊息給寶貝喔 💕</div>
+  </div>`;
+}
+
+// ═══════════════════ CALENDAR ═══════════════════
+function renderCal(){
+  const sel=selectedDate||todayKey();
+  const tk=todayKey();
+  const year=currentYear, month=currentMonth;
+  const daysInMonth=new Date(year,month,0).getDate();
+  const firstDow=(new Date(year,month-1,1).getDay()+6)%7; // 0=Mon
+  
+  const cells=[];
+  for(let i=0;i<firstDow;i++) cells.push(null);
+  for(let d=1;d<=daysInMonth;d++) cells.push(d);
+
+  const monthHols=Object.entries(TW_HOLIDAYS).filter(([k])=>k.startsWith(String(month).padStart(2,'0')));
+
+  const moodEntry=moodState[sel]||{};
+
+  return `<div class="page-inner">
+    <div class="cal-month-nav">
+      <button class="cmn-btn" onclick="changeMonth(-1)">‹</button>
+      <span class="cmn-label">${year}年 ${month}月</span>
+      <button class="cmn-btn" onclick="changeMonth(1)">›</button>
+    </div>
+
+    ${monthHols.length?`<div class="holiday-banner">🗓 ${monthHols.map(([,v])=>v).join('　')}</div>`:''}
+
+    <div class="cal-dow">
+      ${['一','二','三','四','五','六','日'].map((d,i)=>`<div class="${i===5?'sat':i===6?'sun':''}">${d}</div>`).join('')}
+    </div>
+    <div class="cal-grid">
+      ${cells.map(d=>{
+        if(!d) return `<div class="cal-cell empty"></div>`;
+        const key=`${String(month).padStart(2,'0')}${String(d).padStart(2,'0')}`;
+        const isToday=key===tk&&year===2026;
+        const isSel=key===sel;
+        const hol=TW_HOLIDAYS[key];
+        const dow=(firstDow+d-1)%7;
+        const isSat=dow===5, isSun=dow===6;
+        const hasMood=!!moodState[key];
+        const hasSched=schedItems.some(s=>s.date_key===key);
+        const ico=HOLI_ICO[key]||'';
+        const hasShift=!!SHIFTS[key];
+        return `<div class="cal-cell${isToday?' today':''}${hol?' holiday':''}${isSat?' sat':''}${isSun?' sun':''}${isSel&&!isToday?' selected':''}" onclick="selectCalDay('${key}')">
+          <span class="cc-num">${d}</span>
+          ${ico?`<span class="cc-ico">${ico}</span>`:hasShift?`<span class="cc-ico">💼</span>`:''}
+          <div class="cc-dots">
+            ${hasMood?`<div class="cc-dot has-mood"></div>`:''}
+            ${hasSched?`<div class="cc-dot has-sched"></div>`:''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    ${renderMoodDiary(sel)}
+  </div>`;
+}
+
+function changeMonth(dir){
+  currentMonth+=dir;
+  if(currentMonth>12){currentMonth=1;currentYear++}
+  if(currentMonth<1){currentMonth=12;currentYear--}
+  render();
+}
+
+function selectCalDay(key){
+  selectedDate=key;
+  render();
+  setTimeout(()=>{
+    const md=document.querySelector('.mood-diary');
+    if(md) md.scrollIntoView({behavior:'smooth',block:'start'});
+  },100);
+}
+
+function renderMoodDiary(dateKey){
+  const d=parseInt(dateKey.slice(2));
+  const m=parseInt(dateKey.slice(0,2));
+  const entry=moodState[dateKey]||{};
+  
+  function chips(type, who, opts){
+    const selArr=entry[`${who}_${type}`]||[];
+    const cls=who==='xi'?'xi-chip':'ya-chip';
+    return opts.map(o=>`<span class="mchip ${cls}${selArr.includes(o)?' sel':''}" onclick="toggleMoodChip('${dateKey}','${who}','${type}','${o}')">${o}</span>`).join('');
+  }
+
+  const xiPhotosData=(xiPhotos[dateKey]||[]);
+  const yaPhotosData=(yaPhotos[dateKey]||[]);
+
+  return `<div class="mood-diary">
+    <div class="md-header">
+      <div class="md-header-title">💝 ${m}月${d}日 心情日記</div>
+      <div class="md-header-sub">用選的就好，不用打字 ✨</div>
+    </div>
+    <div class="md-body">
+      <div class="md-sides">
+        <div class="md-side xi">
+          <div class="md-side-title">💙 熙寶心情</div>
+          <div class="md-section">
+            <div class="md-sec-label">今天的心情（可複選）</div>
+            <div class="mood-chips">${chips('feeling','xi',MOODS.feeling)}</div>
+          </div>
+          <div class="md-section">
+            <div class="md-sec-label">身體狀況</div>
+            <div class="mood-chips">${chips('body','xi',MOODS.body)}</div>
+          </div>
+          <div class="md-section">
+            <div class="md-sec-label">今天做了什麼</div>
+            <div class="mood-chips">${chips('activity','xi',MOODS.activity)}</div>
+          </div>
+          <div class="photo-upload">
+            <div class="md-sec-label">心情照片</div>
+            <button class="photo-upload-btn xi-btn" onclick="document.getElementById('xi-photo-input').dataset.date='${dateKey}';document.getElementById('xi-photo-input').click()">
+              📷 上傳照片（可多選）
+            </button>
+            ${xiPhotosData.length?`<div class="photo-preview">${xiPhotosData.map((url,i)=>`<div class="photo-thumb-del" onclick="removePhoto('xi','${dateKey}',${i})"><img class="photo-thumb" src="${url}"></div>`).join('')}</div>`:''}
+          </div>
+        </div>
+        <div class="md-side ya">
+          <div class="md-side-title">💗 雅寶心情</div>
+          <div class="md-section">
+            <div class="md-sec-label">今天的心情（可複選）</div>
+            <div class="mood-chips">${chips('feeling','ya',MOODS.feeling)}</div>
+          </div>
+          <div class="md-section">
+            <div class="md-sec-label">身體狀況</div>
+            <div class="mood-chips">${chips('body','ya',MOODS.body)}</div>
+          </div>
+          <div class="md-section">
+            <div class="md-sec-label">今天做了什麼</div>
+            <div class="mood-chips">${chips('activity','ya',MOODS.activity)}</div>
+          </div>
+          <div class="photo-upload">
+            <div class="md-sec-label">心情照片</div>
+            <button class="photo-upload-btn ya-btn" onclick="document.getElementById('ya-photo-input').dataset.date='${dateKey}';document.getElementById('ya-photo-input').click()">
+              📷 上傳照片（可多選）
+            </button>
+            ${yaPhotosData.length?`<div class="photo-preview">${yaPhotosData.map((url,i)=>`<div class="photo-thumb-del" onclick="removePhoto('ya','${dateKey}',${i})"><img class="photo-thumb" src="${url}"></div>`).join('')}</div>`:''}
+          </div>
+        </div>
+      </div>
+      <button class="md-save" onclick="saveMoodEntry('${dateKey}')">💾 儲存今天的日記</button>
+    </div>
+  </div>`;
+}
+
+function toggleMoodChip(date, who, type, val){
+  if(!moodState[date]) moodState[date]={};
+  const key=`${who}_${type}`;
+  if(!moodState[date][key]) moodState[date][key]=[];
+  const arr=moodState[date][key];
+  const i=arr.indexOf(val);
+  if(i>-1) arr.splice(i,1); else arr.push(val);
+  render();
+}
+
+async function saveMoodEntry(dateKey){
+  const data={...moodState[dateKey],date:dateKey};
+  // Save photos as JSON strings
+  data.xi_photos=JSON.stringify(xiPhotos[dateKey]||[]);
+  data.ya_photos=JSON.stringify(yaPhotos[dateKey]||[]);
+  moodState[dateKey]={...moodState[dateKey],...data};
+  await saveMood(dateKey, data);
+}
+
+function handlePhoto(who, input){
+  const dateKey=input.dataset.date||selectedDate||todayKey();
+  const files=Array.from(input.files);
+  if(!files.length) return;
+  const store=who==='xi'?xiPhotos:yaPhotos;
+  if(!store[dateKey]) store[dateKey]=[];
+  
+  let loaded=0;
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      store[dateKey].push(e.target.result);
+      loaded++;
+      if(loaded===files.length){render();}
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value='';
+}
+
+function removePhoto(who, dateKey, idx){
+  const store=who==='xi'?xiPhotos:yaPhotos;
+  if(store[dateKey]) store[dateKey].splice(idx,1);
+  render();
+}
+
+// ═══════════════════ SCHEDULE ═══════════════════
+function renderSched(){
+  const filtered = schedFilter==='all'? schedItems
+    : schedItems.filter(s=>s.who===schedFilter);
+  
+  const today4=`${String(currentMonth).padStart(2,'0')}${String(new Date().getDate()).padStart(2,'0')}`;
+  const upcoming=filtered.filter(s=>s.date_key>=today4).sort((a,b)=>a.date_key>b.date_key?1:-1);
+  const past=filtered.filter(s=>s.date_key<today4).sort((a,b)=>a.date_key>b.date_key?-1:1);
+
+  const stickerGridHtml=()=>{
+    const cat=addFormData.stickerCat||'愛心';
+    const items=STICKERS[cat].items;
+    const cats=Object.keys(STICKERS);
+    return `<div class="sticker-cats">
+      ${cats.map(c=>`<div class="scat${addFormData.stickerCat===c?' active':''}" onclick="setStickerCat('${c}')">${STICKERS[c].ico} ${c}</div>`).join('')}
+    </div>
+    <div class="sticker-grid">
+      ${items.map(s=>`<div class="stk${addFormData.sticker===s?' sel':''}" onclick="setSticker('${s}')">${s}</div>`).join('')}
+    </div>`;
+  };
+
+  return `<div class="page-inner">
+    <div class="sched-tabs">
+      <div class="stab${schedFilter==='all'?' active':''}" onclick="schedFilter='all';render()">💕 全部</div>
+      <div class="stab${schedFilter==='b'?' active':''}" onclick="schedFilter='b';render()">💙 熙寶的</div>
+      <div class="stab${schedFilter==='g'?' active':''}" onclick="schedFilter='g';render()">💗 雅寶的</div>
+    </div>
+
+    <button class="add-sched-btn" onclick="toggleAddForm()">
+      ${showAddForm?'✕ 收起':'✚ 新增行程'}
+    </button>
+
+    ${showAddForm?`<div class="add-form">
+      <div class="af-title">💌 記錄新行程</div>
+      <div class="af-row">
+        <div class="af-label">是誰的行程？</div>
+        <div class="af-who">
+          <button class="who-btn b${addFormData.who==='b'?' sel':''}" onclick="setAddWho('b')">💙 熙寶</button>
+          <button class="who-btn g${addFormData.who==='g'?' sel':''}" onclick="setAddWho('g')">💗 雅寶</button>
+          <button class="who-btn t${addFormData.who==='t'?' sel':''}" onclick="setAddWho('t')">💜 一起</button>
+        </div>
+      </div>
+      <div class="af-row sticker-section">
+        <div class="af-label">選一個貼圖 <span class="stk-selected-display">${addFormData.sticker}</span></div>
+        ${stickerGridHtml()}
+      </div>
+      <div class="af-row">
+        <div class="af-label">行程名稱</div>
+        <input class="af-input" id="add-title" placeholder="例如：去吃火鍋" value="${addFormData.title}" oninput="addFormData.title=this.value">
+      </div>
+      <div class="af-row af-row-2">
+        <div>
+          <div class="af-label">日期</div>
+          <input class="af-input" id="add-date" type="date" value="${addFormData.date}" oninput="addFormData.date=this.value" min="2026-01-01" max="2026-12-31">
+        </div>
+        <div>
+          <div class="af-label">時間</div>
+          <input class="af-input" id="add-time" type="time" value="${addFormData.time}" oninput="addFormData.time=this.value">
+        </div>
+      </div>
+      <button class="af-save" onclick="addSchedItem()">💾 記錄這個行程</button>
+    </div>`:''}
+
+    ${upcoming.length?`<div style="font-size:11px;font-weight:600;color:var(--txt3);margin-bottom:8px">📅 即將到來</div>
+    <div class="sched-list">${upcoming.map(s=>schedCard(s)).join('')}</div>`:''}
+
+    ${past.length?`<div style="font-size:11px;font-weight:600;color:var(--txt3);margin:12px 0 8px">⏰ 過去的行程</div>
+    <div class="sched-list">${past.map(s=>schedCard(s)).join('')}</div>`:''}
+
+    ${!upcoming.length&&!past.length?`<div class="empty-state"><div class="es-ico">💕</div><p>還沒有行程喔<br>點上方按鈕新增第一個！</p></div>`:''}
+  </div>`;
+}
+
+function schedCard(s){
+  const dateStr=s.date_key?`${parseInt(s.date_key.slice(0,2))}/${parseInt(s.date_key.slice(2))}`:s.date||'';
+  const whoLabel={'b':'熙寶的','g':'雅寶的','t':'一起'};
+  return `<div class="sched-item ${s.who||'t'}">
+    <div class="si-ico">${s.sticker||'💕'}</div>
+    <div class="si-body">
+      <div class="si-title">${s.title||'約會'}</div>
+      <div class="si-meta">${dateStr} ${s.time||''}</div>
+    </div>
+    <span class="si-badge ${s.who||'t'}">${whoLabel[s.who]||'一起'}</span>
+    <button class="si-del" onclick="delSched(${s.id})">🗑</button>
+  </div>`;
+}
+
+function toggleAddForm(){showAddForm=!showAddForm;render()}
+function setAddWho(w){addFormData.who=w;render()}
+function setStickerCat(c){addFormData.stickerCat=c;render()}
+function setSticker(s){addFormData.sticker=s;render()}
+
+async function addSchedItem(){
+  const title=document.getElementById('add-title')?.value||addFormData.title;
+  const dateVal=document.getElementById('add-date')?.value||addFormData.date;
+  const time=document.getElementById('add-time')?.value||addFormData.time;
+  if(!title){showToast('請輸入行程名稱！');return}
+  if(!dateVal){showToast('請選擇日期！');return}
+  const parts=dateVal.split('-');
+  const dateKey=parts[1]+parts[2];
+  const item={who:addFormData.who,sticker:addFormData.sticker,title,date_key:dateKey,time,created_at:new Date().toISOString()};
+  await saveSchedule(item);
+  addFormData={who:'t',sticker:'💕',stickerCat:'愛心',title:'',date:'',time:''};
+  showAddForm=false;
+  render();
+}
+
+async function delSched(id){
+  if(!id){showToast('無法刪除');return}
+  await deleteSchedule(id);
+  render();
+}
+
+// ═══════════════════ ANNIVERSARY ═══════════════════
+let anniItems = [];
+let anniFormData = {name:'', date:'', sticker:'💕'};
+let showAnniForm = false;
+const ANNI_STICKERS = ['💕','💍','🌹','🎂','🥂','✈','🌙','💫','🏠','👫','💑','🎁','🌸','🎉','🐾','🤝','😘','💝','🌺','💒'];
+
+function daysBetween(dateStr){
+  // dateStr: 'YYYY-MM-DD'
+  const [y,m,d]=dateStr.split('-').map(Number);
+  const target=new Date(y,m-1,d);
+  const today=new Date(2026,3,9); // fixed today for demo
+  const diff=Math.floor((today-target)/(1000*60*60*24));
+  return diff; // positive = past, negative = future
+}
+
+function nextAnniversary(dateStr){
+  const [,m,d]=dateStr.split('-').map(Number);
+  const today=new Date(2026,3,9);
+  let next=new Date(2026,m-1,d);
+  if(next<=today) next=new Date(2027,m-1,d);
+  const diff=Math.floor((next-today)/(1000*60*60*24));
+  return {date:`${next.getMonth()+1}/${next.getDate()}`,days:diff};
+}
+
+function renderAnni(){
+  // Main couple anniversary
+  const coupleStart='2025-01-01'; // placeholder — editable
+  const coupleDays=daysBetween(coupleStart);
+  const next100=Math.ceil(coupleDays/100)*100;
+  const daysTo100=next100-coupleDays;
+
+  const ANNI_STICKERS_SHOW = ANNI_STICKERS;
+  const anniIcos = ['💕','💍','🌹','🎂','✈','🌸','🎉','💝','🏠','👫'];
+
+  return `<div class="page-inner">
+    <div class="anni-hero">
+      <div style="font-size:11px;opacity:.8;margin-bottom:6px">💑 熙寶 & 雅寶</div>
+      <div class="anni-days">${coupleDays}</div>
+      <div class="anni-days-lbl">在一起的第 ${coupleDays} 天 🥰</div>
+      <div class="anni-couple">從 ${coupleStart} 開始的每一天</div>
+      <div class="anni-next">🎯 距離第 ${next100} 天還有 <b>${daysTo100}</b> 天！</div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:13px;font-weight:700;color:var(--txt2)">💍 重要紀念日</div>
+      <button style="background:var(--grad);color:white;border:none;border-radius:14px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer" onclick="toggleAnniForm()">
+        ${showAnniForm?'✕ 收起':'✚ 新增'}
+      </button>
+    </div>
+
+    ${showAnniForm?`<div class="anni-add-form">
+      <div class="anni-add-title">新增紀念日</div>
+      <div class="af-row">
+        <div class="af-label">選一個圖示</div>
+        <div class="anni-sticker-row">
+          ${ANNI_STICKERS.map(s=>`<span class="anni-stk${anniFormData.sticker===s?' sel':''}" onclick="anniFormData.sticker='${s}';render()">${s}</span>`).join('')}
+        </div>
+      </div>
+      <div class="af-row">
+        <div class="af-label">紀念日名稱</div>
+        <input class="af-input" id="anni-name" placeholder="例如：第一次約會" value="${anniFormData.name}" oninput="anniFormData.name=this.value">
+      </div>
+      <div class="af-row">
+        <div class="af-label">日期</div>
+        <input class="af-input" id="anni-date" type="date" value="${anniFormData.date}" oninput="anniFormData.date=this.value">
+      </div>
+      <button class="af-save" onclick="addAnniItem()">💾 儲存紀念日</button>
+    </div>`:''}
+
+    <div class="anni-list">
+      ${[
+        {name:'交往紀念日 🥂',date:coupleStart,sticker:'💑',special:true},
+        ...anniItems
+      ].map(item=>{
+        const diff=daysBetween(item.date);
+        const isPast=diff>=0;
+        const next=isPast?nextAnniversary(item.date):null;
+        const [y,m,d]=item.date.split('-').map(Number);
+        return `<div class="anni-card${isPast&&diff>30?' passed':''}">
+          <div class="anni-card-ico">${item.sticker||'💕'}</div>
+          <div class="anni-card-body">
+            <div class="anni-card-name">${item.name}</div>
+            <div class="anni-card-date">${y}年${m}月${d}日${next?` · 下次 ${next.date}`:'　即將到來！'}</div>
+            ${isPast&&next?`<div style="font-size:10px;color:var(--pk);margin-top:2px">距下次週年還有 ${next.days} 天</div>`:''}
+          </div>
+          <div class="anni-card-count">
+            <div class="anni-card-days">${isPast?diff:Math.abs(diff)}</div>
+            <div class="anni-card-days-lbl">${isPast?'天前':'天後'}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div style="background:var(--pk4);border-radius:14px;padding:12px 14px;font-size:11px;color:var(--txt2);line-height:1.8">
+      <div style="font-weight:600;margin-bottom:4px">🌸 里程碑倒數</div>
+      ${[100,200,300,365,500,730].map(n=>{
+        const diff=n-coupleDays;
+        if(diff<0) return `<div>✅ 第 ${n} 天（已達成）</div>`;
+        return `<div>📍 第 ${n} 天 — 還有 <b>${diff}</b> 天</div>`;
+      }).join('')}
+    </div>
+
+    <div style="text-align:center;padding:16px;font-size:11px;color:var(--txt4)">每一天都是最珍貴的禮物 💕</div>
+  </div>`;
+}
+
+function toggleAnniForm(){showAnniForm=!showAnniForm;render()}
+
+async function addAnniItem(){
+  const name=document.getElementById('anni-name')?.value||anniFormData.name;
+  const date=document.getElementById('anni-date')?.value||anniFormData.date;
+  if(!name||!date){showToast('請填寫名稱和日期！');return}
+  const item={name,date,sticker:anniFormData.sticker,created_at:new Date().toISOString()};
+  try{
+    const {data,error}=await db.from('anniversaries').insert(item).select();
+    if(!error&&data){anniItems.push(data[0]);showToast('💍 紀念日已儲存！');}
+  }catch(e){anniItems.push({...item,id:Date.now()});showToast('💍 已記錄！')}
+  anniFormData={name:'',date:'',sticker:'💕'};
+  showAnniForm=false;
+  render();
+}
+
+// ═══════════════════ INIT ═══════════════════
+async function init(){
+  const now=new Date();
+  document.getElementById('hdr-date').textContent=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 `;
+  selectedDate=todayKey();
+  await loadData();
+  render();
+  document.getElementById('loading').classList.add('hide');
+}
+
+init();
+</script>
+</body>
+</html>
