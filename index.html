@@ -606,11 +606,11 @@ body {
   <div class="card" style="background:linear-gradient(135deg,#FFF0F4,#EEF7FF)">
     <div class="card-title">💡 班表說明</div>
     <p style="font-size:12px;color:var(--text-light);line-height:1.8">
-      🌅 <b>早班</b>：06:00 – 14:00<br>
-      ☀️ <b>白班</b>：08:00 – 16:00<br>
-      🌆 <b>中班</b>：14:00 – 22:00<br>
-      🌙 <b>晚班</b>：22:00 – 06:00<br>
-      🌜 <b>大夜</b>：00:00 – 08:00<br>
+      🌅 <b>凌晨</b>：05:00 – 09:00<br>
+      ☀️ <b>早班</b>：08:00 – 16:00<br>
+      🌆 <b>中班</b>：12:00 – 18:00<br>
+      🌙 <b>晚班</b>：18:00 – 23:00<br>
+      🌜 <b>大夜</b>：22:00 – 07:00<br>
       📅 <b>休假</b>：今天放假囉！
     </p>
   </div>
@@ -740,11 +740,11 @@ const TW_HOLIDAYS_2026 = {
 
 // ===== SHIFT DATA =====
 const SHIFT_TIMES = {
-  '早': {name:'早班', start:'06:00', end:'14:00', icon:'🌅'},
-  '白': {name:'白班', start:'08:00', end:'16:00', icon:'☀️'},
-  '中': {name:'中班', start:'14:00', end:'22:00', icon:'🌆'},
-  '晚': {name:'晚班', start:'22:00', end:'06:00', icon:'🌙'},
-  '大夜': {name:'大夜班', start:'00:00', end:'08:00', icon:'🌜'},
+  '凌晨': {name:'凌晨', start:'05:00', end:'09:00', icon:'🌅'},
+  '早': {name:'早班', start:'08:00', end:'12:00', icon:'☀️'},
+  '中': {name:'中班', start:'12:00', end:'18:00', icon:'🌆'},
+  '晚': {name:'晚班', start:'18:00', end:'23:00', icon:'🌙'},
+  '大夜': {name:'大夜班', start:'22:00', end:'07:00', icon:'🌜'},
   '休': {name:'休假', start:'-', end:'-', icon:'🌴'},
   '例': {name:'例假', start:'-', end:'-', icon:'🛋️'},
   '國': {name:'國定假日', start:'-', end:'-', icon:'🎉'},
@@ -917,8 +917,8 @@ function renderSchedule() {
 function renderDefaultSchedule() {
   // Demo data when no real data
   const demos = [
-    {name:'小美', shift:'早', isMe:false},
-    {name:'球球', shift:'白', isMe:true},
+    {name:'小美', shift:'凌晨', isMe:false},
+    {name:'球球', shift:'早', isMe:true},
     {name:'小花', shift:'中', isMe:false},
     {name:'大明', shift:'晚', isMe:false},
   ];
